@@ -1,0 +1,14 @@
+# ignore all files in any directory named __pycache__
+__pycache__/*
+
+# ignore all files in any directory named DUMP
+DUMP/*
+
+# ignore all files in any directory named 6.0
+6.0/*
+
+# ignore all files in any directory named IJS
+IJS/*
+
+# ignore all database files
+*.db
