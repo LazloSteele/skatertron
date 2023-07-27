@@ -1,21 +1,18 @@
+from sqlite3 import OperationalError, IntegrityError, ProgrammingError
 from controller import controller as c
-from model import event_table
+from model import Event_Table
+from pdf_scraper import PDF_Scraper as scr
 
-
-def __main__():
-    c.SET_SERVER(m, "Vail")
-    m.delete()
-    c.NEW_COMP(m)
-    m.server.commit()
-    m.assign_file("(008) INTERMEDIATE WOMEN SHORT PROGRAM", "Amelia Greer", "DUMP/Photo/13/New Text Document.txt")
-    m.assign_file("(010) EXCEL PRELIMINARY PLUS FREE SKATE", "Jiana Weak", "DUMP/Photo/13/New Text Document - Copy.txt")
-    m.server.commit()
-
-    m.process_files()
-
-    
 if __name__ == '__main__':
-    m = event_table()
-
-    __main__()
+    competition_name = "AbC"
     
+    m = Event_Table()
+
+    pdf1 = "073.pdf"
+    pdf2 = "Crystal Reports ActiveX Designer - 2023Vail_013Preliminary_FS_StartingOrderWithClubNames.pdf"
+
+    contents = scr.stage_pdf(pdf1)
+    event_dict = scr.handle_6_0(contents)
+
+    
+
