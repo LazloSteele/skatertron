@@ -10,5 +10,6 @@ DUMP/*
 # ignore all files in any directory named IJS
 IJS/*
 
-# ignore all database files
+# ignore all database files to preserve skater anonymity
 *.db
+
