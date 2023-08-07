@@ -1,8 +1,8 @@
 # ignore all files in any directory named __pycache__
-__pycache__/*
+__pycache__\*
 
 # ignore all files in any directory named DUMP
-DUMP/*
+Assets\Media\DUMP\*
 
 # ignore all files in any directory named 6.0
 Assets\Event PDF\6.0\*
