@@ -4,15 +4,35 @@ import os
 
 class ModelSQLite(object):
 
-    def __init__(self, table_config):
-        self._config = table_config
-        self._connection = sqlite_backend.connect_to_db(sqlite_backend.DB_name)
-        for table_sql in self._config:
-            sqlite_backend.create_table(self.connection, table_sql)
+    def __init__(self):
+        self._config = [
+    "CREATE TABLE IF NOT EXISTS events(id integer PRIMARY KEY, evt_number text UNIQUE, evt_title text NOT NULL)",
+    "CREATE TABLE IF NOT EXISTS skates(id integer PRIMARY KEY, evt_id integer NOT NULL, skater text NOT NULL)",
+    "CREATE TABLE IF NOT EXISTS files(id integer PRIMARY KEY, skate_id integer NOT NULL, file text NOT NULL)",
+    "CREATE TABLE IF NOT EXISTS orders(id integer PRIMARY KEY, name text NOT NULL, email text NOT NULL)",
+    "CREATE TABLE IF NOT EXISTS order_items(id integer PRIMARY KEY, order_id integer NOT NULL, file_name text NOT NULL)"
+    ]
+        self._connection = self.connection = None
+        self._application_state = self.application_state = 'init'
+
+    @property
+    def application_state(self):
+        return self._application_state
+
+    @application_state.setter
+    def application_state(self, new_state):
+        self._application_state = new_state
 
     @property
     def connection(self):
         return self._connection
+
+    @connection.setter
+    def connection(self, connection):
+        self._connection = sqlite_backend.connect_to_db(connection)
+
+        for table_sql in self._config:
+            sqlite_backend.create_table(self.connection, table_sql)
 
     def create_event(self, event_dict):
         sqlite_backend.add_event(self.connection, event_dict)
@@ -132,3 +152,6 @@ class Event_Table():
 
 
     '''
+
+if __name__ == '__main__':
+    m = ModelSQLite()

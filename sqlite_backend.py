@@ -2,7 +2,7 @@ import sqlite3
 from sqlite3 import OperationalError, IntegrityError, ProgrammingError
 import skatertron_exceptions
 
-DB_name = 'myDB'
+DB_name = None
 
 def connect_to_db(db=None):
     """Connect to a sqlite DB. Create the database if there isn't one yet.
@@ -26,7 +26,7 @@ def connect_to_db(db=None):
         mydb = ':memory:'
         print('New connection to in-memory SQLite DB...')
     else:
-        mydb = f'{db}.db'
+        mydb = f'competitions\\{db}.db'
         print('New connection to SQLite DB...')
     connection = sqlite3.connect(mydb)
     return connection

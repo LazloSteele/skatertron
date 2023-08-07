@@ -1,4 +1,5 @@
 from pdfminer.high_level import extract_text
+from tkinter import Tk
 from tkinter.filedialog import askopenfilename, askdirectory
 from os import listdir
 import re
@@ -13,7 +14,9 @@ class PDF_Scraper(object):
 
     @staticmethod
     def get_dir_path():
+        print('test')
         path = askdirectory()
+        print('testing')
 
         return path
     
