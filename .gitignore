@@ -13,3 +13,7 @@ Assets\Event PDF\IJS\*
 # ignore all database files to preserve skater anonymity
 *.db
 
+# ignore all pdf files to preserve skater anonymity
+*.pdf
+
+
