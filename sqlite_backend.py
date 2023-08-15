@@ -101,11 +101,17 @@ def add_event(conn, event_dict):
             conn.execute("INSERT INTO skates VALUES(NULL, ?, ?)", (event_id, skater))
             print(f"inserted {skater} into the skates table under event id {event_id}")
     except IntegrityError as e:
-        print("{e}: event number {event_number} was already stored in the events table as {event_name}")
-        
+        print(f"{e}: event number {event_number} was already stored in the events table as {event_name}")
 
-    
+    conn.commit()
 
+@connect
+def add_file(conn, skate, file):
+    try:
+        conn.execute("INSERT INTO files VALUES(NULL, ?, ?)", (skate, file))
+        print(f"inserted {file} into the files table")
+    except IntegrityError as e:
+        print(f"{e}: {file} was already stored in the files table under skate id {skate}")
     conn.commit()
 
 @connect
@@ -138,6 +144,23 @@ def delete_skate(conn, event_number, skater_name):
         raise skatertron_exceptions.EventNotExists(f"Cannot delete event #{event_number} because it does not exist in the events table.")
 
 @connect
+def select_skate(conn, event_number, skater):
+    result = None
+
+    try:
+        event_id = conn.execute(f'SELECT id FROM events WHERE evt_number="{event_number}"').fetchone()[0] 
+        result = conn.execute(f'SELECT id FROM skates WHERE evt_id="{event_id} AND skater="{skater}"').fetchone()[0]
+    except TypeError as e:
+        print(e)
+
+    if result is not None:
+        return result
+    else:
+        raise skatertron_exceptions.EventNotExists(
+            'Can\'t read event number "{event_number}" because it\'s not stored in table'
+            )    
+
+@connect
 def select_event_name(conn, event_number):
     result = None
 
@@ -152,6 +175,7 @@ def select_event_name(conn, event_number):
         raise skatertron_exceptions.EventNotExists(
             'Can\'t read event number "{event_number}" because it\'s not stored in table'
             )
+
 @connect
 def select_skates_by_event(conn, event_number):
     result = None

@@ -47,6 +47,10 @@ class ModelSQLite(object):
     def create_event(self, event_dict):
         sqlite_backend.add_event(self.connection, event_dict)
 
+    def add_file(self, skate, file):
+        sqlite_backend.add_file(self.connection, skate, file)
+        #still needs controller and view 
+
     def read_event_name(self, event_number):
         return sqlite_backend.select_event_name(self.connection, event_number)
 
