@@ -76,7 +76,10 @@ def __main__():
         
         action = input()
         
-        match action:
+        match c.m.application_state:
+
+            
+            '''
             case 'L':
                 comp_name = input('What is the event name?: ')
                 c.load_competition(comp_name)
@@ -100,7 +103,9 @@ def __main__():
                 running = False
             case _:
                 c.v.err_invalid_input(action)
+            '''
 
+            
 if __name__ == '__main__':
     
     c = Controller(model(), view())
