@@ -13,6 +13,7 @@ class ModelSQLite(object):
     "CREATE TABLE IF NOT EXISTS order_items(id integer PRIMARY KEY, order_id integer NOT NULL, file_name text NOT NULL)"
     ]
         self._connection = self.connection = None
+        self._comp_name = self.comp_name = None
         self._application_state = self.application_state = 'init'
 
     @property
@@ -30,18 +31,33 @@ class ModelSQLite(object):
     @connection.setter
     def connection(self, connection):
         self._connection = sqlite_backend.connect_to_db(connection)
+        self.comp_name = connection
 
         for table_sql in self._config:
             sqlite_backend.create_table(self.connection, table_sql)
 
+    @property
+    def comp_name(self):
+        return self._comp_name
+
+    @comp_name.setter
+    def comp_name(self, new_name):
+        self._comp_name = new_name
+
     def create_event(self, event_dict):
         sqlite_backend.add_event(self.connection, event_dict)
+
+    def read_event_name(self, event_number):
+        return sqlite_backend.select_event_name(self.connection, event_number)
 
     def read_skaters_in_event(self, event_number):
         return sqlite_backend.select_skates_by_event(self.connection, event_number)
 
     def read_all(self, table_name):
         return sqlite_backend.select_all(self.connection, table_name)
+
+    def read_events_by_skater(self, skater_name):
+        return sqlite_backend.select_events_by_skater(self.connection, skater_name)
 
     def delete_event(self, event_number):
         sqlite_backend.delete_event(self.connection, event_number)

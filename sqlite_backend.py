@@ -106,7 +106,7 @@ def add_event(conn, event_dict):
 
     
 
-    conn.commit
+    conn.commit()
 
 @connect
 def delete_event(conn, event_number):
@@ -137,15 +137,54 @@ def delete_skate(conn, event_number, skater_name):
     else:
         raise skatertron_exceptions.EventNotExists(f"Cannot delete event #{event_number} because it does not exist in the events table.")
 
+@connect
+def select_event_name(conn, event_number):
+    result = None
 
+    try:
+        result = conn.execute(f'SELECT * FROM events WHERE evt_number="{event_number}"').fetchone()[2]
+    except TypeError as e:
+        print(e)
 
+    if result is not None:
+        return result
+    else:
+        raise skatertron_exceptions.EventNotExists(
+            'Can\'t read event number "{event_number}" because it\'s not stored in table'
+            )
 @connect
 def select_skates_by_event(conn, event_number):
     result = None
 
     try:
         event_id = conn.execute(f'SELECT * FROM events WHERE evt_number="{event_number}"').fetchone()[0]
-        result = conn.execute(f'SELECT * FROM skates WHERE evt_id="{event_id}"').fetchall()
+        result_tuple = conn.execute(f'SELECT * FROM skates WHERE evt_id="{event_id}"').fetchall()
+
+        result = []
+        
+        for event in result_tuple:
+            result.append(event[2])
+    except TypeError as e:
+        print(e)
+    
+    if result is not None:
+        return result
+    else:
+        raise skatertron_exceptions.EventNotExists(
+            'Can\'t read event number "{event_number}" because it\'s not stored in table'
+            )
+
+@connect
+def select_events_by_skater(conn, skater_name):
+    result = None
+
+    try:
+        event_id_list = conn.execute(f'SELECT evt_id FROM skates WHERE skater="{skater_name}"').fetchall()
+        result = []
+        print(event_id_list)
+        for event in event_id_list:
+            result += conn.execute(f'SELECT evt_number, evt_title FROM events WHERE id="{event[0]}"').fetchall()
+            print(result)
     except TypeError as e:
         print(e)
     

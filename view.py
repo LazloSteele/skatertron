@@ -78,7 +78,7 @@ class TUI(object):
 
         i = 1
         for e in evt_list:
-            message += f'{e}\n'
+            message += f'Event {e[1]}: {e[2]}\n'
 
         return(message)
 
@@ -89,7 +89,8 @@ class TUI(object):
 
         i = 1
         for e in evt_list:
-            message += f'{e}\n'
+            print(e)
+            message += f'{e[0]}: {e[1]}\n'
 
         return(message)
     
@@ -141,7 +142,9 @@ class TUI(object):
             case 'init':
                 message = '[L]oad competition | [N]ew competition?'
             case 'competition_loaded':
-                message = '[B]ulk add events | [A]dd single event | [D]isplay event(s)'
+                message = '[B]ulk add events | [A]dd single event | [D]isplay event(s) | Attach [F]iles'
+
+        message += ' | [Q]uit'
 
         print(message)
 
