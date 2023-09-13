@@ -36,13 +36,20 @@ class PDF_Scraper(object):
         for n in to_remove:
             contents.remove(n)
 
+        #add lstrip or replace rstrip to strip all
         event_num_and_name = contents[2].rstrip().upper()
-        
+
+        #regex to match '(*)'
+        #change * to da-z? or something equivalent -or- 3 iterations of a digit plus optional alpha
         match = re.findall(r'\(.*\)', event_num_and_name)
         if match:
+            #returns number without '(' and ')'
             event_number = match[0][1:-1]
+
+            #add try/except or else block to handle 'no event number'
             
-        
+        #magic number of string indexing not a great look
+        #expand match regex to add second match all after
         event_name = event_num_and_name[len(event_number)+3:]
         
         number_of_skaters = 0
@@ -52,7 +59,8 @@ class PDF_Scraper(object):
                 number_of_skaters += 1
             except:
                 pass
-            
+
+        #wtf is this string indexing for? Clean this up.    
         skaters = [n for n in contents[(3+number_of_skaters):-3]]
         skaters = skaters[::2]
 

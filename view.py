@@ -61,15 +61,21 @@ class TUI(object):
 
         skaters = files_dict.keys()
 
+        print(skaters)
+
         i = 1
         for skater in skaters:
             message += f'{i}. {skater}:\n'
 
-            for file in files_dict[skater]:
-                message += f"--- {file}\n"
+            if type(files_dict[skater]) == list:
+                for file in files_dict[skater]:
+                    message += f"--- {file}\n"
+            else:
+                message += f"--- {files_dict[skater]}\n"
             i += 1
 
         return(message)
+
 
     @staticmethod
     @message_wrap
@@ -147,6 +153,13 @@ class TUI(object):
         message += ' | [Q]uit'
 
         print(message)
+
+    @staticmethod
+    @message_wrap
+    def add_file(event_number, skater, file):
+        message = f'Added {file} to {skater}\'s skate on event #{event_number}'
+
+        return(message)
 
 
 if __name__ == '__main__':

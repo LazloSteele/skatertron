@@ -48,8 +48,26 @@ class ModelSQLite(object):
         sqlite_backend.add_event(self.connection, event_dict)
 
     def add_file(self, skate, file):
-        sqlite_backend.add_file(self.connection, skate, file)
-        #still needs controller and view 
+        if file in self.read_files_by_skate(skate):
+            raise sk8_exc.FileExistsInSkate()
+        else:
+            sqlite_backend.add_file(self.connection, skate, file)
+        
+    def read_files(self, event_number):
+        return sqlite_backend.select_files_by_event(self.connection, event_number)
+
+    def read_files_by_skate(self, skate):
+        return sqlite_backend.select_files_by_skate(self.connection, skate)
+
+    def read_file_id(self, skate_id):
+        file_ids = []
+
+        file_ids = sqlite_backend.select_file_id_by_skate(self.connection, skate_id)
+
+        return (file_ids)
+
+    def rename_file(self, file_id):
+        pass
 
     def read_event_name(self, event_number):
         return sqlite_backend.select_event_name(self.connection, event_number)
@@ -63,11 +81,17 @@ class ModelSQLite(object):
     def read_events_by_skater(self, skater_name):
         return sqlite_backend.select_events_by_skater(self.connection, skater_name)
 
+    def read_skate(self, event_number, skater):
+        return sqlite_backend.select_skate(self.connection, event_number, skater)
+
     def delete_event(self, event_number):
         sqlite_backend.delete_event(self.connection, event_number)
 
     def delete_skate(self, event_number, skater_name):
         sqlite_backend.delete_skate(self.connection, event_number, skater_name)
+
+    def delete_file(self, file_id):
+        sqlite_backend.delete_file(self.connection, file_id)
 
 class Event_Table():
     def __init__(self):
@@ -174,4 +198,6 @@ class Event_Table():
     '''
 
 if __name__ == '__main__':
+
     m = ModelSQLite()
+
