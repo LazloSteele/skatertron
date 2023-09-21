@@ -23,6 +23,8 @@ class PDF_Scraper(object):
         text = extract_text(pdf)
         contents = list(filter(lambda x: x != '', text.split('\n')))
 
+        ### Refactor both handle_ijs() and handle_6_0() into here
+
         return contents
 
     @staticmethod
@@ -32,25 +34,26 @@ class PDF_Scraper(object):
         event_name = ''
         skaters = []
 
+        '''
+        removes extreneous data that is inconsistent in the data ordering in the pdf sources
+        '''  
         to_remove = ['Starting', 'Number', 'Name', 'Nation']
         for n in to_remove:
             contents.remove(n)
 
-        #add lstrip or replace rstrip to strip all
-        event_num_and_name = contents[2].rstrip().upper()
+        #REFACTOR OUT TO stage_pdf()
+        #name and number of event has always been third element in the pdf after stripping, happy to find better way
+        event_num_and_name = contents[2].strip().upper()
 
-        #regex to match '(*)'
-        #change * to da-z? or something equivalent -or- 3 iterations of a digit plus optional alpha
-        match = re.findall(r'\(.*\)', event_num_and_name)
-        if match:
-            #returns number without '(' and ')'
-            event_number = match[0][1:-1]
-
-            #add try/except or else block to handle 'no event number'
-            
-        #magic number of string indexing not a great look
-        #expand match regex to add second match all after
-        event_name = event_num_and_name[len(event_number)+3:]
+        '''
+        pulls any instance of digits and an optional alpha within parenthesis
+        positive lookahead and lookbehind to not include the parenthesis
+        meant to capture the event number
+        '''
+        event_number = re.findall(r'(?<=\()[0-9]+[a-z]?(?=\))', event_num_and_name)[0]
+        event_name = re.findall(r'(?<=\)\s)[a-zA-Z0-9\s\\\/\-]+', event_num_and_name)[0]
+        if not event_number:
+            raise ValueError('PDF does not contain expected event number format: \'(001) abc\' -OR- \'(001a) abc\'')
         
         number_of_skaters = 0
         for n in contents:
@@ -81,20 +84,38 @@ class PDF_Scraper(object):
         
         event_num_and_name = contents[1].rstrip().upper()
 
-        print(event_num_and_name)
-        
-        match = re.findall(r'\(.*\)', event_num_and_name)
-        if match:
-            event_number = match[0][1:-1]
-            
-        event_name = event_num_and_name[len(event_number)+3:]
+        #REFACTOR OUT TO stage_pdf()
+        '''
+        pulls any instance of digits and an optional alpha within parenthesis
+        positive lookahead and lookbehind to not include the parenthesis
+        meant to capture the event number
+        '''
+        event_number = re.findall(r'(?<=\()[0-9]+[a-z]?(?=\))', event_num_and_name)[0]
+        event_name = re.findall(r'(?<=\)\s)[a-zA-Z0-9\s\\\/\-]+', event_num_and_name)[0]
+        if not event_number:
+            raise ValueError('PDF does not contain expected event number format: \'(001) abc\' -OR- \'(001a) abc\'')
 
+        #some skaters have a newline character between their skating order # and their name
+        # how to regex the list of strings that contents is and also catch the instance of extra newline
+        # better preprocessing in stage_pdf()???
+        pattern = re.compile(r'(?<=[0-9]\.)\s*(.*)(?=,)')
+        pattern2 = re.compile(r'^[0-9]{0,2}\.\s*')
+
+        #gross bad, bad gross, make this cleaner
+        n=0
         for i in contents:
-            pattern = re.compile(r'^[0-9]+\.\s(.*),')
             match = pattern.findall(i)
+            this_skater = ''
+            
             if match:
-                this_skater = match[0]
+                this_skater = match[0].strip()
+            elif pattern2.findall(i):
+                this_skater = re.findall(r'(.*)(?=,)', contents[n+1].strip())[0]
+
+            if this_skater:
                 skaters.append(this_skater)
+            
+            n+=1
 
         event = {
             'num': event_number,
@@ -118,17 +139,8 @@ class PDF_Scraper(object):
         return contents
 
 if __name__ == '__main__':
-    file = PDF_Scraper.get_file_path()
-    content = PDF_Scraper.stage_pdf(file)
-    event = PDF_Scraper.handle_ijs(content)
-    
-    
-    IJS = PDF_Scraper.get_dir_path()
-    
-    IJS_Content = PDF_Scraper.bulk_stage_pdf(IJS)
-    IJS_Events = []
-    for n in IJS_Content:
-        IJS_Events.append(PDF_Scraper.handle_ijs(n))
+    data = PDF_Scraper.stage_pdf(PDF_Scraper.get_file_path())
+    for i in data:
+        print(i)
 
-    print(event)
-    print(IJS_Events)
+    print(PDF_Scraper.handle_6_0(data))

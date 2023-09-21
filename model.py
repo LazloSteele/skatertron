@@ -48,6 +48,7 @@ class ModelSQLite(object):
         sqlite_backend.add_event(self.connection, event_dict)
 
     def add_file(self, skate, file):
+        skate_filenames = self.read_files_by_skate(skate)
         if file in self.read_files_by_skate(skate):
             raise sk8_exc.FileExistsInSkate()
         else:

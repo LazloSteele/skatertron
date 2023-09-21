@@ -77,9 +77,9 @@ class Controller(object):
         # types. The advantage is enums provide a bit more readability
         for event in content_list:
             skater_dict = {}
-            if event_type == 'IJS' or event_type == 'i':
+            if event_type.upper() == 'IJS' or event_type.upper() == 'I':
                 skater_dict = ps.handle_ijs(event)
-            elif event_type == '6.0':
+            elif event_type == '6.0' or event_type == '6':
                 skater_dict = ps.handle_6_0(event)
             else:
                 self.v.err_invalid_entry()
@@ -93,9 +93,9 @@ class Controller(object):
 
         skater_dict = {}
 
-        if event_type == 'IJS' or event_type == 'i':
+        if event_type.upper() == 'IJS' or event_type.upper() == 'I':
             skater_dict = ps.handle_ijs(content)
-        elif event_type == '6.0':
+        elif event_type == '6.0' or event_type == '6':
             skater_dict = ps.handle_6_0(content)
         else:
             self.v.err_invalid_entry()

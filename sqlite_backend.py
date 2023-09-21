@@ -88,7 +88,7 @@ def scrub(input_string):
 
 @connect
 def add_event(conn, event_dict):
-    event_number = event_dict['num']
+    event_number = event_dict["num"]
     event_name = event_dict["name"]
     skaters = event_dict["skaters"]
 
