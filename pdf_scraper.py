@@ -6,6 +6,9 @@ import re
 
 class PDF_Scraper(object):
     valid_event_types = ['IJS', '6.0']
+    evt_num_re = re.compile(r'(?<=\n\()[0-9]+[a-z]?(?=\))')
+    evt_name_re = re.compile(r'(?<=\)\s)[a-zA-Z0-9( )\\\/\-]+')
+    evt_skaters_re_6_0 = re.compile(r'(?<=[0-9]\.)\s*(.*)(?=,)')
     
     @staticmethod
     def get_file_path():
@@ -20,50 +23,29 @@ class PDF_Scraper(object):
         return path
     
     @staticmethod
-    def stage_pdf(pdf):
+    def stage_pdf(pdf, event_type):
+
+        if event_type not in PDF_Scraper.valid_event_types:
+            raise ValueError('Not a valid event type')
         
         text = extract_text(pdf)
 
-        #initialize values for event
-        event_number = ''
-        event_name = ''
-        skaters = []
+        try:
+            event_number = PDF_Scraper.evt_num_re.findall(text)[0].strip().upper()
+        except:
+            raise ValueError('No valid event number found')
+        
+        try:
+            event_name = PDF_Scraper.evt_name_re.findall(text)[0].strip().upper()
+        except:
+            raise ValueError('No valid event name found')
 
-        '''    
-        elif event_type == '6.0':
+        try:
+            if event_type == '6.0':
+                skaters = PDF_Scraper.evt_skaters_re_6_0.findall(text)
+        except:
+            raise ValueError('No valid skaters found!')
 
-            # in 6.0 pdf some skaters have a newline character between their skating order # and their name
-            # how to regex the list of strings that contents is and also catch the instance of extra newline
-            # better preprocessing???
-            pattern = re.compile(r'(?<=[0-9]\.)\s*(.*)(?=,)')
-            pattern2 = re.compile(r'^[0-9]{0,2}\.\s*')
-
-            #gross bad, bad gross, make this cleaner
-            n=0
-            for i in contents:
-                match = pattern.findall(i)
-                this_skater = ''
-                
-                if match:
-                    this_skater = match[0].strip()
-                elif pattern2.findall(i):
-                    this_skater = re.findall(r'(.*)(?=,)', contents[n+1].strip())[0]
-
-                if this_skater:
-                    skaters.append(this_skater)
-                
-                n+=1
-        '''
-        '''
-        pulls any instance of digits and an optional alpha within parenthesis
-        positive lookahead and lookbehind to not include the parenthesis
-        meant to capture the event number
-        '''
-
-        event_number = re.findall(r'(?<=\n\()[0-9]+[a-z]?(?=\))', text)[0].strip().upper()
-        event_name = re.findall(r'(?<=\)\s)[a-zA-Z0-9( )\\\/\-]+', text)[0].strip().upper()
-        if not event_number:
-            raise ValueError('PDF does not contain expected event number format: \'(001) abc\' -OR- \'(001a) abc\'')
 
         event = {
             'num': event_number,
@@ -74,7 +56,13 @@ class PDF_Scraper(object):
         return(event)
 
     @staticmethod
-    def handle_ijs(content):
+    def skaters_ijs(pdf):
+        content = extract_text(pdf)
+        print(content)
+        match = re.findall(r'(\d+\n)+', content)
+
+        print(match)
+        
         '''
         removes extreneous data that is inconsistent in the data ordering in the pdf sources
         '''  
@@ -111,10 +99,10 @@ class PDF_Scraper(object):
         return contents
 
 if __name__ == '__main__':
-    data = PDF_Scraper.stage_pdf(PDF_Scraper.get_file_path(), '6.0')
-    print(data)
 
-    data = PDF_Scraper.stage_pdf(PDF_Scraper.get_file_path(), 'IJS')
-    print(data)
+    pdf = PDF_Scraper.get_file_path()
+    event = PDF_Scraper.stage_pdf(pdf, '6.0')
+
+    print(event)
 
 
