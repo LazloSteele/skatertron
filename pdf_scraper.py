@@ -9,6 +9,7 @@ class PDF_Scraper(object):
     evt_num_re = re.compile(r'(?<=\n\()[0-9]+[a-z]?(?=\))')
     evt_name_re = re.compile(r'(?<=\)\s)[a-zA-Z0-9( )\\\/\-]+')
     evt_skaters_re_6_0 = re.compile(r'(?<=[0-9]\.)\s*(.*)(?=,)')
+    evt_skaters_re_ijs = re.compile(r'(\d+\n)+([a-zA-Z0-9\s]*)(?=printed at:)')
     
     @staticmethod
     def get_file_path():
@@ -28,7 +29,7 @@ class PDF_Scraper(object):
         if event_type not in PDF_Scraper.valid_event_types:
             raise ValueError('Not a valid event type')
         
-        text = extract_text(pdf)
+        text = extract_text(pdf).replace('\n\n', '\n')
 
         try:
             event_number = PDF_Scraper.evt_num_re.findall(text)[0].strip().upper()
@@ -43,6 +44,10 @@ class PDF_Scraper(object):
         try:
             if event_type == '6.0':
                 skaters = PDF_Scraper.evt_skaters_re_6_0.findall(text)
+            elif event_type == 'IJS':
+                skater_text = PDF_Scraper.evt_skaters_re_ijs.findall(text)[0][1].strip()
+
+                skaters = skater_text.split('\n')[::2]        
         except:
             raise ValueError('No valid skaters found!')
 
@@ -54,36 +59,6 @@ class PDF_Scraper(object):
             }
 
         return(event)
-
-    @staticmethod
-    def skaters_ijs(pdf):
-        content = extract_text(pdf)
-        print(content)
-        match = re.findall(r'(\d+\n)+', content)
-
-        print(match)
-        
-        '''
-        removes extreneous data that is inconsistent in the data ordering in the pdf sources
-        '''  
-        #to_remove = ['Starting', 'Number', 'Name', 'Nation']
-        #for n in to_remove:
-        #    contents.remove(n)
-
-        '''
-        number_of_skaters = 0
-        for n in contents:
-            try:
-                int(n)
-                number_of_skaters += 1
-            except:
-                pass
-
-        #wtf is this string indexing for? Clean this up.    
-        skaters = [n for n in contents[(3+number_of_skaters):-3]]
-        skaters = skaters[::2]
-        '''
-        pass
 
     @staticmethod
     def bulk_stage_pdf(directory):
@@ -101,7 +76,7 @@ class PDF_Scraper(object):
 if __name__ == '__main__':
 
     pdf = PDF_Scraper.get_file_path()
-    event = PDF_Scraper.stage_pdf(pdf, '6.0')
+    event = PDF_Scraper.stage_pdf(pdf, 'IJS')
 
     print(event)
 
