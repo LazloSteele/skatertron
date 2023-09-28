@@ -1,14 +1,8 @@
 # ignore all files in any directory named __pycache__
 __pycache__/
 
-# ignore all files in any directory named DUMP
-Assets/Media/DUMP/
-
-# ignore all files in any directory named 6.0
-Assets/Event PDF/6.0/
-
-# ignore all files in any directory named IJS
-Assets/Event PDF/IJS/
+# ignore all files in the Assets directory
+Assets/
 
 # ignore all database files to preserve skater anonymity
 *.db
@@ -16,4 +10,5 @@ Assets/Event PDF/IJS/
 # ignore all pdf files to preserve skater anonymity
 *.pdf
 
-
+# ignore my cheesy venv launcher
+venv.bat
