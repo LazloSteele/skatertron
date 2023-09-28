@@ -9,7 +9,7 @@ class PDF_Scraper(object):
     evt_num_re = re.compile(r'(?<=\n\()[0-9]+[a-z]?(?=\))')
     evt_name_re = re.compile(r'(?<=\)\s)[a-zA-Z0-9( )\\\/\-]+')
     evt_skaters_re_6_0 = re.compile(r'(?<=[0-9]\.)\s*(.*)(?=,)')
-    evt_skaters_re_ijs = re.compile(r'(\d+\n)+([a-zA-Z0-9\s]*)(?=printed at:)')
+    evt_skaters_re_ijs = re.compile(r'(\d+\n)+([a-zA-Z0-9\s]+)(?=printed at:)')
     
     @staticmethod
     def get_file_path():
