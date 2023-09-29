@@ -12,3 +12,6 @@ Assets/
 
 # ignore my cheesy venv launcher
 venv.bat
+
+# oh and also the venv
+env-lmp-skatertron/

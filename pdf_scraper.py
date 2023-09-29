@@ -62,6 +62,7 @@ class PDF_Scraper(object):
 
     @staticmethod
     def bulk_stage_pdf(directory):
+        #test to work with new functionality
         files = listdir(directory)
 
         contents = []
@@ -81,3 +82,5 @@ if __name__ == '__main__':
     print(event)
 
 
+# Integrate Controller.py/Model.py/View.py into new functionality
+# Add comments
