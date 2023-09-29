@@ -2,52 +2,22 @@ from model import ModelSQLite as model
 from view import TUI as view
 from pdf_scraper import PDF_Scraper as ps
 
-from os import mkdir
-from os.path import isdir, isfile
+from os import mkdir, listdir
+from os.path import isdir, isfile, join
 
 class Controller(object):
     
     def __init__(self, model, view):
         self.m = model
         self.v = view
-        #self._valid_commands = self.valid_commands_setter()
 
         self.v.welcome()
         if not isdir('Competitions'):
             mkdir('Competitions')
 
-    @property
-    def valid_commands(self):
-        return self._valid_commands
-
-    '''
-    def valid_commands_setter(self):
-
-        match self.m.application_state:
-
-            case 'init':
-                self.valid_commands = {
-                    'L': {
-                        'Message': '[L]oad Competition',
-                        'Function': self.load_competition(input('What is the event name?: '))
-                        },
-                    'N': {
-                        'Message': '[N]ew Competition',
-                        'Function': self.new_competition(input('What is the event name?: '))
-                        }
-                    }
-
-        self.valid_commands.update({
-            'Q': {
-                    'Message': '[Q]uit',
-                    'Function': exit()
-                    }
-            })
-            
-    '''
-
     def prompt_user(self):
         self.v.display_valid_actions(self.m.application_state)
+        
     # lps .. load_competition and new_competition are basically doing
     # the same thing, perhaps fold into one method with a flag to indicate
     # load vs new/create. default the flag to the most common action if makes sense
@@ -67,41 +37,33 @@ class Controller(object):
             self.m.connection = f'{competition_name}'
             self.m.application_state = 'competition_loaded'
             self.v.new_comp(competition_name)
-    # lps ... alot of overlap between buld_add and add_event suggest refactor
-    # into one method. You don't want to have to touch multiple methods to e.g.
-    # add a new event_type
-    def bulk_add_events(self, event_type):
-        d = ps.get_dir_path()
-        content_list = ps.bulk_stage_pdf(d)
-        # lps .. consider creating enums rather than passing arouund  'magic'
-        # types. The advantage is enums provide a bit more readability
-        for event in content_list:
-            skater_dict = {}
-            if event_type.upper() == 'IJS' or event_type.upper() == 'I':
-                skater_dict = ps.handle_ijs(event)
-            elif event_type == '6.0' or event_type == '6':
-                skater_dict = ps.handle_6_0(event)
-            else:
-                self.v.err_invalid_entry()
-            # lps ... failure modes handled ?
-            self.m.create_event(skater_dict)
-            self.v.disp_event(skater_dict['name'], skater_dict['skaters'])
 
-    def add_event(self, event_type):
-        f = ps.get_file_path()
-        content = ps.stage_pdf(f)
+    def add_event(self, event_type, bulk = False):
 
         skater_dict = {}
 
         if event_type.upper() == 'IJS' or event_type.upper() == 'I':
-            skater_dict = ps.handle_ijs(content)
+            event_type = 'IJS'
         elif event_type == '6.0' or event_type == '6':
-            skater_dict = ps.handle_6_0(content)
+            event_type = '6.0'
         else:
             self.v.err_invalid_entry()
 
-        self.m.create_event(skater_dict)
-        self.v.disp_event(skater_dict['name'], skater_dict['skaters'])
+        files = []
+
+        if bulk:
+            d = ps.get_dir_path()
+            files = [join(d, file) for file in listdir(d)]
+            
+        else:    
+            f = ps.get_file_path()
+            files.append(f)
+
+        for file in files:
+            skater_dict = ps.stage_pdf(file, event_type)
+
+            self.m.create_event(skater_dict)
+            self.v.disp_event(skater_dict['name'], skater_dict['skaters'])
 
     def unload_file(self, file_id):
         self.m.delete_file(file_id)
@@ -173,7 +135,7 @@ def __main__():
                 c.new_competition(comp_name)
             case 'B':
                 event_type = input('IJS or 6.0: ')
-                c.bulk_add_events(event_type)
+                c.add_event(event_type, True)
             case 'A':
                 event_type = input('IJS or 6.0: ')
                 c.add_event(event_type)

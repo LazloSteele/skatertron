@@ -1,7 +1,6 @@
 from pdfminer.high_level import extract_text
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename, askdirectory
-from os import listdir
 import re
 
 class PDF_Scraper(object):
@@ -9,7 +8,7 @@ class PDF_Scraper(object):
     evt_num_re = re.compile(r'(?<=\n\()[0-9]+[a-z]?(?=\))')
     evt_name_re = re.compile(r'(?<=\)\s)[a-zA-Z0-9( )\\\/\-]+')
     evt_skaters_re_6_0 = re.compile(r'(?<=[0-9]\.)\s*(.*)(?=,)')
-    evt_skaters_re_ijs = re.compile(r'(\d+\n)+([a-zA-Z0-9\s]+)(?=printed at:)')
+    evt_skaters_re_ijs = re.compile(r'(\d+\n)+([a-zA-Z0-9\s\(\)\-]+)(?=printed at:)')
     
     @staticmethod
     def get_file_path():
@@ -41,6 +40,8 @@ class PDF_Scraper(object):
         except:
             raise ValueError('No valid event name found')
 
+        print(text)
+
         try:
             if event_type == '6.0':
                 skaters = PDF_Scraper.evt_skaters_re_6_0.findall(text)
@@ -60,20 +61,6 @@ class PDF_Scraper(object):
 
         return(event)
 
-    @staticmethod
-    def bulk_stage_pdf(directory):
-        #test to work with new functionality
-        files = listdir(directory)
-
-        contents = []
-
-        for file in files:
-            path = f'{directory}\\{file}'
-
-            contents.append(PDF_Scraper.stage_pdf(path))
-
-        return contents
-
 if __name__ == '__main__':
 
     pdf = PDF_Scraper.get_file_path()
@@ -81,6 +68,4 @@ if __name__ == '__main__':
 
     print(event)
 
-
-# Integrate Controller.py/Model.py/View.py into new functionality
 # Add comments
