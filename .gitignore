@@ -1,15 +1,20 @@
 # ignore all files in any directory named __pycache__
-__pycache__/*
+__pycache__/
 
-# ignore all files in any directory named DUMP
-DUMP/*
-
-# ignore all files in any directory named 6.0
-6.0/*
-
-# ignore all files in any directory named IJS
-IJS/*
+# ignore all files in the Assets directory
+Assets/
 
 # ignore all database files to preserve skater anonymity
 *.db
 
+# ignore all pdf files to preserve skater anonymity
+*.pdf
+
+# ignore all database files to preserve skater anonymity
+*.db
+
+# ignore my cheesy venv launcher
+venv.bat
+
+# oh and also the venv
+env-lmp-skatertron/

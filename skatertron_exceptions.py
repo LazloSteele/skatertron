@@ -14,5 +14,11 @@ class SkaterExistsInEvent(Exception):
 class EventNotExists(Exception):
     pass
 
+class FileExistsInSkate(Exception):
+    pass
+
+class FileNotExist(Exception):
+    pass
+
 class SkaterNotInEvent(Exception):
     pass

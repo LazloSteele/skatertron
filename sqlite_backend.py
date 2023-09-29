@@ -2,7 +2,7 @@ import sqlite3
 from sqlite3 import OperationalError, IntegrityError, ProgrammingError
 import skatertron_exceptions
 
-DB_name = 'myDB'
+DB_name = None
 
 def connect_to_db(db=None):
     """Connect to a sqlite DB. Create the database if there isn't one yet.
@@ -26,7 +26,7 @@ def connect_to_db(db=None):
         mydb = ':memory:'
         print('New connection to in-memory SQLite DB...')
     else:
-        mydb = f'{db}.db'
+        mydb = f'competitions\\{db}.db'
         print('New connection to SQLite DB...')
     connection = sqlite3.connect(mydb)
     return connection
@@ -94,19 +94,25 @@ def add_event(conn, event_dict):
 
     try:
         conn.execute("INSERT INTO events VALUES(NULL, ?, ?)", (event_number, event_name))
-        print(f"inserted {event_number} {event_name} into the events table")
+        #print(f"inserted {event_number} {event_name} into the events table")
         event_id = conn.execute("SELECT id FROM events WHERE evt_number = (?)", (event_number,)).fetchone()[0]
         
         for skater in skaters:
             conn.execute("INSERT INTO skates VALUES(NULL, ?, ?)", (event_id, skater))
-            print(f"inserted {skater} into the skates table under event id {event_id}")
+            #print(f"inserted {skater} into the skates table under event id {event_id}")
     except IntegrityError as e:
-        print("{e}: event number {event_number} was already stored in the events table as {event_name}")
-        
+        print(f"{e}: event number {event_number} was already stored in the events table as {event_name}")
 
-    
+    conn.commit()
 
-    conn.commit
+@connect
+def add_file(conn, skate, file):
+    try:
+        conn.execute("INSERT INTO files VALUES(NULL, ?, ?)", (skate, file))
+        #print(f"inserted {file} into the files table")
+    except IntegrityError as e:
+        print(f"{e}: {file} was already stored in the files table under skate id {skate}")
+    conn.commit()
 
 @connect
 def delete_event(conn, event_number):
@@ -137,7 +143,53 @@ def delete_skate(conn, event_number, skater_name):
     else:
         raise skatertron_exceptions.EventNotExists(f"Cannot delete event #{event_number} because it does not exist in the events table.")
 
+@connect
+def delete_file(conn, file_id):
+    c = conn.execute('SELECT EXISTS(SELECT 1 FROM files WHERE id=? LIMIT 1)', (file_id,))
+    result = c.fetchone()
 
+    print(result)
+
+    if result[0]:
+        conn.execute('DELETE FROM files WHERE id=?', (file_id,))   
+        
+        conn.commit()
+    else:
+        raise skatertron_exceptions.FileNotExist(f"Cannot delete file with ID #{file_id} because it does not exist.")
+
+@connect
+def select_skate(conn, event_number, skater):
+    result = None
+
+    try:
+        event_id = conn.execute(f'SELECT id FROM events WHERE evt_number="{event_number}"').fetchone()[0]
+        #print(conn.execute(f'SELECT * FROM skates WHERE evt_id="{event_id}"').fetchall())
+        result = conn.execute(f'SELECT id FROM skates WHERE evt_id="{event_id}" AND skater="{skater}"').fetchone()[0]
+    except TypeError as e:
+        print(e)
+
+    if result is not None:
+        return result
+    else:
+        raise skatertron_exceptions.EventNotExists(
+            'Can\'t read event number "{event_number}" because it\'s not stored in table'
+            )    
+
+@connect
+def select_event_name(conn, event_number):
+    result = None
+
+    try:
+        result = conn.execute(f'SELECT * FROM events WHERE evt_number="{event_number}"').fetchone()[2]
+    except TypeError as e:
+        print(e)
+
+    if result is not None:
+        return result
+    else:
+        raise skatertron_exceptions.EventNotExists(
+            'Can\'t read event number "{event_number}" because it\'s not stored in table'
+            )
 
 @connect
 def select_skates_by_event(conn, event_number):
@@ -145,7 +197,12 @@ def select_skates_by_event(conn, event_number):
 
     try:
         event_id = conn.execute(f'SELECT * FROM events WHERE evt_number="{event_number}"').fetchone()[0]
-        result = conn.execute(f'SELECT * FROM skates WHERE evt_id="{event_id}"').fetchall()
+        result_tuple = conn.execute(f'SELECT * FROM skates WHERE evt_id="{event_id}"').fetchall()
+
+        result = []
+        
+        for event in result_tuple:
+            result.append(event[2])
     except TypeError as e:
         print(e)
     
@@ -156,6 +213,98 @@ def select_skates_by_event(conn, event_number):
             'Can\'t read event number "{event_number}" because it\'s not stored in table'
             )
 
+@connect
+def select_events_by_skater(conn, skater_name):
+    result = None
+
+    try:
+        event_id_list = conn.execute(f'SELECT evt_id FROM skates WHERE skater="{skater_name}"').fetchall()
+        result = []
+        #print(event_id_list)
+        for event in event_id_list:
+            result += conn.execute(f'SELECT evt_number, evt_title FROM events WHERE id="{event[0]}"').fetchall()
+            #print(result)
+    except TypeError as e:
+        print(e)
+    
+    if result is not None:
+        return result
+    else:
+        raise skatertron_exceptions.EventNotExists(
+            'Can\'t read event number "{event_number}" because it\'s not stored in table'
+            )
+
+@connect
+def select_files_by_event(conn, event_number):
+    result = None
+
+    try:
+        event_id = conn.execute(f'SELECT id FROM events WHERE evt_number="{event_number}"').fetchone()[0]
+        skate_tuple = conn.execute(f'SELECT id, skater FROM skates WHERE evt_id="{event_id}"').fetchall()
+
+        result = {}
+        for skate in skate_tuple:
+            skate_id = skate[0]
+            skater = skate[1]
+            
+            result_tuple = conn.execute(f'SELECT * FROM files WHERE skate_id="{skate_id}"').fetchall()
+            
+            result[skater] = []
+            
+            for e in result_tuple:
+                file = e[2]
+                result[skater].append(file)
+            if result[skater] == []:
+                result[skater] = 'Not Filmed'
+            
+            # get skater from event id
+            # check if skater exists in result
+            # if not then add file as the start of a list
+            # if yes then append file to list in the skater key
+            # alternatively change file dict to list of tuples???
+
+        return result    
+
+    except TypeError as e:
+        print(e)
+    
+    if result is not None:
+        return result
+    else:
+        raise skatertron_exceptions.EventNotExists(
+            'Can\'t read event number "{event_number}" because it\'s not stored in table'
+            )
+
+@connect
+def select_files_by_skate(conn, skate):
+    result = None
+    
+    try:
+        files = conn.execute(f'SELECT file FROM files WHERE skate_id="{skate}"').fetchall()
+
+        result = []
+        for file in files:
+            result.append(file[0])
+    except:
+        pass
+    
+    return result
+
+@connect
+def select_file_id_by_skate(conn, skate):
+    result = None
+
+    try:
+        files = conn.execute(f'SELECT id FROM files WHERE skate_id="{skate}"').fetchall()
+
+        result = []
+        for file in files:
+            result.append(file[0])
+    except:
+        print("oops")
+    
+    return result
+        
 @connect
 def select_all(conn, table_name):
     table_name = scrub(table_name)

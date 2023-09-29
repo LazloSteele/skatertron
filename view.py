@@ -1,18 +1,19 @@
 line_length = 120
 
 def message_wrap(func):
-        def wrap(*args, **kwargs):
-            message = '/' * line_length + '\n'
-            message += func(*args, **kwargs)
-            message += '\n'+'/' * line_length
+    def wrap(*args, **kwargs):
+        message = '/' * line_length + '\n'
+        message += func(*args, **kwargs)
+        message += '\n'+'/' * line_length
 
-            message_list = message.split('\n')
-            print()
-            for line in message_list:
-                print(line.center(line_length))
-            print()
+        message_list = message.split('\n')
+        print()
+        for line in message_list:
+            print(line.center(line_length))
+        print()
 
-        return wrap
+    return wrap
+        
 
 
 class TUI(object):
@@ -60,15 +61,21 @@ class TUI(object):
 
         skaters = files_dict.keys()
 
+        print(skaters)
+
         i = 1
         for skater in skaters:
             message += f'{i}. {skater}:\n'
 
-            for file in files_dict[skater]:
-                message += f"--- {file}\n"
+            if type(files_dict[skater]) == list:
+                for file in files_dict[skater]:
+                    message += f"--- {file}\n"
+            else:
+                message += f"--- {files_dict[skater]}\n"
             i += 1
 
         return(message)
+
 
     @staticmethod
     @message_wrap
@@ -77,7 +84,7 @@ class TUI(object):
 
         i = 1
         for e in evt_list:
-            message += f'{e}\n'
+            message += f'Event {e[1]}: {e[2]}\n'
 
         return(message)
 
@@ -88,7 +95,8 @@ class TUI(object):
 
         i = 1
         for e in evt_list:
-            message += f'{e}\n'
+            print(e)
+            message += f'{e[0]}: {e[1]}\n'
 
         return(message)
     
@@ -133,7 +141,26 @@ class TUI(object):
         message = 'ERROR: This command cannot be executed as entered!'
 
         return(message)
-                
+
+    @staticmethod
+    def display_valid_actions(app_state):
+        match app_state:
+            case 'init':
+                message = '[L]oad competition | [N]ew competition?'
+            case 'competition_loaded':
+                message = '[B]ulk add events | [A]dd single event | [D]isplay event(s) | Attach [F]iles'
+
+        message += ' | [Q]uit'
+
+        print(message)
+
+    @staticmethod
+    @message_wrap
+    def add_file(event_number, skater, file):
+        message = f'Added {file} to {skater}\'s skate on event #{event_number}'
+
+        return(message)
+
 
 if __name__ == '__main__':
     event_title = "001 Freeskate 5 Short Program"
