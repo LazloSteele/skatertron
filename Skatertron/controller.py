@@ -22,7 +22,7 @@ class Controller(object):
     # the same thing, perhaps fold into one method with a flag to indicate
     # load vs new/create. default the flag to the most common action if makes sense
     def load_competition(self, competition_name):
-        if not isfile(f'Competitions\\{competition_name}.db'):
+        if not isfile(fr'..\data\Competitions\{competition_name}.db'):
             self.v.err_not_exists('competition', competition_name)
         else:
             self.m.connection = f'{competition_name}'
@@ -31,7 +31,7 @@ class Controller(object):
             self.v.load_comp(competition_name)
         
     def new_competition(self, competition_name):
-        if isfile(f'Competitions\\{competition_name}.db'):
+        if isfile(fr'Competitions\{competition_name}.db'):
             self.v.err_item_exists('competition', competition_name)
         else:
             self.m.connection = f'{competition_name}'
