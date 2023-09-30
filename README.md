@@ -16,6 +16,7 @@ This project makes use of the following languages and packages:
     * SQLite version: 3.35.5 
     * Tkinter version: 8.6
     * pdfminer.six version: 20221105
+    * Hypothesis version: 6.87.0
 
 ## Setup
 To setup this repository, install the specified version of Python, launch your command line and change your directory to the repository root and run:
