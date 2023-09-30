@@ -13,7 +13,9 @@ The aim of this project is to help my client, a high volume sports media company
 ## Technologies
 This project makes use of the following languages and packages:
 * Python version: 3.10.2
-    * SQLite version: 3.35.5 
+    * ~SQLite version: 3.35.5~
+    * psycopg2 version: 2.9.8 
+    * SQLAlchemy version: 2.0.21 
     * Tkinter version: 8.6
     * pdfminer.six version: 20221105
     * Hypothesis version: 6.87.0
