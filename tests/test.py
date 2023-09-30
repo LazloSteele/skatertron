@@ -4,8 +4,9 @@ import sys
 
 sys.path.append('../skatertron')
 
-import controller
+import cli
 
 @given(text())
-def test_cli_controller(s):
+def test_cli_text_input(s):
     pass
+    

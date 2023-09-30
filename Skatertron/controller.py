@@ -12,11 +12,14 @@ class Controller(object):
         self.v = view
 
         self.v.welcome()
-        if not isdir('Competitions'):
-            mkdir('Competitions')
+        if not isdir('..\data\Competitions'):
+            mkdir('..\data\Competitions')
 
     def prompt_user(self):
         self.v.display_valid_actions(self.m.application_state)
+
+        return(input().upper())
+
         
     # lps .. load_competition and new_competition are basically doing
     # the same thing, perhaps fold into one method with a flag to indicate
@@ -103,14 +106,8 @@ class Controller(object):
         except:
             view.err_item_exists("FILE", f)
     '''
-    mvp:
-    - add event
-    - get all events
-    - get events by skater
-    - get files by skate
+    mvp to-do:
     - delete event
-    - state
-    - command mapping
     
     '''
 
@@ -118,10 +115,9 @@ def __main__():
     running = True
     
     while running:
-        c.prompt_user()
 
         try:
-            action = input().upper()
+            action = c.prompt_user()
         except:
             print('Invalid entry')
 
@@ -199,12 +195,7 @@ def __main__():
 
                 file_id=input('which file id?: ')
 
-                c.unload_file(file_id)
-                
-
-                
-
-                
+                c.unload_file(file_id)            
                 
             case 'Q':
                 running = False
