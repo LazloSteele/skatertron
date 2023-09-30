@@ -31,7 +31,7 @@ class Controller(object):
             self.v.load_comp(competition_name)
         
     def new_competition(self, competition_name):
-        if isfile(fr'Competitions\{competition_name}.db'):
+        if isfile(fr'..\data\Competitions\{competition_name}.db'):
             self.v.err_item_exists('competition', competition_name)
         else:
             self.m.connection = f'{competition_name}'

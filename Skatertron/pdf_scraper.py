@@ -40,8 +40,6 @@ class PDF_Scraper(object):
         except:
             raise ValueError('No valid event name found')
 
-        print(text)
-
         try:
             if event_type == '6.0':
                 skaters = PDF_Scraper.evt_skaters_re_6_0.findall(text)

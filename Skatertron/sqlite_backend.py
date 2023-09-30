@@ -26,7 +26,7 @@ def connect_to_db(db=None):
         mydb = ':memory:'
         print('New connection to in-memory SQLite DB...')
     else:
-        mydb = f'competitions\\{db}.db'
+        mydb = fr'..\data\competitions\{db}.db'
         print('New connection to SQLite DB...')
     connection = sqlite3.connect(mydb)
     return connection
