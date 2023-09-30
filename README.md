@@ -1,5 +1,5 @@
 # Skatertron 9000 #
-### An organization system for high volume media storage aimed at the USFS and Entryeeze standards of skate order sheets ###
+**An organization system for high volume media storage aimed at the USFS and Entryeeze standards of skate order sheets**
 
 ## Table of contents
 * [Introduction](#introduction)
