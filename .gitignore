@@ -10,9 +10,6 @@ Assets/
 # ignore all pdf files to preserve skater anonymity
 *.pdf
 
-# ignore all database files to preserve skater anonymity
-*.db
-
 # ignore my cheesy venv launcher
 venv.bat
 
