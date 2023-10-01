@@ -19,6 +19,7 @@ This project makes use of the following languages and packages:
     * Tkinter version: 8.6
     * pdfminer.six version: 20221105
     * Hypothesis version: 6.87.0
+    * Unidecode version: 1.3.7
 
 ## Setup
 To setup this repository, install the specified version of Python, launch your command line and change your directory to the repository root and run:

@@ -15,3 +15,6 @@ venv.bat
 
 # oh and also the venv
 env-lmp-skatertron/
+
+# and hypothesis results
+.hypothesis/

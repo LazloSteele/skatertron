@@ -4,9 +4,11 @@ import sys
 
 sys.path.append('../skatertron')
 
-import cli
-
-@given(text())
-def test_cli_text_input(s):
-    pass
+import sqlalchemy_backend
     
+@given(db = text())
+def test_connections():
+    pass
+
+if __name__ == "__main__":
+    test_postgres_connections()
