@@ -1,14 +1,15 @@
 from hypothesis import given
 from hypothesis.strategies import text
-import sys
 
-sys.path.append('../skatertron')
+import Skatertron.postgres_backend as pg_backend
+import config.config as user_data
 
-import sqlalchemy_backend
-    
-@given(db = text())
-def test_connections():
-    pass
+
+def test_postgres_connection():
+    pw = user_data.Config.pw()
+    conn = pg_backend.connect_to_db(pw)
+
+    print(conn)
 
 if __name__ == "__main__":
-    test_postgres_connections()
+    test_postgres_connection()
