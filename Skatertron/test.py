@@ -13,7 +13,8 @@ def test_create_event():
     controller.create_event("71","freeskate 9")
 
 def test_read_event():
-    print(controller.read_event(event_number="69"))
+    for e in controller.read_event(event_number="69"):
+        print(e.evt_title)
     print(controller.read_event())
     print(controller.read_event(event_id=65))
     print(controller.read_event(event_title='butts'))
