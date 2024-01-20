@@ -28,23 +28,23 @@ class Controller(object):
         except IntegrityError:
             raise EventExists
 
-    def read_event(self, **kwargs):
+    def read_event(self, event_id=None, event_number=None, event_title=None):
         events = []
+        statement = select(Event)
 
-        if "event_number" in kwargs:
-            statement = select(Event).where(Event.evt_number == kwargs["event_number"])
-            my_query = self.session.execute(statement)
+        if event_id:
+            statement = statement.where(Event.id == event_id)
 
-        else:
-            statement = select(Event)
-            my_query = self.session.execute(statement)
+        if event_number:
+            statement = statement.where(Event.evt_number == event_number)
+
+        if event_title:
+            statement = statement.where(Event.evt_title == event_title)
+
+        my_query = self.session.execute(statement)
 
         for event in my_query.scalars():
-            events.append({
-                "id": event.id,
-                "number": event.evt_number,
-                "title": event.evt_title
-            })
+            events.append(event)
 
         return events
 
