@@ -15,19 +15,34 @@ def test_create_event():
 
 
 def test_read_all_events():
-    print(controller.read_event())
+    print(controller.read_all_events())
 
 
-def test_read_event_id_by_number():
-    print(controller.read_event_id(controller.read_event(event_number="71")))
+def test_read_event_by_id():
+    event = controller.read_event_by_id(84)
+
+    print(event)
+    print("ID:", event.id)
+    print("#", event.evt_number)
+    print("title:", event.evt_title)
 
 
-def test_read_event_title_by_number():
-    print(controller.read_event_title(controller.read_event(event_number="71")))
+def test_read_event_by_number():
+    event = controller.read_event_by_number("70")
+
+    print(event)
+    print("ID:", event.id)
+    print("#", event.evt_number)
+    print("title:", event.evt_title)
 
 
-def test_read_event_number_by_id():
-    print(controller.read_event_number(controller.read_event(event_id=84)))
+def test_read_events_by_title():
+    events = controller.read_events_by_title("t")
+    for event in events:
+        print(event)
+        print("ID:", event.id)
+        print("#", event.evt_number)
+        print("title:", event.evt_title)
 
 
 def test_update_event():
@@ -35,13 +50,12 @@ def test_update_event():
 
 
 def test_delete_event():
-    e = controller.read_event(event_title='freeskate 9')[0]
+    e = controller.read_event(event_title="freeskate 9")[0]
     controller.delete_event(event_id=e.id)
     controller.delete_event(event_number="69")
-    controller.delete_event(event_title='freeskate 10')
+    controller.delete_event(event_title="freeskate 10")
 
 
 if __name__ == "__main__":
-    test_read_event_id_by_number()
-    test_read_event_title_by_number()
-    test_read_event_number_by_id()
+
+    test_read_events_by_title()

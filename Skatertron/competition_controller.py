@@ -28,34 +28,31 @@ class Controller(object):
         except IntegrityError:
             raise EventExists
 
-    def read_event(self, event_id=None, event_number=None, event_title=None):
+    def read_all_events(self):
         events = []
-        statement = select(Event)
 
-        if event_id:
-            statement = statement.where(Event.id == event_id)
+        query = self.session.execute(select(Event)).scalars()
 
-        if event_number:
-            statement = statement.where(Event.evt_number == event_number)
-
-        if event_title:
-            statement = statement.where(Event.evt_title == event_title)
-
-        my_query = self.session.execute(statement)
-
-        for event in my_query.scalars():
+        for event in query:
             events.append(event)
-
         return events
 
-    def read_event_id(self, events_list):
-        return events_list[0].id
+    def read_event_by_id(self, event_id):
+        event = self.session.get(Event, event_id)
+        return event
 
-    def read_event_number(self, events_list):
-        return events_list[0].evt_number
+    def read_event_by_number(self, event_number):
+        event = self.session.execute(select(Event).filter_by(evt_number=event_number)).one_or_none()[0]
+        return event
 
-    def read_event_title(self, events_list):
-        return events_list[0].evt_title
+    def read_events_by_title(self, event_title):
+        events = []
+        query = self.session.execute(select(Event).where(Event.evt_title.contains(event_title))).all()
+
+        for event in query:
+            events.append(event[0])
+
+        return events
 
     def update_event(self, event_id, new_event_number=None, new_event_title=None):
         event = self.session.get(Event, event_id)
