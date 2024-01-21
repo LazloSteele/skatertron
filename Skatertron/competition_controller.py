@@ -49,13 +49,13 @@ class Controller(object):
         return events
 
     def read_event_id(self, events_list):
-        return events_list.id[0]
+        return events_list[0].id
 
-    def read_event_number(self, event_obj):
-        pass
+    def read_event_number(self, events_list):
+        return events_list[0].evt_number
 
-    def read_event_title(self, event_obj):
-        pass
+    def read_event_title(self, events_list):
+        return events_list[0].evt_title
 
     def update_event(self, event_id, new_event_number=None, new_event_title=None):
         event = self.session.get(Event, event_id)
