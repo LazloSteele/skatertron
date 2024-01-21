@@ -48,8 +48,8 @@ class Controller(object):
 
         return events
 
-    def read_event_id(self, event_obj):
-        pass
+    def read_event_id(self, events_list):
+        return events_list.id[0]
 
     def read_event_number(self, event_obj):
         pass
@@ -68,16 +68,9 @@ class Controller(object):
 
         self.session.commit()
 
-    def delete_event(self, event_id=None, event_number=None, event_title=None):
+    def delete_event(self, event_id):
 
-        if event_id:
-            event = self.session.query(Event).filter_by(id=event_id).one_or_none()
-
-        if event_number:
-            event = self.session.query(Event).filter_by(evt_number=event_number).one_or_none()
-
-        if event_title:
-            event = self.session.query(Event).filter_by(evt_title=event_title).one_or_none()
+        event = self.session.get(Event, event_id)
 
         try:
             self.session.delete(event)
