@@ -1,6 +1,6 @@
 from sqlalchemy_backend import connect_to_db, Base, Event, Skate, File
 
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import UnmappedInstanceError
@@ -51,8 +51,17 @@ class Controller(object):
     def update_event(self, event_id, new_event_num, new_event_title):
         pass
 
-    def delete_event(self, event_num):
-        event = self.session.query(Event).filter_by(evt_number=event_num).one_or_none()
+    def delete_event(self, event_id=None, event_number=None, event_title=None):
+
+        if event_id:
+            event = self.session.query(Event).filter_by(id=event_id).one_or_none()
+
+
+        if event_number:
+            event = self.session.query(Event).filter_by(evt_number=event_number).one_or_none()
+
+        if event_title:
+            event = self.session.query(Event).filter_by(evt_title=event_title).one_or_none()
 
         try:
             self.session.delete(event)
