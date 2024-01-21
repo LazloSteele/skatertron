@@ -48,14 +48,30 @@ class Controller(object):
 
         return events
 
-    def update_event(self, event_id, new_event_num, new_event_title):
+    def read_event_id(self, event_obj):
         pass
+
+    def read_event_number(self, event_obj):
+        pass
+
+    def read_event_title(self, event_obj):
+        pass
+
+    def update_event(self, event_id, new_event_number=None, new_event_title=None):
+        event = self.session.get(Event, event_id)
+
+        if new_event_number:
+            event.evt_number = new_event_number
+
+        if new_event_title:
+            event.evt_title = new_event_title
+
+        self.session.commit()
 
     def delete_event(self, event_id=None, event_number=None, event_title=None):
 
         if event_id:
             event = self.session.query(Event).filter_by(id=event_id).one_or_none()
-
 
         if event_number:
             event = self.session.query(Event).filter_by(evt_number=event_number).one_or_none()

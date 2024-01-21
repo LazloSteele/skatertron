@@ -14,13 +14,11 @@ def test_create_event():
     controller.create_event("72","freeskate 10")
 
 def test_read_event():
-    print(controller.read_event(event_number="69"))
     print(controller.read_event())
-    print(controller.read_event(event_title='butts'))
 
 
 def test_update_event():
-    controller.update_event(1, "70", "butts")
+    controller.update_event(controller.read_event(event_number="70")[0].id, new_event_title="booty")
 
 
 def test_delete_event():
@@ -30,7 +28,6 @@ def test_delete_event():
     controller.delete_event(event_title='freeskate 10')
 
 if __name__ == "__main__":
-    test_create_event()
-    test_read_event()
+
     test_update_event()
-    test_delete_event()
+    test_read_event()
