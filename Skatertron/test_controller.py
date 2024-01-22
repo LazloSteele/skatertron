@@ -119,7 +119,7 @@ def test_read_file_by_skater_name():
 
 
 def test_update_file():
-    pass
+    f_c.update_file(1,new_skate_id=6,new_filepath=f"/competitions/{f_c.competition}/assets/001.txt")
 
 
 def test_delete_file():
@@ -127,7 +127,7 @@ def test_delete_file():
 
 
 if __name__ == "__main__":
-    test_read_all_files()
-    test_read_file_by_skater_name()
+    test_read_file_by_id()
     test_update_file()
     test_delete_file()
+    test_read_file_by_id()

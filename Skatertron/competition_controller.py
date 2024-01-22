@@ -209,14 +209,14 @@ class FileController(object):
 
         return files
 
-    def update_skate(self, skate_id, new_event_id=None, new_skater_name=None):
-        skate = self.session.get(Skate, skate_id)
+    def update_file(self, file_id, new_skate_id=None, new_filepath=None):
+        file = self.session.get(File, file_id)
 
-        if new_event_id:
-            skate.evt_id = new_event_id
+        if new_skate_id:
+            file.skate_id = new_skate_id
 
-        if new_skater_name:
-            skate.skater = new_skater_name
+        if new_filepath:
+            file.file = new_filepath
 
         self.session.commit()
 
