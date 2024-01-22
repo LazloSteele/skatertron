@@ -149,3 +149,77 @@ class SkateController(object):
             self.session.commit()
         except UnmappedInstanceError:
             raise SkateIDNotExists
+
+
+class FileController(object):
+    def __init__(self, competition="test"):
+        self.competition = competition
+
+        self.engine = connect_to_db(self.competition)
+
+        Base.metadata.create_all(self.engine)
+
+        self.Session = sessionmaker(bind=self.engine)
+        self.session = self.Session()
+
+    def create_file(self, skate_id, filepath):
+        file = File(skate_id=skate_id, file=filepath)
+
+        try:
+            self.session.add(file)
+
+            self.session.commit()
+        except IntegrityError:
+            raise EventNotExists
+
+    def read_all_files(self):
+        files = []
+
+        query = self.session.execute(select(File)).scalars()
+
+        for file in query:
+            files.append(file)
+        return files
+
+    def read_skate_by_id(self, skate_id):
+        skate = self.session.get(Skate, skate_id)
+        return skate
+
+    def read_skates_by_event(self, event_id):
+        skates = []
+        query = self.session.execute(select(Skate).filter_by(evt_id=event_id)).all()
+
+        for skate in query:
+            skates.append(skate[0])
+        return skates
+
+    def read_skates_by_skater(self, skater_name):
+        skates = []
+        query = self.session.execute(select(Skate).where(Skate.skater.contains(skater_name))).all()
+
+        for skate in query:
+            skates.append(skate[0])
+
+        return skates
+
+    def update_skate(self, skate_id, new_event_id=None, new_skater_name=None):
+        skate = self.session.get(Skate, skate_id)
+
+        if new_event_id:
+            skate.evt_id = new_event_id
+
+        if new_skater_name:
+            skate.skater = new_skater_name
+
+        self.session.commit()
+
+    def delete_skate(self, skate_id):
+
+        skate = self.session.get(Skate, skate_id)
+
+        try:
+            self.session.delete(skate)
+
+            self.session.commit()
+        except UnmappedInstanceError:
+            raise SkateIDNotExists

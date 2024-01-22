@@ -3,11 +3,11 @@ from hypothesis import given
 from hypothesis.strategies import text
 """
 
-from competition_controller import EventController, SkateController
+from competition_controller import EventController, SkateController, FileController
 
 e_c = EventController()
 s_c = SkateController()
-
+f_c = FileController()
 
 def test_create_event():
     e_c.create_event("69", "butts")
@@ -91,5 +91,38 @@ def test_delete_skate():
     s_c.delete_skate(4)
 
 
-if __name__ == "__main__":
+def test_create_file():
+    f_c.create_file(5, f"/competitions/{f_c.competition}/assets/001.txt")
+
+
+def test_read_all_files():
+    print(f_c.read_all_files())
+
+
+def test_read_file_by_skate():
     pass
+
+
+def test_read_file_by_id():
+    pass
+
+
+def test_read_file_by_skater_name():
+    pass
+
+
+def test_update_file():
+    pass
+
+
+def test_delete_file():
+    pass
+
+
+if __name__ == "__main__":
+    test_read_all_files()
+    test_read_file_by_id()
+    test_read_file_by_skate()
+    test_read_file_by_skater_name()
+    test_update_file()
+    test_delete_file()
