@@ -99,12 +99,18 @@ def test_read_all_files():
     print(f_c.read_all_files())
 
 
-def test_read_file_by_skate():
-    pass
+def test_read_files_by_skate():
+    files = f_c.read_files_by_skate(5)
+    for file in files:
+        print(file)
+        print(file.id)
+        print(e_c.read_event_by_id(s_c.read_skate_by_id(file.skate_id).evt_id).evt_title)
+        print(file.file)
+
 
 
 def test_read_file_by_id():
-    pass
+    print(f_c.read_file_by_id(1))
 
 
 def test_read_file_by_skater_name():
@@ -122,7 +128,7 @@ def test_delete_file():
 if __name__ == "__main__":
     test_read_all_files()
     test_read_file_by_id()
-    test_read_file_by_skate()
+    test_read_files_by_skate()
     test_read_file_by_skater_name()
     test_update_file()
     test_delete_file()

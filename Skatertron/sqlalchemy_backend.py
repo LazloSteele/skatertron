@@ -48,7 +48,7 @@ class File(Base):
     file: Mapped[str] = mapped_column(String(255))
 
     def __repr__(self) -> str:
-        return f"Entry {self.id!r}: Skate ID = {self.skate_id!r} filepath = {self.file!r})"
+        return f"Entry {self.id!r}: Skate ID = {self.skate_id!r} filepath = {self.file!r}"
 
 
 def connect_to_db(competition):

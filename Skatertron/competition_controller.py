@@ -181,17 +181,17 @@ class FileController(object):
             files.append(file)
         return files
 
-    def read_skate_by_id(self, skate_id):
-        skate = self.session.get(Skate, skate_id)
-        return skate
+    def read_file_by_id(self, file_id):
+        file = self.session.get(File, file_id)
+        return file
 
-    def read_skates_by_event(self, event_id):
-        skates = []
-        query = self.session.execute(select(Skate).filter_by(evt_id=event_id)).all()
+    def read_files_by_skate(self, skate_id):
+        files = []
+        query = self.session.execute(select(File).filter_by(skate_id=skate_id)).all()
 
         for skate in query:
-            skates.append(skate[0])
-        return skates
+            files.append(skate[0])
+        return files
 
     def read_skates_by_skater(self, skater_name):
         skates = []
