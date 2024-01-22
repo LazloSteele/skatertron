@@ -56,8 +56,8 @@ def test_delete_event():
 
 
 def test_create_skate():
-    s_c.create_skate(85, "Shanda Rhymes")
-
+    s_c.create_skate(85, "Ira Glass")
+    s_c.create_skate(85, "John Bahm")
 
 def test_read_all_skates():
     print(s_c.read_all_skates())
@@ -92,7 +92,8 @@ def test_delete_skate():
 
 
 def test_create_file():
-    f_c.create_file(5, f"/competitions/{f_c.competition}/assets/001.txt")
+    f_c.create_file(6, f"/competitions/{f_c.competition}/assets/003.txt")
+    f_c.create_file(7, f"/competitions/{f_c.competition}/assets/004.txt")
 
 
 def test_read_all_files():
@@ -114,7 +115,7 @@ def test_read_file_by_id():
 
 
 def test_read_file_by_skater_name():
-    pass
+    print(f_c.read_files_by_skater_name("Ira Glass"))
 
 
 def test_update_file():
@@ -127,8 +128,6 @@ def test_delete_file():
 
 if __name__ == "__main__":
     test_read_all_files()
-    test_read_file_by_id()
-    test_read_files_by_skate()
     test_read_file_by_skater_name()
     test_update_file()
     test_delete_file()

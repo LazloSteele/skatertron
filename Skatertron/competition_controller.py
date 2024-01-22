@@ -162,6 +162,8 @@ class FileController(object):
         self.Session = sessionmaker(bind=self.engine)
         self.session = self.Session()
 
+        self.skate_controller = SkateController()
+
     def create_file(self, skate_id, filepath):
         file = File(skate_id=skate_id, file=filepath)
 
@@ -193,14 +195,19 @@ class FileController(object):
             files.append(skate[0])
         return files
 
-    def read_skates_by_skater(self, skater_name):
-        skates = []
-        query = self.session.execute(select(Skate).where(Skate.skater.contains(skater_name))).all()
+    def read_files_by_skater_name(self, skater_name):
+        files = []
 
-        for skate in query:
-            skates.append(skate[0])
+        skates = self.skate_controller.read_skates_by_skater(skater_name)
 
-        return skates
+        for skate in skates:
+            print(skate.id)
+            query = self.session.execute(select(File).filter_by(skate_id=skate.id)).all()
+
+            for file in query:
+                files.append(file[0])
+
+        return files
 
     def update_skate(self, skate_id, new_event_id=None, new_skater_name=None):
         skate = self.session.get(Skate, skate_id)
