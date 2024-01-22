@@ -4,11 +4,11 @@ from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import UnmappedInstanceError
-from skatertron_exceptions import EventExists, EventNotExists, SkaterExistsInEvent, SkaterNotInEvent
+from skatertron_exceptions import EventExists, EventNotExists, SkateIDNotExists
 
 
 class EventController(object):
-    def __init__(self, competition = "test"):
+    def __init__(self, competition="test"):
         self.competition = competition
 
         self.engine = connect_to_db(self.competition)
@@ -78,7 +78,7 @@ class EventController(object):
 
 
 class SkateController(object):
-    def __init__(self, competition = "test"):
+    def __init__(self, competition="test"):
         self.competition = competition
 
         self.engine = connect_to_db(self.competition)
@@ -139,13 +139,13 @@ class SkateController(object):
 
         self.session.commit()
 
-    def delete_event(self, event_id):
+    def delete_skate(self, skate_id):
 
-        event = self.session.get(Event, event_id)
+        skate = self.session.get(Skate, skate_id)
 
         try:
-            self.session.delete(event)
+            self.session.delete(skate)
 
             self.session.commit()
         except UnmappedInstanceError:
-            raise EventNotExists
+            raise SkateIDNotExists

@@ -22,3 +22,6 @@ class FileNotExist(Exception):
 
 class SkaterNotInEvent(Exception):
     pass
+
+class SkateIDNotExists(Exception):
+    pass

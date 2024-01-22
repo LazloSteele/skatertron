@@ -82,9 +82,14 @@ def test_read_skates_by_skater():
     for skate in skates:
         print(skate)
 
+
 def test_update_skate():
     s_c.update_skate(1, new_skater_name="Ira Glass")
 
+
+def test_delete_skate():
+    s_c.delete_skate(4)
+
+
 if __name__ == "__main__":
-    test_update_skate()
-    test_read_all_skates()
+    pass
