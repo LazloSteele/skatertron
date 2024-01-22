@@ -78,10 +78,13 @@ def test_read_skates_by_event():
 
 
 def test_read_skates_by_skater():
-    pass
+    skates = s_c.read_skates_by_skater("Shanda Rhymes")
+    for skate in skates:
+        print(skate)
 
+def test_update_skate():
+    s_c.update_skate(1, new_skater_name="Ira Glass")
 
 if __name__ == "__main__":
+    test_update_skate()
     test_read_all_skates()
-    test_read_skate_by_id()
-    test_read_skates_by_event()

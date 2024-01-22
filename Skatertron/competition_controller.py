@@ -119,23 +119,23 @@ class SkateController(object):
             skates.append(skate[0])
         return skates
 
-    def read_events_by_title(self, event_title):
-        events = []
-        query = self.session.execute(select(Event).where(Event.evt_title.contains(event_title))).all()
+    def read_skates_by_skater(self, skater_name):
+        skates = []
+        query = self.session.execute(select(Skate).where(Skate.skater.contains(skater_name))).all()
 
-        for event in query:
-            events.append(event[0])
+        for skate in query:
+            skates.append(skate[0])
 
-        return events
+        return skates
 
-    def update_event(self, event_id, new_event_number=None, new_event_title=None):
-        event = self.session.get(Event, event_id)
+    def update_skate(self, skate_id, new_event_id=None, new_skater_name=None):
+        skate = self.session.get(Skate, skate_id)
 
-        if new_event_number:
-            event.evt_number = new_event_number
+        if new_event_id:
+            skate.evt_id = new_event_id
 
-        if new_event_title:
-            event.evt_title = new_event_title
+        if new_skater_name:
+            skate.skater = new_skater_name
 
         self.session.commit()
 
