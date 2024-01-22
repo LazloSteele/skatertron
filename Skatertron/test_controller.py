@@ -9,6 +9,7 @@ e_c = EventController()
 s_c = SkateController()
 f_c = FileController()
 
+
 def test_create_event():
     e_c.create_event("69", "butts")
     e_c.create_event("71", "freeskate 9")
@@ -58,6 +59,7 @@ def test_delete_event():
 def test_create_skate():
     s_c.create_skate(85, "Ira Glass")
     s_c.create_skate(85, "John Bahm")
+
 
 def test_read_all_skates():
     print(s_c.read_all_skates())
@@ -109,7 +111,6 @@ def test_read_files_by_skate():
         print(file.file)
 
 
-
 def test_read_file_by_id():
     print(f_c.read_file_by_id(1))
 
@@ -119,15 +120,14 @@ def test_read_file_by_skater_name():
 
 
 def test_update_file():
-    f_c.update_file(1,new_skate_id=6,new_filepath=f"/competitions/{f_c.competition}/assets/001.txt")
+    f_c.update_file(1, new_skate_id=6, new_filepath=f"/competitions/{f_c.competition}/assets/001.txt")
 
 
 def test_delete_file():
-    pass
+    f_c.delete_file(1)
 
 
 if __name__ == "__main__":
-    test_read_file_by_id()
-    test_update_file()
+    test_read_all_files()
     test_delete_file()
-    test_read_file_by_id()
+    test_read_all_files()

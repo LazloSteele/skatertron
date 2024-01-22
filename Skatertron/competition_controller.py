@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import UnmappedInstanceError
-from skatertron_exceptions import EventExists, EventNotExists, SkateIDNotExists
+from skatertron_exceptions import EventExists, EventNotExists, SkateIDNotExists, FileNotExist
 
 
 class EventController(object):
@@ -220,13 +220,13 @@ class FileController(object):
 
         self.session.commit()
 
-    def delete_skate(self, skate_id):
+    def delete_file(self, file_id):
 
-        skate = self.session.get(Skate, skate_id)
+        file = self.session.get(File, file_id)
 
         try:
-            self.session.delete(skate)
+            self.session.delete(file)
 
             self.session.commit()
         except UnmappedInstanceError:
-            raise SkateIDNotExists
+            raise FileNotExist
