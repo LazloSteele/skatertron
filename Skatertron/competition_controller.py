@@ -103,17 +103,21 @@ class SkateController(object):
 
         query = self.session.execute(select(Skate)).scalars()
 
-        for event in query:
-            skates.append(event)
+        for skate in query:
+            skates.append(skate)
         return skates
 
-    def read_event_by_id(self, event_id):
-        event = self.session.get(Event, event_id)
-        return event
+    def read_skate_by_id(self, skate_id):
+        skate = self.session.get(Skate, skate_id)
+        return skate
 
-    def read_event_by_number(self, event_number):
-        event = self.session.execute(select(Event).filter_by(evt_number=event_number)).one_or_none()[0]
-        return event
+    def read_skates_by_event(self, event_id):
+        skates = []
+        query = self.session.execute(select(Skate).filter_by(evt_id=event_id)).all()
+
+        for skate in query:
+            skates.append(skate[0])
+        return skates
 
     def read_events_by_title(self, event_title):
         events = []

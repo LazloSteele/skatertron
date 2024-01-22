@@ -47,14 +47,12 @@ def test_read_events_by_title():
 
 
 def test_update_event():
-    e_c.update_event(e_c.read_event(event_number="70")[0].id, new_event_title="booty")
+    e_c.update_event(e_c.read_event_by_number("70").id, new_event_title="booty")
 
 
 def test_delete_event():
-    e = e_c.read_event(event_title="freeskate 9")[0]
-    e_c.delete_event(event_id=e.id)
-    e_c.delete_event(event_number="69")
-    e_c.delete_event(event_title="freeskate 10")
+    e = e_c.read_event_by_number("freeskate 9")
+    e_c.delete_event(e.id)
 
 
 def test_create_skate():
@@ -64,12 +62,19 @@ def test_create_skate():
 def test_read_all_skates():
     print(s_c.read_all_skates())
 
+
 def test_read_skate_by_id():
-    pass
+    skate = s_c.read_skate_by_id(1)
+    event_title = e_c.read_event_by_id(skate.evt_id).evt_title
+    print(skate)
+    print("ID:", skate.id)
+    print(skate.skater, "skating in", event_title)
 
 
 def test_read_skates_by_event():
-    pass
+    skates = s_c.read_skates_by_event(84)
+    for skate in skates:
+        print(skate)
 
 
 def test_read_skates_by_skater():
@@ -78,3 +83,5 @@ def test_read_skates_by_skater():
 
 if __name__ == "__main__":
     test_read_all_skates()
+    test_read_skate_by_id()
+    test_read_skates_by_event()
