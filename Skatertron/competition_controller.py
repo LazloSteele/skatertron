@@ -7,7 +7,7 @@ from sqlalchemy.orm.exc import UnmappedInstanceError
 from skatertron_exceptions import EventExists, EventNotExists, SkateIDNotExists, FileNotExist
 
 
-class EventController(object):
+class BaseController(object):
     def __init__(self, competition="test"):
         self.competition = competition
 
@@ -17,6 +17,11 @@ class EventController(object):
 
         self.Session = sessionmaker(bind=self.engine)
         self.session = self.Session()
+
+
+class EventController(object):
+    def __init__(self, session):
+        self.session = session
 
     def create_event(self, event_num, event_title):
         event = Event(evt_number=event_num, evt_title=event_title)
@@ -78,15 +83,8 @@ class EventController(object):
 
 
 class SkateController(object):
-    def __init__(self, competition="test"):
-        self.competition = competition
-
-        self.engine = connect_to_db(self.competition)
-
-        Base.metadata.create_all(self.engine)
-
-        self.Session = sessionmaker(bind=self.engine)
-        self.session = self.Session()
+    def __init__(self, session):
+        self.session = session
 
     def create_skate(self, event_id, skater_name):
         skate = Skate(evt_id=event_id, skater=skater_name)
@@ -152,17 +150,9 @@ class SkateController(object):
 
 
 class FileController(object):
-    def __init__(self, competition="test"):
-        self.competition = competition
-
-        self.engine = connect_to_db(self.competition)
-
-        Base.metadata.create_all(self.engine)
-
-        self.Session = sessionmaker(bind=self.engine)
-        self.session = self.Session()
-
-        self.skate_controller = SkateController()
+    def __init__(self, session):
+        self.session = session
+        self.skate_controller = SkateController(self.session)
 
     def create_file(self, skate_id, filepath):
         file = File(skate_id=skate_id, file=filepath)

@@ -1,5 +1,6 @@
 line_length = 120
 
+
 def message_wrap(func):
     def wrap(*args, **kwargs):
         message = '/' * line_length + '\n'
@@ -13,14 +14,13 @@ def message_wrap(func):
         print()
 
     return wrap
-        
 
 
 class TUI(object):
     @staticmethod
     @message_wrap
     def welcome():
-        return('Welcome to the LMP Skatertron')
+        return 'Welcome to the LMP Skatertron'
 
     @staticmethod
     @message_wrap
@@ -146,9 +146,9 @@ class TUI(object):
     def display_valid_actions(app_state):
         match app_state:
             case 'init':
-                message = '[L]oad competition | [N]ew competition?'
+                message = 'Please name competition: '
             case 'competition_loaded':
-                message = '[B]ulk add events | [A]dd single event | [D]isplay event(s) | Attach [F]iles'
+                message = '[A]dd event | [D]isplay event(s) | Attach [F]iles'
 
         message += ' | [Q]uit'
 
