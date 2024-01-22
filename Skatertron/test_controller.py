@@ -1,8 +1,3 @@
-"""
-from hypothesis import given
-from hypothesis.strategies import text
-"""
-
 from competition_controller import EventController, SkateController, FileController
 
 e_c = EventController()
