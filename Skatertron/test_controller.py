@@ -62,7 +62,7 @@ def test_create_skate():
 
 
 def test_read_all_skates():
-    pass
+    print(s_c.read_all_skates())
 
 def test_read_skate_by_id():
     pass
@@ -77,5 +77,4 @@ def test_read_skates_by_skater():
 
 
 if __name__ == "__main__":
-
     test_read_all_skates()

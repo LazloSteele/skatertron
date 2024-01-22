@@ -98,14 +98,14 @@ class SkateController(object):
         except IntegrityError:
             raise EventNotExists
 
-    def read_all_events(self):
-        events = []
+    def read_all_skates(self):
+        skates = []
 
-        query = self.session.execute(select(Event)).scalars()
+        query = self.session.execute(select(Skate)).scalars()
 
         for event in query:
-            events.append(event)
-        return events
+            skates.append(event)
+        return skates
 
     def read_event_by_id(self, event_id):
         event = self.session.get(Event, event_id)
