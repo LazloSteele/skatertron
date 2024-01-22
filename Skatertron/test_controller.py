@@ -129,5 +129,4 @@ def test_delete_file():
 
 if __name__ == "__main__":
     test_read_all_files()
-    test_delete_file()
     test_read_all_files()
