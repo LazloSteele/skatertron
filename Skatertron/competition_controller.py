@@ -1,4 +1,4 @@
-from sqlalchemy_backend import connect_to_db, Base, Event, Skate, File
+from archive.sqlalchemy_backend import connect_to_db, Base, Event, Skate, File
 
 from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
