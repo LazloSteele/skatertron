@@ -6,6 +6,6 @@ class Event(BaseModel):
 
     id: int
     competition_id: int
-    evt_number: str
-    evt_title: str
+    event_number: str
+    event_name: str
     

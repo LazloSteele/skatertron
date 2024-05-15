@@ -6,4 +6,4 @@ class File(BaseModel):
 
     id: int
     skate_id: int
-    file: str
+    file_name: str

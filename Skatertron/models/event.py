@@ -9,8 +9,8 @@ class Event(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     competition_id: Mapped[int] = mapped_column(ForeignKey("competitions.id"))
-    evt_number: Mapped[str] = mapped_column(String(4), unique=True)
-    evt_title: Mapped[str] = mapped_column(String(60))
+    event_number: Mapped[str] = mapped_column(String(4), unique=True)
+    event_name: Mapped[str] = mapped_column(String(60))
 
     def __repr__(self) -> str:
-        return f"Entry {self.id!r}: #{int(self.evt_number)!r} {self.evt_title!r}"
+        return f"Entry {self.id!r}: #{int(self.event_number)!r} {self.event_name!r}"

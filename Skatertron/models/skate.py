@@ -8,8 +8,8 @@ class Skate(Base):
     __tablename__ = "skates"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    evt_id: Mapped[int] = mapped_column(ForeignKey("events.id"))
-    skater: Mapped[str] = mapped_column(String(40))
+    event_id: Mapped[int] = mapped_column(ForeignKey("events.id"))
+    skater_name: Mapped[str] = mapped_column(String(40))
 
     def __repr__(self) -> str:
-        return f"Entry {self.id!r}: Event ID = {self.evt_id!r} skater = {self.skater!r}"
+        return f"Entry {self.id!r}: Event ID = {self.event_id!r} skater = {self.skater_name!r}"
