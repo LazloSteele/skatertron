@@ -18,26 +18,33 @@ class Base(DeclarativeBase):
     pass
 
 
+class Competition(Base):
+    __tablename__ = "competitions"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    competition_name: Mapped[str] = mapped_column(String(60))
+
+
 class Event(Base):
     __tablename__ = "events"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    evt_number: Mapped[str] = mapped_column(String(4), unique=True)
-    evt_title: Mapped[str] = mapped_column(String(60))
+    competition_id: Mapped[int] = mapped_column(ForeignKey("competitions.id"))
+    event_number: Mapped[str] = mapped_column(String(4), unique=True)
+    event_name: Mapped[str] = mapped_column(String(60))
 
     def __repr__(self) -> str:
-        return f"Entry {self.id!r}: #{int(self.evt_number)!r} {self.evt_title!r}"
+        return f"Entry {self.id!r}: #{int(self.event_number)!r} {self.event_name!r}"
 
 
 class Skate(Base):
     __tablename__ = "skates"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    evt_id: Mapped[int] = mapped_column(ForeignKey("events.id"))
-    skater: Mapped[str] = mapped_column(String(40))
+    event_id: Mapped[int] = mapped_column(ForeignKey("events.id"))
+    skater_name: Mapped[str] = mapped_column(String(40))
 
     def __repr__(self) -> str:
-        return f"Entry {self.id!r}: Event ID = {self.evt_id!r} skater = {self.skater!r}"
+        return f"Entry {self.id!r}: Event ID = {self.event_id!r} skater = {self.skater_name!r}"
 
 
 class File(Base):
@@ -45,10 +52,10 @@ class File(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     skate_id: Mapped[int] = mapped_column(ForeignKey("skates.id"))
-    file: Mapped[str] = mapped_column(String(255))
+    file_name: Mapped[str] = mapped_column(String(255))
 
     def __repr__(self) -> str:
-        return f"Entry {self.id!r}: Skate ID = {self.skate_id!r} filepath = {self.file!r}"
+        return f"Entry {self.id!r}: Skate ID = {self.skate_id!r} filepath = {self.file_name!r}"
 
 
 def connect_to_db(competition):

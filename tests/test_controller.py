@@ -20,8 +20,8 @@ def test_read_event_by_id():
 
     print(event)
     print("ID:", event.id)
-    print("#", event.evt_number)
-    print("title:", event.evt_title)
+    print("#", event.event_number)
+    print("title:", event.event_name)
 
 
 def test_read_event_by_number():
@@ -29,8 +29,8 @@ def test_read_event_by_number():
 
     print(event)
     print("ID:", event.id)
-    print("#", event.evt_number)
-    print("title:", event.evt_title)
+    print("#", event.event_number)
+    print("title:", event.event_name)
 
 
 def test_read_events_by_title():
@@ -38,8 +38,8 @@ def test_read_events_by_title():
     for event in events:
         print(event)
         print("ID:", event.id)
-        print("#", event.evt_number)
-        print("title:", event.evt_title)
+        print("#", event.event_number)
+        print("title:", event.event_name)
 
 
 def test_update_event():
@@ -62,10 +62,10 @@ def test_read_all_skates():
 
 def test_read_skate_by_id():
     skate = s_c.read_skate_by_id(1)
-    event_title = e_c.read_event_by_id(skate.evt_id).evt_title
+    event_title = e_c.read_event_by_id(skate.event_id).event_name
     print(skate)
     print("ID:", skate.id)
-    print(skate.skater, "skating in", event_title)
+    print(skate.skater_name, "skating in", event_title)
 
 
 def test_read_skates_by_event():
@@ -102,8 +102,8 @@ def test_read_files_by_skate():
     for file in files:
         print(file)
         print(file.id)
-        print(e_c.read_event_by_id(s_c.read_skate_by_id(file.skate_id).evt_id).evt_title)
-        print(file.file)
+        print(e_c.read_event_by_id(s_c.read_skate_by_id(file.skate_id).event_id).event_name)
+        print(file.file_name)
 
 
 def test_read_file_by_id():
