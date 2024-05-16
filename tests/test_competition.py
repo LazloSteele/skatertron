@@ -59,6 +59,20 @@ class TestCompetition:
 
         assert denver_international.competition_name == "Schmlenver International"
 
+    @pytest.mark.xfail(raises=IntegrityError)
+    def test_competition_delete(self, db_session):
+        denver_international = db_session.query(Competition).filter_by(
+            competition_name="Denver International").first()
+        di_id = denver_international.id
+
+        db_session.delete(denver_international)
+        db_session.commit()
+
+        try:
+            denver_international = db_session.query(Competition).filter_by(
+                id=di_id).first()
+        except IntegrityError:
+            db_session.rollback()
 
     @pytest.mark.xfail(raises=IntegrityError)
     def test_competition_no_name(self, db_session):
