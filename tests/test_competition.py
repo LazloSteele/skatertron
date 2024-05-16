@@ -35,6 +35,31 @@ class TestCompetition:
         assert denver_international.competition_name != "Enver Invitational"
         assert denver_international.host_club == "Denver FSC"
 
+    def test_competition_renumber(self, db_session):
+        denver_international = db_session.query(Competition).filter_by(
+            competition_name="Denver International").first()
+
+        di_id = denver_international.id
+        denver_international.competition_year = 2056
+        db_session.commit()
+        denver_international = db_session.query(Competition).filter_by(
+            id=di_id).first()
+
+        assert denver_international.competition_year == 2056
+
+    def test_competition_rename(self, db_session):
+        denver_international = db_session.query(Competition).filter_by(
+            competition_name="Denver International").first()
+
+        di_id = denver_international.id
+        denver_international.competition_name = "Schmlenver International"
+        db_session.commit()
+        denver_international = db_session.query(Competition).filter_by(
+            id=di_id).first()
+
+        assert denver_international.competition_name == "Schmlenver International"
+
+
     @pytest.mark.xfail(raises=IntegrityError)
     def test_competition_no_name(self, db_session):
         competition = Competition(
