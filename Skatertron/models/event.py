@@ -9,7 +9,7 @@ class Event(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     competition_id: Mapped[int] = mapped_column(ForeignKey("competitions.id"))
-    event_number: Mapped[str] = mapped_column(String(4), unique=True)
+    event_number: Mapped[str] = mapped_column(String(4))
     event_name: Mapped[str] = mapped_column(String(60))
 
     def __repr__(self) -> str:

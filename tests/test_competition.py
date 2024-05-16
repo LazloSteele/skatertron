@@ -13,12 +13,6 @@ class TestCompetition:
             host_club="Denver FSC"
         )
 
-        self.valid_event = Event(
-            competition_id=2,
-            event_number="2055b",
-            event_name="Chacha Slide"
-        )
-
     def teardown_class(self):
         self.session.rollback()
         self.session.close()
@@ -33,16 +27,3 @@ class TestCompetition:
         assert denver_international.competition_year == 2055
         assert denver_international.competition_name != "Enver Invitational"
         assert denver_international.host_club == "Denver FSC"
-
-    '''
-    def test_event_valid(self):
-        self.session.add(self.valid_event)
-        self.session.commit()
-
-        chacha_slide = self.session.query(Event).filter_by(
-            event_number="2055b").first()
-
-        assert chacha_slide.competition_id == 1
-        assert chacha_slide.event_name != "Enver Invitational"
-        assert chacha_slide.event_number == "2055b"
-    '''

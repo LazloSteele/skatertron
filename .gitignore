@@ -22,3 +22,4 @@ env-lmp-skatertron/
 # ignore secret directories
 secret/
 /Event PDF/
+/Skatertron/.env
