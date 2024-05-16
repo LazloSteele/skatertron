@@ -1,29 +1,75 @@
 from Skatertron.database import Base, session_manager, get_db_session
-from Skatertron.models import Competition, Event, Skate, File
+from Skatertron.models import Competition
+from sqlalchemy.exc import IntegrityError
+import pytest
+
+
+@pytest.fixture(scope="module")
+def db_session():
+    Base.metadata.create_all(session_manager.engine)
+    session = get_db_session().__next__()
+    yield session
+    session.rollback()
+    session.close()
+
+
+@pytest.fixture(scope="module")
+def valid_competition():
+    valid_competition = Competition(
+        competition_name="Denver International",
+        competition_year=2055,
+        host_club="Denver FSC"
+    )
+    return valid_competition
 
 
 class TestCompetition:
-    def setup_class(self):
-        Base.metadata.create_all(session_manager.engine)
+    def test_competition_valid(self, db_session, valid_competition):
+        db_session.add(valid_competition)
+        db_session.commit()
 
-        self.session = get_db_session().__next__()
-        self.valid_competition = Competition(
-            competition_name="Denver International",
-            competition_year=2055,
-            host_club="Denver FSC"
-        )
-
-    def teardown_class(self):
-        self.session.rollback()
-        self.session.close()
-
-    def test_competition_valid(self):
-        self.session.add(self.valid_competition)
-        self.session.commit()
-
-        denver_international = self.session.query(Competition).filter_by(
+        denver_international = db_session.query(Competition).filter_by(
             competition_name="Denver International").first()
 
         assert denver_international.competition_year == 2055
         assert denver_international.competition_name != "Enver Invitational"
         assert denver_international.host_club == "Denver FSC"
+
+    @pytest.mark.xfail(raises=IntegrityError)
+    def test_competition_no_name(self, db_session):
+        competition = Competition(
+            competition_year=2055,
+            host_club="Denver FSC"
+        )
+
+        db_session.add(competition)
+        try:
+            db_session.commit()
+        except IntegrityError:
+            db_session.rollback()
+
+    @pytest.mark.xfail(raises=IntegrityError)
+    def test_competition_no_year(self, db_session):
+        competition = Competition(
+            competition_name="Denver Invitational",
+            host_club="Denver FSC"
+        )
+
+        db_session.add(competition)
+        try:
+            db_session.commit()
+        except IntegrityError:
+            db_session.rollback()
+
+    @pytest.mark.xfail(raises=IntegrityError)
+    def test_competition_no_host(self, db_session):
+        competition = Competition(
+            competition_year=2055,
+            competition_name="Denver FSC"
+        )
+
+        db_session.add(competition)
+        try:
+            db_session.commit()
+        except IntegrityError:
+            db_session.rollback()
