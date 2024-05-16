@@ -3,14 +3,18 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "skatertron_lazlosteele"
+name = "skatertron"
 version = "0.0.11"
 authors = [
   { name="Lazlo Steele", email="lazlo@coloradobarconsultants.com" },
 ]
 readme = "README.md"
 
-
 [project.urls]
 Homepage = "https://github.com/LazloSteele/skatertron"
 Issues = "https://github.com/LazloSteele/skatertron/issues"
+
+[tool.pytest.ini_options]
+addopts = [
+    "--import-mode=importlib",
+]
