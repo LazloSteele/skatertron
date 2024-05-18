@@ -1,27 +1,8 @@
-from Skatertron.database import Base, session_manager, get_db_session
 from Skatertron.models import Event
-import pytest
 from sqlalchemy.exc import IntegrityError
+from . import db_session, valid_event
 
-
-@pytest.fixture(scope="module")
-def db_session():
-    Base.metadata.create_all(session_manager.engine)
-    session = get_db_session().__next__()
-    yield session
-    session.rollback()
-    session.close()
-
-
-@pytest.fixture(scope="module")
-def valid_event():
-    valid_event = Event(
-        competition_id=1,
-        event_number="205b",
-        event_name="Chacha Slide"
-    )
-
-    return valid_event
+import pytest
 
 
 class TestEvent:
