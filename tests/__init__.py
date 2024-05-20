@@ -33,6 +33,7 @@ def valid_event():
 
     return valid_event
 
+
 @pytest.fixture(scope="module")
 def valid_skate():
     valid_skate = Skate(
