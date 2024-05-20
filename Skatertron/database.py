@@ -3,7 +3,7 @@ import contextlib
 from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy import create_engine
 from typing import Any
-from .config import settings
+from config import settings
 from contextlib import contextmanager
 Base = declarative_base()
 
