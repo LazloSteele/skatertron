@@ -66,7 +66,7 @@ def update_competition(competition_id: int,
             raise HTTPException(404, f"Competition with id: #{competition_id} not found.")
 
 
-@router.delete("/{competition_id")
+@router.delete("/{competition_id}")
 def delete_competition(competition_id: int):
     with get_db_session().__next__() as session:
         try:
@@ -75,4 +75,4 @@ def delete_competition(competition_id: int):
             session.delete(competition)
             session.commit()
         except UnmappedInstanceError:
-            raise HTTPException(404,f"Competition with id: #{competition_id} not found.")
+            raise HTTPException(404, f"Competition with id: #{competition_id} not found.")

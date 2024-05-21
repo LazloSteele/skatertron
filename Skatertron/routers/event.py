@@ -66,7 +66,7 @@ def update_event(event_id: int,
             raise HTTPException(404, f"Event with id: #{event_id} not found.")
 
 
-@router.delete("/{event_id")
+@router.delete("/{event_id}")
 def delete_event(event_id: int):
     with get_db_session().__next__() as session:
         try:
@@ -75,4 +75,4 @@ def delete_event(event_id: int):
             session.delete(event)
             session.commit()
         except UnmappedInstanceError:
-            raise HTTPException(404,f"Event with id: #{event_id} not found.")
+            raise HTTPException(404, f"Event with id: #{event_id} not found.")

@@ -62,8 +62,8 @@ def update_event(skate_id: int,
             raise HTTPException(404, f"Skate with id: #{skate_id} not found.")
 
 
-@router.delete("/{skate_id")
-def delete_skate(skate_id: int):
+@router.delete("/{skate_id}")
+def delete_event(skate_id: int):
     with get_db_session().__next__() as session:
         try:
             skate = session.query(SkateDBModel).filter_by(id=skate_id).first()
@@ -71,4 +71,4 @@ def delete_skate(skate_id: int):
             session.delete(skate)
             session.commit()
         except UnmappedInstanceError:
-            raise HTTPException(404,f"Skate with id: #{skate_id} not found.")
+            raise HTTPException(404, f"Skate with id: #{skate_id} not found.")
