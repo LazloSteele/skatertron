@@ -1,4 +1,4 @@
-from Skatertron.async_database import Base
+from Skatertron.database import Base
 
 from .competition import Competition
 from .event import Event

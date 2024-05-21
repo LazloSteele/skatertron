@@ -50,7 +50,7 @@ class SessionManager:
             yield session
         except Exception:
             session.rollback()
-            raise
+            raise Exception
         finally:
             session.close()
 
