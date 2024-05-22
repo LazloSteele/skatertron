@@ -7,7 +7,7 @@
 </head>
 <style>
     .AppFrame {
-        border: 5px outset blue;
+        border: 5px outset #214F59;
         position: fixed;
         top:0;
         bottom:0;
@@ -15,7 +15,7 @@
         right:0;
     }
     .CompetitionBrowser {
-        background-color: gold;
+        background-color: #846347;
         position: fixed;
         height: 5%;
         top: 5px;
@@ -23,16 +23,68 @@
         right: 5px;
     }
     .EventBrowser {
-        background-color: red;
+        background-color: #5F8E99;
         position: fixed;
         margin-top: 5px;
         margin-bottom: 5px;
+        margin-right: 5px;
         top: 5%;
         bottom: 0;
         width: 20%;
         overflow-y:auto;
     }
+    .SkateMediaFrame {
+        background-color: #5F8E99;
+        position: fixed;
+        left: 20%;
+        right: 0%;
+        top: 5%;
+        bottom: 45%;
+        margin-left: 5px;
+        margin-top: 5px;
+        margin-right: 5px;
+        margin-bottom: 5px;
+    }
+    .SkateSelect {
+        background-color: #CAD6D9;
+        position: fixed;
+        top: 5%;
+        bottom: 45%;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        width: 20%;
+        overflow-y: auto;
+    }
+    .MediaPlayer {
+        position fixed;
+        margin-top: 1.5%;
+        margin-left: 40%;
 
+    }
+    .FileBrowser {
+        position: fixed;
+        top: 53.63%;
+        bottom: 0;
+        left: 20%;
+        right: 40%;
+        margin-top: 5px;
+        margin-left: 5px;
+        margin-right: 5px;
+        margin-bottom: 5px;
+        background-color: #846347;
+    }
+    .CurrentOrder {
+        position: fixed;
+        background-color: #D9D1CA;
+        top: 53.63%;
+        bottom: 0;
+        left: 59.387%;
+        right: 0;
+        margin-top: 5px;
+        margin-left: 5px;
+        margin-right: 5px;
+        margin-bottom: 5px;
+    }
 </style>
 <body>
     <div class="AppFrame">
@@ -105,10 +157,40 @@
                 <li>FS2</li>
                 <li>Short Program</li>
                 <li>Butts</li>
-
-
-
             </ul>
+        </div>
+        <div class="SkateMediaFrame">
+            <div class="SkateSelect">
+                <ul>
+                    <li>Schmamanda Flor</li>
+                    <li>Schmamanda Blor</li>
+                    <li>Schmamanda Clor</li>
+                    <li>Schmamanda Dlor</li>
+                    <li>Schmamanda Nlor</li>
+                    <li>Schmamanda Plor</li>
+                    <li>Schmamanda Flor</li>
+                    <li>Schmamanda Blor</li>
+                    <li>Schmamanda Clor</li>
+                    <li>Schmamanda Dlor</li>
+                    <li>Schmamanda Nlor</li>
+                    <li>Schmamanda Plor</li>
+                    <li>Schmamanda Flor</li>
+                    <li>Schmamanda Blor</li>
+                    <li>Schmamanda Clor</li>
+                    <li>Schmamanda Dlor</li>
+                    <li>Schmamanda Nlor</li>
+                    <li>Schmamanda Plor</li>
+                </ul>
+            </div>
+            <div class="MediaPlayer">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/O5O3yK8DJCc?si=Ni3dJBwcHeZJqz_O" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+        </div>
+        <div class="FileBrowser">
+            <p></p>
+        </div>
+        <div class="CurrentOrder">
+            <p></p>
         </div>
     </div>
 </body>
