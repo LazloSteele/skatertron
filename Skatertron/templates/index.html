@@ -4,114 +4,12 @@
     <meta charset="UTF-8">
     <title>Skatertron</title>
     <script src="https://unpkg.com/htmx.org"></script>
-    <link rel="stylesheet" href="styles.css">
+    <link href="{{ url_for('static', path='styles.css') }}" rel="stylesheet">
 </head>
 <body>
-    <div class="AppFrame">
-        <div class="CompetitionBrowser">
-            <p>Here are all the competitions!</p>
-        </div>
-        <div class="EventBrowser">
-            <ul>
-                <li>FS1</li>
-                <li>FS2</li>
-                <li>Short Program</li>
-                <li>Butts</li>
-                <li>FS1</li>
-                <li>FS2</li>
-                <li>Short Program</li>
-                <li>Butts</li>
-                <li>FS1</li>
-                <li>FS2</li>
-                <li>Short Program</li>
-                <li>Butts</li>
-                <li>FS1</li>
-                <li>FS2</li>
-                <li>Short Program</li>
-                <li>Butts</li>
-                <li>FS1</li>
-                <li>FS2</li>
-                <li>Short Program</li>
-                <li>Butts</li>
-                <li>FS1</li>
-                <li>FS2</li>
-                <li>Short Program</li>
-                <li>Butts</li>
-                <li>FS1</li>
-                <li>FS2</li>
-                <li>Short Program</li>
-                <li>Butts</li>
-                <li>FS1</li>
-                <li>FS2</li>
-                <li>Short Program</li>
-                <li>Butts</li>
-                <li>FS1</li>
-                <li>FS2</li>
-                <li>Short Program</li>
-                <li>Butts</li>
-                <li>FS1</li>
-                <li>FS2</li>
-                <li>Short Program</li>
-                <li>Butts</li>
-                <li>FS1</li>
-                <li>FS2</li>
-                <li>Short Program</li>
-                <li>Butts</li>
-                <li>FS1</li>
-                <li>FS2</li>
-                <li>Short Program</li>
-                <li>Butts</li>
-                <li>FS1</li>
-                <li>FS2</li>
-                <li>Short Program</li>
-                <li>Butts</li>
-                <li>FS1</li>
-                <li>FS2</li>
-                <li>Short Program</li>
-                <li>Butts</li>
-                <li>FS1</li>
-                <li>FS2</li>
-                <li>Short Program</li>
-                <li>Butts</li>
-                <li>FS1</li>
-                <li>FS2</li>
-                <li>Short Program</li>
-                <li>Butts</li>
-            </ul>
-        </div>
-        <div class="SkateMediaFrame">
-            <div class="SkateSelect">
-                <ul>
-                    <li>Schmamanda Flor</li>
-                    <li>Schmamanda Blor</li>
-                    <li>Schmamanda Clor</li>
-                    <li>Schmamanda Dlor</li>
-                    <li>Schmamanda Nlor</li>
-                    <li>Schmamanda Plor</li>
-                    <li>Schmamanda Flor</li>
-                    <li>Schmamanda Blor</li>
-                    <li>Schmamanda Clor</li>
-                    <li>Schmamanda Dlor</li>
-                    <li>Schmamanda Nlor</li>
-                    <li>Schmamanda Plor</li>
-                    <li>Schmamanda Flor</li>
-                    <li>Schmamanda Blor</li>
-                    <li>Schmamanda Clor</li>
-                    <li>Schmamanda Dlor</li>
-                    <li>Schmamanda Nlor</li>
-                    <li>Schmamanda Plor</li>
-                </ul>
-            </div>
-            <div class="MediaPlayer">
-                <iframe width="560" height="315" src="https://www.youtube.com/embed/O5O3yK8DJCc?si=Ni3dJBwcHeZJqz_O" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-            </div>
-        </div>
-        <div class="FileBrowser">
-            <p></p>
-        </div>
-        <div class="CurrentOrder">
-            <p></p>
-        </div>
+    <div>
+        {% include 'app_frame.html' %}
+        {% block AppFrame %} {% endblock %}
     </div>
 </body>
 </html>

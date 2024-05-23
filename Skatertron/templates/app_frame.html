@@ -1,0 +1,21 @@
+
+{% block AppFrame %}
+
+    <div class="AppFrame">
+
+        {% include 'competition_browser.html' %}
+        {% include 'event_browser.html' %}
+        {% include 'skate_media_frame.html' %}
+        {% include 'file_browser.html' %}
+        {% include 'current_order.html' %}
+
+        {% block CompetitionBrowser %} {% endblock %}
+        {% block EventBrowser %} {% endblock %}
+        {% block SkateMediaFrame %} {% endblock %}
+        {% block FileBrowser %} {% endblock %}
+        {% block CurrentOrder %} {% endblock %}
+
+    </div>
+
+
+{% endblock %}
