@@ -1,4 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
+
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import UnmappedInstanceError
 
@@ -6,10 +9,14 @@ from Skatertron.models.event import Event as EventDBModel
 from Skatertron.schemas.event import Event as EventSchema
 from Skatertron.database import get_db_session
 
+
 router = APIRouter(
     prefix="/events",
     tags=["events"]
 )
+
+
+templates = Jinja2Templates(directory="templates")
 
 
 @router.post("/")
@@ -32,6 +39,19 @@ def get_all_events():
     all_events = get_db_session().__next__().query(EventDBModel).all()
 
     return all_events
+
+
+@router.get("/by_competition/{competition_id}", response_class=HTMLResponse)
+def get_events_by_competition_id(request: Request, competition_id: int):
+    with get_db_session().__next__() as session:
+        events_list = session.query(EventDBModel).filter_by(competition_id=competition_id).all()
+
+    return templates.TemplateResponse(
+        request=request,
+        name="events_by_competition.html",
+        context={
+            "events_list": events_list
+        })
 
 
 @router.get("/{event_id}", response_model=EventSchema)

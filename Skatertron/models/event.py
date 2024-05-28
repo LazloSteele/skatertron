@@ -13,4 +13,4 @@ class Event(Base):
     event_name: Mapped[str] = mapped_column(String(60))
 
     def __repr__(self) -> str:
-        return f"Entry {self.id!r}: #{int(self.event_number)!r} {self.event_name!r}"
+        return f"#{self.event_number} {self.event_name}"

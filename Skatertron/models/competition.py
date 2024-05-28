@@ -13,4 +13,4 @@ class Competition(Base):
     host_club: Mapped[str] = mapped_column(String(60))
 
     def __repr__(self) -> str:
-        return f"Entry {self.id!r}: {int(self.competition_year)!r} {self.competition_name!r}"
+        return f"{int(self.competition_year)} {self.competition_name}"

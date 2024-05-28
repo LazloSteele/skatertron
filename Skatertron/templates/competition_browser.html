@@ -1,5 +1,12 @@
 {% block CompetitionBrowser %}
 <div class="CompetitionBrowser">
-    <p>Here are all the competitions!</p>
+    <select name="Load Competition" id="Competition-Select"
+            hx-target="#EventBrowser"
+    >
+        <option>--Please Select Competition--</option>
+        {% for competition in competitions_list %}
+        <option hx-get="/events/by_competition/{{ competition.id }}">{{ competition }}</option>
+        {% endfor %}
+    </select>
 </div>
 {% endblock %}

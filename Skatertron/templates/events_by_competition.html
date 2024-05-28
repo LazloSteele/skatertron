@@ -1,0 +1,12 @@
+{% block events_by_competition %}
+
+<button hx-post="/events">
+        Add Event
+</button>
+<ul>
+        {% for event in events_list %}
+        <li class="EventListItem">#{{event.event_number}} {{event.event_name}}</li>
+        {% endfor %}
+</ul>
+
+{% endblock %}
