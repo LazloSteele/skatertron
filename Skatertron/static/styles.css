@@ -5,6 +5,7 @@
         bottom:0;
         left:0;
         right:0;
+        z-index:-1;
     }
 .CompetitionBrowser {
     background-color: #846347;
@@ -13,6 +14,7 @@
     top: 5px;
     left: 5px;
     right: 5px;
+    z-index:-1;
     }
 
 .EventBrowser {
@@ -25,6 +27,7 @@
     bottom: 0;
     width: 20%;
     overflow-y:auto;
+    z-index:-1;
     }
 .SkateMediaFrame {
     background-color: #5F8E99;
@@ -37,6 +40,7 @@
     margin-top: 5px;
     margin-right: 5px;
     margin-bottom: 5px;
+    z-index:-1;
     }
 .SkateSelect {
     background-color: #CAD6D9;
@@ -47,11 +51,13 @@
     margin-bottom: 5px;
     width: 20%;
     overflow-y: auto;
+    z-index:-1;
     }
 .MediaPlayer {
     position fixed;
     margin-top: 1.5%;
     margin-left: 40%;
+    z-index:-1;
     }
 .FileBrowser {
     position: fixed;
@@ -64,6 +70,7 @@
     margin-right: 5px;
     margin-bottom: 5px;
     background-color: #846347;
+    z-index:-1;
     }
 .CurrentOrder {
     position: fixed;
@@ -76,14 +83,50 @@
     margin-left: 5px;
     margin-right: 5px;
     margin-bottom: 5px;
-    }
-.CompetitionButton {
-    background-color: #D9D1DD;
-    }
-.EventListItem {
-    font-color: Black;
+    z-index:-1;
 }
-.EventListItem:hover {
-    background-color: #846347;
-    font-color: #D9D1CA;
+/***** MODAL DIALOG ****/
+#modal {
+	/* Underlay covers entire screen. */
+	position: fixed;
+	top:0px;
+	bottom: 0px;
+	left:0px;
+	right:0px;
+	background-color:rgba(0,0,0,0.5);
+	z-index:1000;
+
+	/* Flexbox centers the .modal-content vertically and horizontally */
+	display:flex;
+	flex-direction:column;
+	align-items:center;
+
+}
+
+#modal > .modal-underlay {
+	/* underlay takes up the entire viewport. This is only
+	required if you want to click to dismiss the popup */
+	position: absolute;
+	z-index: -1;
+	top:0px;
+	bottom:0px;
+	left: 0px;
+	right: 0px;
+}
+
+#modal > .modal-content {
+	/* Position visible dialog near the top of the window */
+	margin-top:10vh;
+
+	/* Sizing for visible dialog */
+	width:80%;
+	max-width:600px;
+
+	/* Display properties for visible dialog*/
+	border:solid 1px #999;
+	border-radius:8px;
+	box-shadow: 0px 0px 20px 0px rgba(0,0,0,0.3);
+	background-color:white;
+	padding:20px;
+
 }
