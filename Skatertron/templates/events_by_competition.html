@@ -1,12 +1,11 @@
 {% block events_by_competition %}
 
-<button hx-get="/new_event_modal" hx-target="AppFrame">
-        Add Event
-</button>
-<ul>
+{% include 'new_event_modal.html' %}
+
+<sl-tree id="EventsList">
         {% for event in events_list %}
-        <li class="EventListItem">#{{event.event_number}} {{event.event_name}}</li>
+        {% include 'new_event.html' %}
         {% endfor %}
-</ul>
+</sl-tree>
 
 {% endblock %}

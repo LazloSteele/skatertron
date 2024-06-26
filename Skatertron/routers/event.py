@@ -1,9 +1,11 @@
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import UnmappedInstanceError
+
+from typing import Annotated
 
 from Skatertron.models.event import Event as EventDBModel
 from Skatertron.schemas.event import Event as EventSchema
@@ -19,19 +21,31 @@ router = APIRouter(
 templates = Jinja2Templates(directory="templates")
 
 
-@router.post("/")
-def create_event(event_schema: EventSchema):
+@router.post("/", status_code=201, response_class=HTMLResponse)
+def create_event(event_name: Annotated[str, Form()],
+                 event_number: Annotated[str, Form()],
+                 competition_id: Annotated[int, Form()],
+                 request: Request):
     try:
-        event = EventDBModel(event_name=event_schema.event_name,
-                             event_number=event_schema.event_number,
-                             competition_id=event_schema.competition_id
+        event = EventDBModel(event_name=event_name,
+                             event_number=event_number,
+                             competition_id=competition_id
                              )
+        with get_db_session().__next__() as session:
+            session.add(event)
+            session.commit()
+
+        return templates.TemplateResponse(
+            request=request,
+            name="new_event.html",
+            context={
+                "event": event
+            }
+        )
+
     except IntegrityError:
         raise HTTPException(422, "Missing data from event model.")
 
-    with get_db_session().__next__() as session:
-        session.add(event)
-        session.commit()
 
 
 @router.get("/", response_model=list[EventSchema])
@@ -50,7 +64,8 @@ def get_events_by_competition_id(request: Request, competition_id: int):
         request=request,
         name="events_by_competition.html",
         context={
-            "events_list": events_list
+            "events_list": events_list,
+            "current_competition_id": competition_id
         })
 
 

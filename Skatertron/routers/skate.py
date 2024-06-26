@@ -1,4 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request, Form
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
+
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import UnmappedInstanceError
 
@@ -10,6 +13,8 @@ router = APIRouter(
     prefix="/skates",
     tags=["skates"]
 )
+
+templates = Jinja2Templates(directory="templates")
 
 
 @router.post("/")
@@ -42,6 +47,23 @@ def get_skate_by_id(skate_id: int):
             return skate
     except IntegrityError:
         raise HTTPException(404, f"Skate with id #{skate_id} not found.")
+
+
+@router.get("/get_skates_by_event_id/{event_id}", response_class=HTMLResponse)
+def get_skates_by_event_id(event_id: int, request: Request):
+    try:
+        with get_db_session().__next__() as session:
+            skates = session.query(SkateDBModel).filter_by(event_id=event_id).all()
+
+            return templates.TemplateResponse(
+                request=request,
+                name="skates_by_event.html",
+                context={
+                    "skates_list": skates
+                }
+            )
+    except IntegrityError:
+        raise HTTPException(404, f"Event with id #{event_id} not found.")
 
 
 @router.put("/{skate_id}")

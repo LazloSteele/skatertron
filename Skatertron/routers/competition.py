@@ -46,7 +46,6 @@ def create_competition(competition_name: Annotated[str, Form()],
         raise HTTPException(422, "Missing data from competition model.")
 
 
-
 @router.get("/", response_model=list[CompetitionSchema])
 def get_all_competitions():
     all_competitions = get_db_session().__next__().query(CompetitionDBModel).all()

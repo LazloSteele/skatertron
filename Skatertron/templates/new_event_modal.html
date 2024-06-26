@@ -1,15 +1,30 @@
 {% block NewEventModal %}
 
-<div id="modal">
-	<div class="modal-underlay"></div>
-	<div class="modal-content">
-		<h1>Modal Dialog</h1>
-		This is the modal content.
-		You can put anything here, like text, or a form, or an image.
-		<br>
-		<br>
-		<button>Close</button>
-	</div>
-</div>
+    <dialog id="new_event_modal">
+        <h1>New Event</h1>
+        <form>
+            <label for="event_number">Event Number: </label><br>
+            <input type="text" id="event_number" name="event_number" autocomplete="off"/><br>
+            <label for="event_name">Event Name: </label><br>
+            <input type="text" id="event_name" name="event_name" autocomplete="off"/><br>
+            <input type="hidden" name="competition_id" value={{ current_competition_id }}>
+
+            <button
+                    hx-post="/events/"
+                    onclick="new_event_modal.close()"
+                    hx-target="#EventsList"
+                    hx-swap="beforeend"
+            >
+                Submit
+            </button>
+            <button onclick="new_event_modal.close()">
+                Cancel
+            </button>
+
+
+        </form>
+    </dialog>
+
+    <button onclick="new_event_modal.show()">New Event</button>
 
 {% endblock %}

@@ -3,14 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <title>Skatertron</title>
+
+    <!-- initialize htmx and shoelace -->
     <script src="https://unpkg.com/htmx.org"></script>
+    <script
+            type="module"
+            src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.1/cdn/shoelace-autoloader.js">
+    </script>
+    <script
+            type="module"
+            src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.1/cdn/components/tree/tree.js">
+
+    </script>
+
+    <!-- include the stylesheet and favicon -->
     <link href="{{ url_for('static', path='styles.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', path='favicon.ico') }}" rel="shortcut icon" type="image/png" />
 </head>
+
 <body>
     <div>
         {% include 'app_frame.html' %}
         {% block AppFrame %} {% endblock %}
     </div>
 </body>
+
 </html>
