@@ -3,11 +3,42 @@
     <select name="Load Competition" id="Competition-Select"
             autocomplete="off"
             hx-target="#EventBrowser"
+            hx-trigger=""
     >
         <option>--Please Select Competition--</option>
         {% for competition in competitions_list %}
         <option hx-get="/events/by_competition/{{ competition.id }}">{{ competition }}</option>
         {% endfor %}
+
     </select>
+
+    <dialog id="new_competition_modal">
+        <h1>New Competition</h1>
+        <form>
+            <label for="competition_name">Competition Name: </label><br>
+            <input type="text" id="competition_name" name="competition_name" autocomplete="off"/><br>
+            <label for="competition_year">Competition Year: </label><br>
+            <input type="number" id="competition_year" name="competition_year" min="2016" autocomplete="off"/><br>
+            <label for="host_club">Host Club: </label><br>
+            <input type="text" id="host_club" name="host_club" autocomplete="off"/><br>
+            <button
+                    hx-post="/competitions/"
+                    onclick="new_competition_modal.close()"
+                    hx-target="#Competition-Select"
+                    hx-swap="beforeend"
+            >
+                Submit
+            </button>
+            <button onclick="new_competition_modal.close()">
+                Cancel
+            </button>
+
+
+        </form>
+    </dialog>
+
+    <button onclick="new_competition_modal.show()">New Competition</button>
+
+
 </div>
 {% endblock %}

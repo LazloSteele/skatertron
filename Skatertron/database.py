@@ -14,7 +14,7 @@ class SessionManager:
             engine_kwargs = {}
 
         self._engine = create_engine(host, **engine_kwargs)
-        self._sessionmaker = sessionmaker(bind=self.engine)
+        self._sessionmaker = sessionmaker(bind=self.engine, expire_on_commit=False)
 
     @property
     def engine(self):

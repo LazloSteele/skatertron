@@ -1,6 +1,9 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Form, Request
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import UnmappedInstanceError
+from typing import Annotated
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
 
 from Skatertron.models.competition import Competition as CompetitionDBModel
 from Skatertron.schemas.competition import Competition as CompetitionSchema
@@ -12,19 +15,36 @@ router = APIRouter(
 )
 
 
-@router.post("/")
-def create_competition(competition_schema: CompetitionSchema):
+templates = Jinja2Templates(directory="templates")
+
+
+@router.post("/", status_code=201, response_class=HTMLResponse)
+def create_competition(competition_name: Annotated[str, Form()],
+                       competition_year: Annotated[int, Form()],
+                       host_club: Annotated[str, Form()],
+                       request: Request
+                       ):
     try:
-        competition = CompetitionDBModel(competition_name=competition_schema.competition_name,
-                                         competition_year=competition_schema.competition_year,
-                                         host_club=competition_schema.host_club
+        competition = CompetitionDBModel(competition_name=competition_name,
+                                         competition_year=competition_year,
+                                         host_club=host_club
                                          )
+
+        with get_db_session().__next__() as session:
+            session.add(competition)
+            session.commit()
+
+        return templates.TemplateResponse(
+            request=request,
+            name="new_competition.html",
+            context={
+                "competition": competition
+            }
+        )
+
     except IntegrityError:
         raise HTTPException(422, "Missing data from competition model.")
 
-    with get_db_session().__next__() as session:
-        session.add(competition)
-        session.commit()
 
 
 @router.get("/", response_model=list[CompetitionSchema])

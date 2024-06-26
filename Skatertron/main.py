@@ -32,14 +32,3 @@ def root(request: Request):
             "competitions_list": competitions_list
         }
     )
-
-
-@app.get("/new_event_modal/{competition_id}", response_class=HTMLResponse)
-def new_event_modal(request: Request, competition_id: int):
-    return templates.TemplateResponse(
-        request=request,
-        name="new_event_modal.html",
-        context={
-            "competition_id": competition_id
-        }
-    )

@@ -1,12 +1,6 @@
-.AppFrame {
-        border: 5px outset #214F59;
-        position: fixed;
-        top:0;
-        bottom:0;
-        left:0;
-        right:0;
-        z-index:-1;
-    }
+#new_competition_modal {
+    position:absolute;
+}
 .CompetitionBrowser {
     background-color: #846347;
     position: fixed;
@@ -14,7 +8,17 @@
     top: 5px;
     left: 5px;
     right: 5px;
-    z-index:-1;
+    z-index: 1;
+    }
+
+.AppFrame {
+        border: 5px outset #214F59;
+        position:fixed;
+        top:0;
+        bottom:0;
+        left:0;
+        right:0;
+        z-index:-1;
     }
 
 .EventBrowser {
@@ -29,6 +33,12 @@
     overflow-y:auto;
     z-index:-1;
     }
+
+
+li.EventListItem:hover {
+    background-color: #000000;
+}
+
 .SkateMediaFrame {
     background-color: #5F8E99;
     position: fixed;
