@@ -1,6 +1,10 @@
 #new_competition_modal {
     position:absolute;
 }
+#new_event_modal {
+    position:absolute;
+    z-index: 1;
+}
 .CompetitionBrowser {
     background-color: #846347;
     position: fixed;
@@ -91,4 +95,5 @@
 }
 sl-tree {
     font-size: 1rem;
+    z-index:-1;
 }
