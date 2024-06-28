@@ -2,6 +2,8 @@ from fastapi import APIRouter, HTTPException, Request, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 
+from typing import Annotated
+
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import UnmappedInstanceError
 
@@ -17,19 +19,29 @@ router = APIRouter(
 templates = Jinja2Templates(directory="templates")
 
 
-@router.post("/")
-def create_skate(skate_schema: SkateSchema):
+@router.post("/", status_code=201, response_class=HTMLResponse)
+def create_skate(event_id: Annotated[int, Form()],
+                 skater_name: Annotated[str, Form()],
+                 request: Request):
     try:
-        skate = SkateDBModel(event_id=skate_schema.event_id,
-                             skater_name=skate_schema.skater_name
+        skate = SkateDBModel(event_id=event_id,
+                             skater_name=skater_name
                              )
+
+        with get_db_session().__next__() as session:
+            session.add(skate)
+            session.commit()
+
+        return templates.TemplateResponse(
+            request=request,
+            name="new_skate.html",
+            context={
+                "skate": skate
+            }
+        )
+
     except IntegrityError:
         raise HTTPException(422, "Missing data from skate model.")
-
-    with get_db_session().__next__() as session:
-        session.add(skate)
-        session.commit()
-
 
 @router.get("/", response_model=list[SkateSchema])
 def get_all_skates():
@@ -59,6 +71,7 @@ def get_skates_by_event_id(event_id: int, request: Request):
                 request=request,
                 name="skates_by_event.html",
                 context={
+                    "current_event_id": event_id,
                     "skates_list": skates
                 }
             )

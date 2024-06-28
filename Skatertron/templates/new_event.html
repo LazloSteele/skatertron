@@ -1,10 +1,15 @@
 {% block NewCompetition %}
 
-<sl-tree-item hx-get="/skates/get_skates_by_event_id/{{ event.id }}" hx-swap="beforeend" hx-trigger="click once">
+<sl-tree-item
+        hx-get="/skates/get_skates_by_event_id/{{ event.id }}"
+        hx-target="#skate_tree_{{ event.id }}"
+        hx-swap="outerHTML"
+        hx-trigger="load"
+        class="event_tree"
+>
     #{{event.event_number}} {{event.event_name}}
-    <sl-tree-item>
-        <button>New Skater</button>
-    </sl-tree-item>
+
+    <sl-tree-item class="skate_tree_item" id="skate_tree_{{ event.id }}"></sl-tree-item>
 
 </sl-tree-item>
 
