@@ -28,7 +28,7 @@
         z-index:-1;
     }
 .EventBrowser {
-    background-color: #5F8E99;
+    background-color: #D9D1CA;
     position: fixed;
     margin-top: 5px;
     margin-bottom: 5px;
@@ -52,21 +52,10 @@
     margin-bottom: 5px;
     z-index:-1;
     }
-.SkateSelect {
-    background-color: #CAD6D9;
-    position: fixed;
-    top: 5%;
-    bottom: 45%;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    width: 20%;
-    overflow-y: auto;
-    z-index:-1;
-    }
 .MediaPlayer {
     position fixed;
     margin-top: 1.5%;
-    margin-left: 40%;
+    margin-left: 25%;
     z-index:-1;
     }
 .FileBrowser {
