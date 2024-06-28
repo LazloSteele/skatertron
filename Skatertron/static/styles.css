@@ -69,7 +69,7 @@
     margin-right: 5px;
     margin-bottom: 5px;
     background-color: #846347;
-    z-index:-1;
+    z-index:100;
     }
 .CurrentOrder {
     position: fixed;
@@ -87,4 +87,7 @@
 sl-tree {
     font-size: 1rem;
     z-index:-1;
+}
+.drag-over {
+    background-color: #000000;
 }

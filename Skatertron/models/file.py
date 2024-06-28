@@ -7,7 +7,7 @@ from . import Base
 class File(Base):
     __tablename__ = "files"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     skate_id: Mapped[int] = mapped_column(ForeignKey("skates.id"))
     file_name: Mapped[str] = mapped_column(String(255))
 

@@ -19,18 +19,20 @@ router = APIRouter(
 templates = Jinja2Templates(directory="templates")
 
 
-@router.post("/")
+@router.post("/", status_code=201)
 def create_file(file_schema: FileSchema):
     try:
         file = FileDBModel(skate_id=file_schema.skate_id,
                            file_name=file_schema.file_name
                            )
+        with get_db_session().__next__() as session:
+            session.add(file)
+            session.commit()
+
+
     except IntegrityError:
         raise HTTPException(422, "Missing data from file model.")
 
-    with get_db_session().__next__() as session:
-        session.add(file)
-        session.commit()
 
 
 @router.get("/", response_model=list[FileSchema])
@@ -50,6 +52,7 @@ def get_file_by_id(file_id: int):
     except IntegrityError:
         raise HTTPException(404, f"File with id #{file_id} not found.")
 
+
 @router.get("/files_by_skate/{skate_id}", response_class=HTMLResponse)
 def get_files_by_skate(request: Request, skate_id: int):
     try:
@@ -67,7 +70,6 @@ def get_files_by_skate(request: Request, skate_id: int):
 
     except IntegrityError:
         raise HTTPException(404, f"Skate with id #{skate_id} not found.")
-
 
 
 @router.put("/{file_id}")
