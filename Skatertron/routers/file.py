@@ -19,6 +19,9 @@ router = APIRouter(
 templates = Jinja2Templates(directory="templates")
 
 
+# TODO: add file_path data to all endpoints
+# TODO: add file_type (video||photo) data to all endpoints
+
 @router.post("/", status_code=201, response_class=HTMLResponse)
 def create_file(file_schema: FileSchema, request: Request):
     try:

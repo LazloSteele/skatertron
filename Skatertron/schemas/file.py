@@ -6,3 +6,5 @@ class File(BaseModel):
 
     skate_id: int
     file_name: str
+    file_path: str
+    file_type: str
