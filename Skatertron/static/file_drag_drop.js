@@ -16,35 +16,49 @@ dropzone.addEventListener('drop', function (e) {
     dropzone.classList.remove('drag-over');
 
     const files = e.dataTransfer.files;
+
     for (let i = 0; i < files.length; i++) {
-        file = {
-            skate_id: 1,
-            file_name: files[i].name,
-        };
+        file = files[i]
 
-        fetch('/files/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(file),
-            }
-        )
+        if (file && (file.type.startsWith('image/') || file.type.startsWith('video/'))) {
 
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-                return response.json(); // Parse the JSON from the response
-        })
+            file_json = {
+                skate_id: 1,
+                file_name: file.name,
+            };
 
-        .then(data => {
-            console.log('Response from FastAPI:', data);
-            // Handle the response from the server
-        })
+            fetch('/files/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(file_json),
+                }
+            )
 
-        .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
-        });
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                    return response;
+            })
+
+            .then(data => {
+                console.log('Response from FastAPI:', data);
+                
+                // Handle the response from the server
+
+            })
+
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+        }
+
+        else {
+        throw new Error('Not a valid video or photo file.');
+        return;
+    };
     }
+
 });

@@ -19,8 +19,8 @@ router = APIRouter(
 templates = Jinja2Templates(directory="templates")
 
 
-@router.post("/", status_code=201)
-def create_file(file_schema: FileSchema):
+@router.post("/", status_code=201, response_class=HTMLResponse)
+def create_file(file_schema: FileSchema, request: Request):
     try:
         file = FileDBModel(skate_id=file_schema.skate_id,
                            file_name=file_schema.file_name
@@ -28,11 +28,16 @@ def create_file(file_schema: FileSchema):
         with get_db_session().__next__() as session:
             session.add(file)
             session.commit()
-
+        return templates.TemplateResponse(
+            request=request,
+            name="file.html",
+            context={
+                "file": file
+            }
+        )
 
     except IntegrityError:
         raise HTTPException(422, "Missing data from file model.")
-
 
 
 @router.get("/", response_model=list[FileSchema])

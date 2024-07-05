@@ -54,3 +54,4 @@ full functionality of this program can be explored.
 * Add front end functionality to add files to an order object
 * Add back end functionality to upload the files in an order 
 * Make the CSS positioning grid based
+* Rename file data model to something clearer
