@@ -1,14 +1,18 @@
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, UploadFile, File, Form
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import UnmappedInstanceError
 
+from typing import Annotated
+from pathlib import Path
 
 from Skatertron.models.file import File as FileDBModel
 from Skatertron.schemas.file import File as FileSchema
 from Skatertron.database import get_db_session
+
+import shutil
 
 router = APIRouter(
     prefix="/files",
@@ -19,18 +23,32 @@ router = APIRouter(
 templates = Jinja2Templates(directory="templates")
 
 
-# TODO: add file_path data to all endpoints
-# TODO: add file_type (video||photo) data to all endpoints
+@router.post("/{skate_id}", status_code=201, response_class=HTMLResponse)
+def create_file(request: Request,
+                skate_id: int,
+                competition: str = "TEST",
+                event: str = "Test Test",
+                skater: str = "Sarah Testes",
+                uploaded_file: UploadFile = File(...)
+                ):
 
-@router.post("/", status_code=201, response_class=HTMLResponse)
-def create_file(file_schema: FileSchema, request: Request):
+    path = Path(f"files/{competition} - {event} - {skater} - {uploaded_file.filename}")
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    with open(path, 'wb') as file:
+        shutil.copyfileobj(uploaded_file.file, file)
+
     try:
-        file = FileDBModel(skate_id=file_schema.skate_id,
-                           file_name=file_schema.file_name
+        file = FileDBModel(skate_id=skate_id,
+                           file_name=f"{skater} - {uploaded_file.filename}",
+                           file_path=f"files/{competition}/{event}/{skater}/",
+                           file_type=uploaded_file.content_type
                            )
+
         with get_db_session().__next__() as session:
             session.add(file)
             session.commit()
+
         return templates.TemplateResponse(
             request=request,
             name="file.html",

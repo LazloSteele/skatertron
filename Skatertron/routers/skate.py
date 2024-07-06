@@ -43,6 +43,7 @@ def create_skate(event_id: Annotated[int, Form()],
     except IntegrityError:
         raise HTTPException(422, "Missing data from skate model.")
 
+
 @router.get("/", response_model=list[SkateSchema])
 def get_all_skates():
     all_skates = get_db_session().__next__().query(SkateDBModel).all()

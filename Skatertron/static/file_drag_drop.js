@@ -22,17 +22,19 @@ dropzone.addEventListener('drop', function (e) {
 
         if (file && (file.type.startsWith('image/') || file.type.startsWith('video/'))) {
 
-            file_json = {
-                skate_id: 1,
-                file_name: file.name,
-            };
+            var formData = new FormData();
+            formData.append('uploaded_file', file);
+            formData.append('skate_id', 1);
+            formData.append('competition', "testyyyy");
+            formData.append('event', "testyyyy");
+            formData.append('skater', "testyyyy");
 
             fetch('/files/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(file_json),
+                body: formData,
                 }
             )
 

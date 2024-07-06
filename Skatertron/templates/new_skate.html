@@ -5,8 +5,9 @@
         id="skate_tree_item_{{ skate.id }}"
         hx-get="/files/files_by_skate/{{ skate.id }}"
         hx-target=".FileBrowser"
-        hx-swap="innerHTML"
+        hx-swap="outerHTML"
 >
-    {{skate.skater_name}}</sl-tree-item>
+    {{skate.skater_name}}
+</sl-tree-item>
 
 {% endblock %}

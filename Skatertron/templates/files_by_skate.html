@@ -1,9 +1,50 @@
 {% block FilesBySkate %}
+<div
+        class="FileBrowserFrame"
+        id="FileBrowserFrame"
+>
+    <form id='file_upload_form {{ current_skate_id }}'
+          hx-encoding='multipart/form-data'
+          hx-post='/files/{{ current_skate_id }}'
+          hx-swap="none"
+          _='on htmx:xhr:progress(loaded, total) set #progress.value to (loaded/total)*100'>
+        <label for="file_upload {{ current_skate_id }}">
+            Upload Files:
+        </label>
+        <input type="file"
+               id="file_upload {{ current_skate_id }}"
+               name="uploaded_file"
+               accept="image/*, video/*"
+        />
+        <button>
+            Upload
+        </button>
+        <progress id='progress' value='0' max='100'></progress>
+    </form>
+    <button hx-get="/files/files_by_skate/{{ current_skate_id }}"
+            hx-target=".FileBrowser"
+            hx-swap="outerHTML">
+        Refresh!
+    </button>
+    <sl-tree class="FileBrowser" id="FileBrowser" >
 
-<!-- TODO: add separate view for video/photo -->
+        <sl-tree-item>
+            Video
+            {% for file in files_list %}
+                {% if "video" in file.file_type %}
+                    {% include 'file.html' %}
+                {% endif %}
+            {% endfor %}
+        </sl-tree-item>
 
-{% for file in files_list %}
-{% include 'file.html' %}
-{% endfor %}
-
+        <sl-tree-item>
+            Photo
+            {% for file in files_list %}
+                {% if "image" in file.file_type %}
+                    {% include 'file.html' %}
+                {% endif %}
+            {% endfor %}
+        </sl-tree-item>
+    </sl-tree>
+</div>
 {% endblock %}
