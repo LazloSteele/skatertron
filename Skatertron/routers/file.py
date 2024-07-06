@@ -1,11 +1,10 @@
-from fastapi import APIRouter, HTTPException, Request, UploadFile, File, Form
+from fastapi import APIRouter, HTTPException, Request, UploadFile, File
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import UnmappedInstanceError
 
-from typing import Annotated
 from pathlib import Path
 
 from Skatertron.models.file import File as FileDBModel
@@ -23,6 +22,7 @@ router = APIRouter(
 templates = Jinja2Templates(directory="templates")
 
 
+# TODO: somehow get competition, event, and skater name into this endpoint...
 @router.post("/{skate_id}", status_code=201, response_class=HTMLResponse)
 def create_file(request: Request,
                 skate_id: int,
