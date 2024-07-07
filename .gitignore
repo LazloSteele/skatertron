@@ -25,3 +25,4 @@ secret/
 /Skatertron/.env
 /.idea/
 /Skatertron/files/
+/Skatertron/static/media/

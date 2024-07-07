@@ -32,8 +32,9 @@ def create_file(request: Request,
                 skater: Annotated[str, Form()],
                 uploaded_file: UploadFile = File(...)
                 ):
-
-    path = Path(f"files/{competition} - {event} - {skater} - {uploaded_file.filename}")
+    file_name = f"{competition}-{event}-{skater}-{uploaded_file.filename}".replace(" ","")
+    file_path = "static/media/"
+    path = Path(f"{file_path}{file_name}")
     path.parent.mkdir(parents=True, exist_ok=True)
 
     with open(path, 'wb') as file:
@@ -41,8 +42,8 @@ def create_file(request: Request,
 
     try:
         file = FileDBModel(skate_id=skate_id,
-                           file_name=f"{competition} - {event} - {skater} - {uploaded_file.filename}",
-                           file_path=f"files/",
+                           file_name=file_name,
+                           file_path=file_path,
                            file_type=uploaded_file.content_type
                            )
 
@@ -80,19 +81,31 @@ def get_file_by_id(file_id: int):
         raise HTTPException(404, f"File with id #{file_id} not found.")
 
 
-@router.get("/stream/{file_id}")
-def preview_file_by_id(file_id: int):
+@router.get("/{file_id}/media", response_class=HTMLResponse)
+def preview_file_by_id(file_id: int, request: Request):
     try:
         with get_db_session().__next__() as session:
             file = session.query(FileDBModel).filter_by(id=file_id).first()
-            path = f"./{file.file_path}{file.file_name}"
+            path = f"{file.file_path}{file.file_name}"
 
             def iterfile():
                 with open(path, mode="rb") as file_like:
                     yield from file_like
 
-            return StreamingResponse(iterfile().__next__())
+            '''
+            # noinspection PyTypeChecker
+            return StreamingResponse(iterfile(), media_type=file.file_type)
+            '''
+            return templates.TemplateResponse(
+                request=request,
+                name="media_player.html",
+                context={
+                    "path": path,
+                    "file_type": file.file_type,
+                    "file_name": file.file_name
+                }
 
+            )
     except IntegrityError:
         raise HTTPException(404, f"File with id #{file_id} not found.")
 

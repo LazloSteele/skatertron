@@ -55,7 +55,7 @@
 .MediaPlayer {
     position fixed;
     margin-top: 1.5%;
-    margin-left: 25%;
+    margin-left: 15%;
     z-index:-1;
     }
 .FileBrowserFrame {

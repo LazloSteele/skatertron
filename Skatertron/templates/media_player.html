@@ -1,7 +1,17 @@
 {% block MediaPlayer %}
 
             <div class="MediaPlayer">
-                <iframe width="560" height="315" src="https://www.youtube.com/embed/O5O3yK8DJCc?si=Ni3dJBwcHeZJqz_O" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                {% if "video" in file_type %}
+                <video width="560" height="315" controls>
+                    <source src="{{ url_for('static', path='media/' ~file_name) }}" type="{{ file_type }}">
+                </video>
+                {% endif %}
+                {% if "image" in file_type %}
+                 <img src="{{ url_for('static', path='media/' ~file_name) }}"
+                      alt="Skating Photo {{ file_name }}"
+                      height="315"
+                 >
+                {% endif %}
             </div>
 
 {% endblock %}
