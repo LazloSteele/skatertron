@@ -9,6 +9,9 @@ from sqlalchemy.orm.exc import UnmappedInstanceError
 
 from Skatertron.models.skate import Skate as SkateDBModel
 from Skatertron.schemas.skate import Skate as SkateSchema
+from Skatertron.models.event import Event as EventDBModel
+from Skatertron.models.competition import Competition as CompetitionDBModel
+from Skatertron.models.file import File as FileDBModel
 from Skatertron.database import get_db_session
 
 router = APIRouter(
@@ -44,13 +47,6 @@ def create_skate(event_id: Annotated[int, Form()],
         raise HTTPException(422, "Missing data from skate model.")
 
 
-@router.get("/", response_model=list[SkateSchema])
-def get_all_skates():
-    all_skates = get_db_session().__next__().query(SkateDBModel).all()
-
-    return all_skates
-
-
 @router.get("/{skate_id}", response_model=SkateSchema)
 def get_skate_by_id(skate_id: int):
     try:
@@ -62,22 +58,28 @@ def get_skate_by_id(skate_id: int):
         raise HTTPException(404, f"Skate with id #{skate_id} not found.")
 
 
-@router.get("/get_skates_by_event_id/{event_id}", response_class=HTMLResponse)
-def get_skates_by_event_id(event_id: int, request: Request):
+@router.get("/{skate_id}/files", response_class=HTMLResponse)
+def get_files_by_skate_id(request: Request, skate_id: int):
     try:
         with get_db_session().__next__() as session:
-            skates = session.query(SkateDBModel).filter_by(event_id=event_id).all()
+            files_list = session.query(FileDBModel).filter_by(skate_id=skate_id).all()
+            current_skate = get_skate_by_id(skate_id)
+            current_event = session.query(EventDBModel).filter_by(id=current_skate.event_id).first()
+            current_competition = session.query(CompetitionDBModel).filter_by(id=current_event.competition_id).first()
 
-            return templates.TemplateResponse(
-                request=request,
-                name="skates_by_event.html",
-                context={
-                    "current_event_id": event_id,
-                    "skates_list": skates
-                }
-            )
+        return templates.TemplateResponse(
+            request=request,
+            name="files_by_skate.html",
+            context={
+                "files_list": files_list,
+                "current_skate": current_skate,
+                "current_event": current_event,
+                "current_competition": current_competition
+            }
+        )
+
     except IntegrityError:
-        raise HTTPException(404, f"Event with id #{event_id} not found.")
+        raise HTTPException(404, f"Skate with id #{skate_id} not found.")
 
 
 @router.put("/{skate_id}")

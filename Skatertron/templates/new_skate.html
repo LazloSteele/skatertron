@@ -3,7 +3,7 @@
 <sl-tree-item
         class="skate_tree_item"
         id="skate_tree_item_{{ skate.id }}"
-        hx-get="/files/files_by_skate/{{ skate.id }}"
+        hx-get="/skates/{{ skate.id }}/files"
         hx-target=".FileBrowser"
         hx-swap="outerHTML"
 >

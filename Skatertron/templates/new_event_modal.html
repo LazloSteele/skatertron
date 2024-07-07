@@ -7,7 +7,7 @@
             <input type="text" id="event_number" name="event_number" autocomplete="off"/><br>
             <label for="event_name">Event Name: </label><br>
             <input type="text" id="event_name" name="event_name" autocomplete="off"/><br>
-            <input type="hidden" name="competition_id" value={{ current_competition_id }}>
+            <input type="hidden" name="competition_id" value={{ current_competition.id }}>
 
             <button
                     hx-post="/events/"

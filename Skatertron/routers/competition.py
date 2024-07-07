@@ -7,6 +7,7 @@ from fastapi.responses import HTMLResponse
 
 from Skatertron.models.competition import Competition as CompetitionDBModel
 from Skatertron.schemas.competition import Competition as CompetitionSchema
+from Skatertron.models.event import Event as EventDBModel
 from Skatertron.database import get_db_session
 
 router = APIRouter(
@@ -62,6 +63,21 @@ def get_competition_by_id(competition_id: int):
             return competition
     except IntegrityError:
         raise HTTPException(404, f"Competition with id#{competition_id} not found.")
+
+
+@router.get("/{competition_id}/events/", response_class=HTMLResponse)
+def get_events_by_competition_id(competition_id: int, request: Request):
+    with get_db_session().__next__() as session:
+        events_list = session.query(EventDBModel).filter_by(competition_id=competition_id).all()
+        current_competition = get_competition_by_id(competition_id)
+
+    return templates.TemplateResponse(
+        request=request,
+        name="events_by_competition.html",
+        context={
+            "events_list": events_list,
+            "current_competition": current_competition
+        })
 
 
 @router.put("/{competition_id}")

@@ -1,11 +1,12 @@
-from fastapi import APIRouter, HTTPException, Request, UploadFile, File
-from fastapi.responses import HTMLResponse
+from fastapi import APIRouter, HTTPException, Request, UploadFile, File, Form
+from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import UnmappedInstanceError
 
 from pathlib import Path
+from typing import Annotated
 
 from Skatertron.models.file import File as FileDBModel
 from Skatertron.schemas.file import File as FileSchema
@@ -26,9 +27,9 @@ templates = Jinja2Templates(directory="templates")
 @router.post("/{skate_id}", status_code=201, response_class=HTMLResponse)
 def create_file(request: Request,
                 skate_id: int,
-                competition: str = "TEST",
-                event: str = "Test Test",
-                skater: str = "Sarah Testes",
+                competition: Annotated[str, Form()],
+                event: Annotated[str, Form()],
+                skater: Annotated[str, Form()],
                 uploaded_file: UploadFile = File(...)
                 ):
 
@@ -40,8 +41,8 @@ def create_file(request: Request,
 
     try:
         file = FileDBModel(skate_id=skate_id,
-                           file_name=f"{skater} - {uploaded_file.filename}",
-                           file_path=f"files/{competition}/{event}/{skater}/",
+                           file_name=f"{competition} - {event} - {skater} - {uploaded_file.filename}",
+                           file_path=f"files/",
                            file_type=uploaded_file.content_type
                            )
 
@@ -75,6 +76,23 @@ def get_file_by_id(file_id: int):
             file = session.query(FileDBModel).filter_by(id=file_id).first()
 
             return file
+    except IntegrityError:
+        raise HTTPException(404, f"File with id #{file_id} not found.")
+
+
+@router.get("/stream/{file_id}")
+def preview_file_by_id(file_id: int):
+    try:
+        with get_db_session().__next__() as session:
+            file = session.query(FileDBModel).filter_by(id=file_id).first()
+            path = f"./{file.file_path}{file.file_name}"
+
+            def iterfile():
+                with open(path, mode="rb") as file_like:
+                    yield from file_like
+
+            return StreamingResponse(iterfile().__next__())
+
     except IntegrityError:
         raise HTTPException(404, f"File with id #{file_id} not found.")
 

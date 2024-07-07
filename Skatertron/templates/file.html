@@ -1,5 +1,10 @@
 {% block File %}
 
-<sl-tree-item>{{ file.file_name }}</sl-tree-item>
+<sl-tree-item
+        hx-get="/files/stream/{{ file.id }}"
+        hx-target=".MediaPlayer"
+>
+    {{ file.file_name }}
+</sl-tree-item>
 
 {% endblock %}

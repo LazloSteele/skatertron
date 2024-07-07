@@ -9,6 +9,8 @@ from typing import Annotated
 
 from Skatertron.models.event import Event as EventDBModel
 from Skatertron.schemas.event import Event as EventSchema
+from Skatertron.models.skate import Skate as SkateDBModel
+from Skatertron.models.competition import Competition as CompetitionDBModel
 from Skatertron.database import get_db_session
 
 
@@ -39,34 +41,13 @@ def create_event(event_name: Annotated[str, Form()],
             request=request,
             name="new_event.html",
             context={
+                "current_competition": competition_id,
                 "event": event
             }
         )
 
     except IntegrityError:
         raise HTTPException(422, "Missing data from event model.")
-
-
-
-@router.get("/", response_model=list[EventSchema])
-def get_all_events():
-    all_events = get_db_session().__next__().query(EventDBModel).all()
-
-    return all_events
-
-
-@router.get("/by_competition/{competition_id}", response_class=HTMLResponse)
-def get_events_by_competition_id(request: Request, competition_id: int):
-    with get_db_session().__next__() as session:
-        events_list = session.query(EventDBModel).filter_by(competition_id=competition_id).all()
-
-    return templates.TemplateResponse(
-        request=request,
-        name="events_by_competition.html",
-        context={
-            "events_list": events_list,
-            "current_competition_id": competition_id
-        })
 
 
 @router.get("/{event_id}", response_model=EventSchema)
@@ -76,6 +57,28 @@ def get_event_by_id(event_id: int):
             event = session.query(EventDBModel).filter_by(id=event_id).first()
 
             return event
+    except IntegrityError:
+        raise HTTPException(404, f"Event with id #{event_id} not found.")
+
+
+@router.get("/{event_id}/skates/", response_class=HTMLResponse)
+def get_skates_by_event_id(event_id: int, request: Request):
+    try:
+        with get_db_session().__next__() as session:
+            skates = session.query(SkateDBModel).filter_by(event_id=event_id).all()
+
+            current_event = get_event_by_id(event_id)
+            current_competition = session.query(CompetitionDBModel).filter_by(id=current_event.competition_id)
+
+            return templates.TemplateResponse(
+                request=request,
+                name="skates_by_event.html",
+                context={
+                    "current_competition": current_competition,
+                    "current_event": current_event,
+                    "skates_list": skates
+                }
+            )
     except IntegrityError:
         raise HTTPException(404, f"Event with id #{event_id} not found.")
 
