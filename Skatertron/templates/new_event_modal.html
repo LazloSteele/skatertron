@@ -2,6 +2,23 @@
 <!-- TODO: Add pdf_scraper functionality to the new event, including bulk pdf scraping -->
     <dialog id="new_event_modal">
         <h1>New Event</h1>
+        <form
+                hx-post="/events/pdf_scraper"
+                hx-trigger="submit"
+                hx-target="#EventsList"
+                hx-swap="beforeend"
+                hx-encoding="multipart/form-data"
+        >
+            <label for="event_type">IJS/6.0: </label><br>
+            <input type="text" id="event_type" name="event_type" autocomplete="off"/><br>
+            <label for="pdf_file">Load PDF: </label><br>
+            <input type="file" id="pdf_file" name="pdf_file" autocomplete="off" accept="application/pdf" required multiple/><br>
+            <input type="hidden" name="competition_id" value={{ current_competition.id }}>
+
+            <button type="submit">
+                By PDF!
+            </button>
+        </form>
         <form>
             <label for="event_number">Event Number: </label><br>
             <input type="text" id="event_number" name="event_number" autocomplete="off"/><br>

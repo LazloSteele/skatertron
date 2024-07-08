@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Request, Form
+from fastapi import APIRouter, HTTPException, Request, Form, File, UploadFile
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 
@@ -12,6 +12,7 @@ from Skatertron.schemas.event import Event as EventSchema
 from Skatertron.models.skate import Skate as SkateDBModel
 from Skatertron.models.competition import Competition as CompetitionDBModel
 from Skatertron.database import get_db_session
+from Skatertron.utils.pdf_scraper import PDFScraper
 
 
 router = APIRouter(
@@ -36,6 +37,43 @@ def create_event(event_name: Annotated[str, Form()],
         with get_db_session().__next__() as session:
             session.add(event)
             session.commit()
+
+        return templates.TemplateResponse(
+            request=request,
+            name="new_event.html",
+            context={
+                "current_competition": competition_id,
+                "event": event
+            }
+        )
+
+    except IntegrityError:
+        raise HTTPException(422, "Missing data from event model.")
+
+
+@router.post("/pdf_scraper", status_code=201, response_class=HTMLResponse)
+def create_event_by_pdf(request: Request,
+                        event_type: Annotated[str, Form()],
+                        competition_id: Annotated[int, Form()],
+                        pdf_file: UploadFile = File(...)
+                        ):
+    event = PDFScraper.stage_pdf(pdf_file, event_type)
+
+    try:
+        event = EventDBModel(event_name=event.event_name,
+                             event_number=event.event_number,
+                             competition_id=competition_id
+                             )
+
+        with get_db_session().__next__() as session:
+            session.add(event)
+            session.commit()
+
+        for skater in event.skaters:
+            skate = SkateDBModel(event_id=event.id, skater_name=skater)
+            with get_db_session().__next__() as session:
+                session.add(skate)
+                session.commit()
 
         return templates.TemplateResponse(
             request=request,

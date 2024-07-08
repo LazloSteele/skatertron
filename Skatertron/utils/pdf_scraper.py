@@ -51,8 +51,8 @@ class PDFScraper(object):
                 raise ValueError('Not a valid event type')
 
             event = {
-                'num': event_number,
-                'name': event_name,
+                'event_number': event_number,
+                'event_name': event_name,
                 'skaters': skaters
             }
 
