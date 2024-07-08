@@ -23,7 +23,6 @@ router = APIRouter(
 templates = Jinja2Templates(directory="templates")
 
 
-# TODO: somehow get competition, event, and skater name into this endpoint...
 @router.post("/", status_code=201, response_class=HTMLResponse)
 def create_file(competition: Annotated[str, Form()],
                 event: Annotated[str, Form()],
@@ -38,20 +37,8 @@ def create_file(competition: Annotated[str, Form()],
     path = Path(f"{file_path}{file_name}")
     path.parent.mkdir(parents=True, exist_ok=True)
 
-    print('''
-
-    THE EAGLE HAS LANDED!!!!
-
-    ''')
-
     with open(path, 'wb') as file:
         shutil.copyfileobj(uploaded_file.file, file)
-
-    print('''
-
-    THE EAGLE HAS COPIED!!!!
-
-    ''')
 
     try:
         file = FileDBModel(skate_id=int(skate_id),
