@@ -56,39 +56,44 @@ def create_event(event_name: Annotated[str, Form()],
 def create_event_by_pdf(request: Request,
                         event_type: Annotated[str, Form()],
                         competition_id: Annotated[int, Form()],
-                        pdf_file: UploadFile = File(...)
+                        pdf_file_list: list[UploadFile] = File(...)
                         ):
-    content = BytesIO(pdf_file.file.read())
-    print(content)
-    event_scraped = PDFScraper.stage_pdf(content, event_type)
+    for pdf_file in pdf_file_list:
+        content = BytesIO(pdf_file.file.read())
+        print(content)
+        event_scraped = PDFScraper.stage_pdf(content, event_type)
 
-    try:
-        event = EventDBModel(event_name=event_scraped["event_name"],
-                             event_number=event_scraped["event_number"],
-                             competition_id=competition_id
-                             )
+        try:
+            event = EventDBModel(event_name=event_scraped["event_name"],
+                                 event_number=event_scraped["event_number"],
+                                 competition_id=competition_id
+                                 )
 
-        with get_db_session().__next__() as session:
-            session.add(event)
-            session.commit()
-
-        for skater in event_scraped["skaters"]:
-            skate = SkateDBModel(event_id=event.id, skater_name=skater)
             with get_db_session().__next__() as session:
-                session.add(skate)
+                session.add(event)
                 session.commit()
 
-        return templates.TemplateResponse(
-            request=request,
-            name="new_event.html",
-            context={
-                "current_competition": competition_id,
-                "event": event
-            }
-        )
+            for skater in event_scraped["skaters"]:
+                skate = SkateDBModel(event_id=event.id, skater_name=skater)
+                with get_db_session().__next__() as session:
+                    session.add(skate)
+                    session.commit()
 
-    except IntegrityError:
-        raise HTTPException(422, "Missing data from event model.")
+        except IntegrityError:
+            raise HTTPException(422, "Missing data from event model.")
+
+    with get_db_session().__next__() as session:
+        events_list = session.query(EventDBModel).filter_by(competition_id=competition_id).all()
+        current_competition = session.query(CompetitionDBModel).filter_by(id=competition_id).first()
+
+    return templates.TemplateResponse(
+        request=request,
+        name="events_by_competition.html",
+        context={
+            "events_list": events_list,
+            "current_competition": current_competition
+        }
+    )
 
 
 @router.get("/{event_id}", response_model=EventSchema)

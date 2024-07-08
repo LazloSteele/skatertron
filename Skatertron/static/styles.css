@@ -70,6 +70,7 @@
     margin-bottom: 5px;
     background-color: #846347;
     z-index:100;
+    overflow-y: scroll;
     }
 .CurrentOrder {
     position: fixed;
