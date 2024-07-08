@@ -1,6 +1,3 @@
-// Get the drop zone element
-const dropzone = document.getElementById('FileBrowserFrame');
-
 dropzone.addEventListener('dragover', function (e) {
     e.preventDefault();
     dropzone.classList.add('drag-over');
