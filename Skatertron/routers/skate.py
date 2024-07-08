@@ -58,6 +58,30 @@ def get_skate_by_id(skate_id: int):
         raise HTTPException(404, f"Skate with id #{skate_id} not found.")
 
 
+@router.get("/{skate_id}/details", response_class=HTMLResponse)
+def get_context_by_skate_id(skate_id: int, request: Request):
+    try:
+        with get_db_session().__next__() as session:
+            files_list = session.query(FileDBModel).filter_by(skate_id=skate_id).all(),
+            current_skate = get_skate_by_id(skate_id)
+            current_event = session.query(EventDBModel).filter_by(id=current_skate.event_id).first()
+            current_competition = session.query(CompetitionDBModel).filter_by(id=current_event.competition_id).first()
+
+        return templates.TemplateResponse(
+            request=request,
+            name="file_browser_context.html",
+            context={
+                "skate_id": skate_id,
+                "current_skate": current_skate.skater_name,
+                "current_event": f"{current_event.event_number} {current_event.event_name}",
+                "current_competition": f"{current_competition.competition_year} {current_competition.competition_name}"
+            }
+        )
+
+    except IntegrityError:
+        raise HTTPException(404, f"Skate with id #{skate_id} not found.")
+
+
 @router.get("/{skate_id}/files", response_class=HTMLResponse)
 def get_files_by_skate_id(request: Request, skate_id: int):
     try:

@@ -23,17 +23,17 @@ dropzone.addEventListener('drop', function (e) {
         if (file && (file.type.startsWith('image/') || file.type.startsWith('video/'))) {
 
             var formData = new FormData();
+            formData.append('skate_id', skate_id);
+            formData.append('competition', current_competition);
+            formData.append('event', current_event);
+            formData.append('skater', current_skate);
             formData.append('uploaded_file', file);
-            formData.append('skate_id', 1);
-            formData.append('competition', "testyyyy");
-            formData.append('event', "testyyyy");
-            formData.append('skater', "testyyyy");
+
+
+            console.log(formData)
 
             fetch('/files/', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
                 body: formData,
                 }
             )
@@ -60,7 +60,7 @@ dropzone.addEventListener('drop', function (e) {
         else {
         throw new Error('Not a valid video or photo file.');
         return;
-    };
+        };
     }
 
 });

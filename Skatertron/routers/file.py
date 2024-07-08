@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Request, UploadFile, File, Form
-from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 from sqlalchemy.exc import IntegrityError
@@ -24,24 +24,37 @@ templates = Jinja2Templates(directory="templates")
 
 
 # TODO: somehow get competition, event, and skater name into this endpoint...
-@router.post("/{skate_id}", status_code=201, response_class=HTMLResponse)
-def create_file(request: Request,
-                skate_id: int,
-                competition: Annotated[str, Form()],
+@router.post("/", status_code=201, response_class=HTMLResponse)
+def create_file(competition: Annotated[str, Form()],
                 event: Annotated[str, Form()],
                 skater: Annotated[str, Form()],
+                skate_id: Annotated[str, Form()],
+                request: Request,
                 uploaded_file: UploadFile = File(...)
                 ):
-    file_name = f"{competition}-{event}-{skater}-{uploaded_file.filename}".replace(" ","")
+
+    file_name = f"{competition} - {event} - {skater} - {uploaded_file.filename}"
     file_path = "static/media/"
     path = Path(f"{file_path}{file_name}")
     path.parent.mkdir(parents=True, exist_ok=True)
 
+    print('''
+
+    THE EAGLE HAS LANDED!!!!
+
+    ''')
+
     with open(path, 'wb') as file:
         shutil.copyfileobj(uploaded_file.file, file)
 
+    print('''
+
+    THE EAGLE HAS COPIED!!!!
+
+    ''')
+
     try:
-        file = FileDBModel(skate_id=skate_id,
+        file = FileDBModel(skate_id=int(skate_id),
                            file_name=file_name,
                            file_path=file_path,
                            file_type=uploaded_file.content_type
@@ -82,15 +95,11 @@ def get_file_by_id(file_id: int):
 
 
 @router.get("/{file_id}/media", response_class=HTMLResponse)
-def preview_file_by_id(file_id: int, request: Request):
+def get_media_by_id(file_id: int, request: Request):
     try:
         with get_db_session().__next__() as session:
             file = session.query(FileDBModel).filter_by(id=file_id).first()
             path = f"{file.file_path}{file.file_name}"
-
-            def iterfile():
-                with open(path, mode="rb") as file_like:
-                    yield from file_like
 
             '''
             # noinspection PyTypeChecker

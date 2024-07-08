@@ -2,8 +2,11 @@
 <div
         class="FileBrowserFrame"
         id="FileBrowserFrame"
+        hx-get="/skates/{{ current_skate.id }}/details"
+        hx-target=".FileBrowserFrame"
+        hx-swap="afterend"
+        hx-trigger="load"
 >
-
 
     <!-- TODO: add functionality for multi file upload -->
     <form id='file_upload_form {{ current_skate.id }}'
