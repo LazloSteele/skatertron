@@ -6,6 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import UnmappedInstanceError
 
 from typing import Annotated
+from io import BytesIO
 
 from Skatertron.models.event import Event as EventDBModel
 from Skatertron.schemas.event import Event as EventSchema
@@ -57,11 +58,13 @@ def create_event_by_pdf(request: Request,
                         competition_id: Annotated[int, Form()],
                         pdf_file: UploadFile = File(...)
                         ):
-    event = PDFScraper.stage_pdf(pdf_file, event_type)
+    content = BytesIO(pdf_file.file.read())
+    print(content)
+    event_scraped = PDFScraper.stage_pdf(content, event_type)
 
     try:
-        event = EventDBModel(event_name=event.event_name,
-                             event_number=event.event_number,
+        event = EventDBModel(event_name=event_scraped["event_name"],
+                             event_number=event_scraped["event_number"],
                              competition_id=competition_id
                              )
 
@@ -69,7 +72,7 @@ def create_event_by_pdf(request: Request,
             session.add(event)
             session.commit()
 
-        for skater in event.skaters:
+        for skater in event_scraped["skaters"]:
             skate = SkateDBModel(event_id=event.id, skater_name=skater)
             with get_db_session().__next__() as session:
                 session.add(skate)
