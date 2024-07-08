@@ -62,7 +62,6 @@ def get_skate_by_id(skate_id: int):
 def get_context_by_skate_id(skate_id: int, request: Request):
     try:
         with get_db_session().__next__() as session:
-            files_list = session.query(FileDBModel).filter_by(skate_id=skate_id).all(),
             current_skate = get_skate_by_id(skate_id)
             current_event = session.query(EventDBModel).filter_by(id=current_skate.event_id).first()
             current_competition = session.query(CompetitionDBModel).filter_by(id=current_event.competition_id).first()
