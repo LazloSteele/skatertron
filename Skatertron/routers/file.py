@@ -35,12 +35,12 @@ def create_file(competition: Annotated[str, Form()],
     file_name = f"{competition} - {event} - {skater} - {uploaded_file.filename}"
     file_path = f"static/media/{competition}/{event}/"
     path = Path(f"{file_path}{file_name}")
-    path.parent.mkdir(parents=True, exist_ok=True)
-
-    with open(path, 'wb') as file:
-        shutil.copyfileobj(uploaded_file.file, file)
 
     try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+
+        file_uploaded = False
+
         file = FileDBModel(skate_id=int(skate_id),
                            file_name=file_name,
                            file_path=file_path,
@@ -51,6 +51,11 @@ def create_file(competition: Annotated[str, Form()],
             session.add(file)
             session.commit()
 
+        with open(path, 'wb') as file:
+            shutil.copyfileobj(uploaded_file.file, file)
+            file_uploaded = True
+
+        #TODO: trigger message upon file upload to change status to uploaded, spinner while uploaded!=True
         return templates.TemplateResponse(
             request=request,
             name="file.html",

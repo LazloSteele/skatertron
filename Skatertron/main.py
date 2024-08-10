@@ -4,7 +4,6 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from routers import competition, event, skate, file
 import uvicorn
-import os
 
 # this is the app
 app = FastAPI(title="Skatertron", docs_url="/api/docs")

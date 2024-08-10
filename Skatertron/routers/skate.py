@@ -101,6 +101,7 @@ def get_files_by_skate_id(request: Request, skate_id: int):
             }
         )
 
+    #TODO: more and better error handling plz
     except IntegrityError:
         raise HTTPException(404, f"Skate with id #{skate_id} not found.")
 

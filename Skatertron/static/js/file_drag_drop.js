@@ -55,8 +55,8 @@ dropzone.addEventListener('drop', function (e) {
         }
 
         else {
-        throw new Error('Not a valid video or photo file.');
-        return;
+            throw new Error('Not a valid video or photo file.');
+            return;
         };
     }
 

@@ -7,13 +7,13 @@
         hx-swap="afterend"
         hx-trigger="load"
 >
+    <sl-tree class="FileBrowser" id="FileBrowser" >
+    <h3>{{ current_skate.skater_name }}</h3>
     <button hx-get="/skates/{{ current_skate.id }}/files"
             hx-target=".FileBrowser"
             hx-swap="outerHTML">
         Refresh!
     </button>
-    <sl-tree class="FileBrowser" id="FileBrowser" >
-
         <sl-tree-item>
             Video
             {% for file in files_list %}
