@@ -24,6 +24,5 @@ class MQWorker:
 
 
 if __name__ == "__main__":
-    with pika.BlockingConnection(pika.ConnectionParameters(host='localhost')) as connection:
-        worker = MQWorker(connection)
-
+    with pika.BlockingConnection(pika.ConnectionParameters(host='localhost')) as my_connection:
+        worker = MQWorker(my_connection)
