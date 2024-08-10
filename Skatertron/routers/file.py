@@ -33,7 +33,7 @@ def create_file(competition: Annotated[str, Form()],
                 ):
 
     file_name = f"{competition} - {event} - {skater} - {uploaded_file.filename}"
-    file_path = "static/media/"
+    file_path = f"static/media/{competition}/{event}/"
     path = Path(f"{file_path}{file_name}")
     path.parent.mkdir(parents=True, exist_ok=True)
 

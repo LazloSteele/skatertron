@@ -1,94 +1,74 @@
 #new_competition_modal {
-    position:absolute;
+    position: absolute;
+    z-index: 100;
 }
 #new_event_modal {
     position:absolute;
-    z-index: 1;
+    z-index: 3;
 }
 .new_skate_modal {
     position:absolute;
-    z-index: 1;
+    z-index: 3;
 }
 .CompetitionBrowser {
+    grid-column: 1/4;
+    grid-row: 1;
     background-color: #846347;
-    position: fixed;
-    height: 5%;
-    top: 5px;
-    left: 5px;
-    right: 5px;
     z-index: 1;
     }
 .AppFrame {
-        border: 5px outset #214F59;
-        position:fixed;
-        top:0;
-        bottom:0;
-        left:0;
-        right:0;
-        z-index:-1;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 2rem 1fr 1fr;
+    min-height: 98vh;
+    max-height: 98vh;
+    z-index:-100;
     }
 .EventBrowser {
+    grid-column: 1;
+    grid-row: 2/4;
     background-color: #D9D1CA;
-    position: fixed;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    margin-right: 5px;
-    top: 5%;
-    bottom: 0;
-    width: 20%;
     overflow-y:auto;
-    z-index:-1;
+    z-index:1;
+    resize: horizontal;
     }
+
+.ModalButton {
+    grid-column: 2;
+    grid-row: 1;
+    z-index: 2;
+}
+
+sl-tree-item:hover {
+    background-color: Yellow;
+    color: Black;
+}
 .SkateMediaFrame {
+    grid-column: 2/4;
+    grid-row: 2;
     background-color: #5F8E99;
-    position: fixed;
-    left: 20%;
-    right: 0%;
-    top: 5%;
-    bottom: 45%;
-    margin-left: 5px;
-    margin-top: 5px;
-    margin-right: 5px;
-    margin-bottom: 5px;
-    z-index:-1;
-    }
+    z-index:1;
+}
 .MediaPlayer {
-    position fixed;
-    margin-top: 1.5%;
-    margin-left: 15%;
-    z-index:-1;
+    z-index:2;
     }
 .FileBrowserFrame {
-    position: fixed;
-    top: 53.63%;
-    bottom: 0;
-    left: 20%;
-    right: 40%;
-    margin-top: 5px;
-    margin-left: 5px;
-    margin-right: 5px;
-    margin-bottom: 5px;
+    grid-row: 3;
+    grid-column: 2;
     background-color: #846347;
-    z-index:100;
+    z-index:1;
     overflow-y: scroll;
     }
 .CurrentOrder {
-    position: fixed;
+    grid-row: 3;
+    grid-column: 3;
     background-color: #D9D1CA;
-    top: 53.63%;
-    bottom: 0;
-    left: 59.387%;
-    right: 0;
-    margin-top: 5px;
-    margin-left: 5px;
-    margin-right: 5px;
-    margin-bottom: 5px;
-    z-index:-1;
+    z-index:1;
 }
 sl-tree {
     font-size: 1rem;
-    z-index:-1;
+    z-index:1;
 }
 .drag-over {
-    background-color: #000000;
+    background-color: #D9D1CA;
 }

@@ -3,11 +3,11 @@
             <div class="MediaPlayer">
                 {% if "video" in file_type %}
                 <video width="560" height="315" controls>
-                    <source src="{{ url_for('static', path='media/' ~file_name) }}" type="{{ file_type }}">
+                    <source src="{{ url_for('static', path='media/' ~path) }}" type="{{ file_type }}">
                 </video>
                 {% endif %}
                 {% if "image" in file_type %}
-                 <img src="{{ url_for('static', path='media/' ~file_name) }}"
+                 <img src="{{ url_for('static', path='media/' ~path) }}"
                       alt="Skating Photo {{ file_name }}"
                       height="315"
                  >

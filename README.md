@@ -15,10 +15,8 @@ The aim of this project is to help my client, a high volume sports media company
 This project makes use of the following languages and packages:
 * Python version: 3.10.2
     * psycopg2 version: 2.9.8 
-    * SQLAlchemy version: 2.0.21 
-    * Tkinter version: 8.6
+    * SQLAlchemy version: 2.0.21
     * pdfminer version: 20221105
-    * Hypothesis version: 6.87.0
     * alembic version: 1.13.1 
     * pydantic version: 2.5.3 
     * fastapi version: 0.109.1 
