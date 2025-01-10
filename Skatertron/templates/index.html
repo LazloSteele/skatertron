@@ -33,16 +33,22 @@
 
 <body>
 <div class="AppFrame" id="AppFrame">
+
     <div class="CompetitionBrowser">
-        <select name="Load Competition" id="Competition-Select"
-                hx-target="#EventBrowser"
-                autocomplete="off"
-        >
-            <option>--Please Select Competition--</option>
-            {% for competition in competitions_list %}
-            {% include 'new_competition.html' %}
-            {% endfor %}
-        </select>
+        <sl-button-group label="Competition Button Group">
+            <sl-select
+                    name="Load Competition"
+                    id="Competition-Select"
+                    hx-target="#EventBrowser"
+                    hoist
+                    placeholder="--Please Select Competition--"
+            >
+                {% for competition in competitions_list %}
+                {% include 'new_competition.html' %}
+                {% endfor %}
+            </sl-select>
+            <sl-button class="ModalButton" onclick="new_competition_modal.show()">New Competition</sl-button>
+        </sl-button-group>
 
         <dialog id="new_competition_modal">
             <h1>New Competition</h1>
@@ -69,8 +75,6 @@
                 </button>
             </form>
         </dialog>
-
-        <button class="ModalButton" onclick="new_competition_modal.show()">New Competition</button>
     </div>
     <div class="EventBrowser" id="EventBrowser">
         Please Select a Competition

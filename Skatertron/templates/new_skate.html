@@ -1,0 +1,13 @@
+{% block NewCompetition %}
+
+<sl-tree-item
+        class="skate_tree_item"
+        id="skate_tree_item_{{ skate.id }}"
+        hx-get="/skates/{{ skate.id }}/files"
+        hx-target=".FileBrowser"
+        hx-swap="outerHTML"
+>
+    {{skate.skater_name}}
+</sl-tree-item>
+
+{% endblock %}

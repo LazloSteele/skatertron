@@ -1,0 +1,9 @@
+{% block NewSkate %}
+
+<sl-tree-item>{% include 'new_skate_modal.html' %}</sl-tree-item>
+
+{% for skate in skates_list %}
+{% include 'new_skate.html' %}
+{% endfor %}
+
+{% endblock %}

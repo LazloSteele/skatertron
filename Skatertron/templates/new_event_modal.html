@@ -1,0 +1,48 @@
+{% block NewEventModal %}
+    <dialog id="new_event_modal">
+        <h1>New Event</h1>
+        <form
+                hx-post="/events/pdf_scraper"
+                hx-trigger="submit"
+                hx-target="#EventBrowser"
+                hx-swap="innerhtml"
+                hx-encoding="multipart/form-data"
+        >
+            <label for="event_type">IJS/6.0: </label><br>
+            <input type="text" id="event_type" name="event_type" autocomplete="off"/><br>
+            <label for="pdf_file">Load PDF: </label><br>
+            <input type="file" id="pdf_file" name="pdf_file_list" autocomplete="off" accept="application/pdf" required multiple/><br>
+            <input type="hidden" name="competition_id" value={{ current_competition.id }}>
+
+            <button type="submit" onclick="new_event_modal.close()">
+                By PDF!
+            </button>
+        </form>
+        <form>
+            <label for="event_number">Event Number: </label><br>
+            <input type="text" id="event_number" name="event_number" autocomplete="off"/><br>
+            <label for="event_name">Event Name: </label><br>
+            <input type="text" id="event_name" name="event_name" autocomplete="off"/><br>
+            <input type="hidden" name="competition_id" value={{ current_competition.id }}>
+
+            <button
+                    hx-post="/events/"
+                    onclick="new_event_modal.close()"
+                    hx-target="#EventsList"
+                    hx-swap="beforeend"
+            >
+                Submit
+            </button>
+            <button type="button"
+                    onclick="new_event_modal.close()"
+            >
+                Cancel
+            </button>
+
+
+        </form>
+    </dialog>
+
+    <button onclick="new_event_modal.show()">New Event</button>
+
+{% endblock %}
