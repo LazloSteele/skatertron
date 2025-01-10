@@ -1,0 +1,28 @@
+{% block CompetitionBrowser %}
+
+<div class="CompetitionBrowser">
+    <select name="Load Competition" id="Competition-Select"
+            hx-target="#EventBrowser"
+            autocomplete="off"
+    >
+        <option>--Please Select Competition--</option>
+
+        <!--
+
+        Honestly not sure why this renders correctly, but it seems to...
+
+        -->
+
+        {% for competition in competitions_list %}
+        {% include 'new_competition.html' %}
+        {% endfor %}
+
+    </select>
+
+    {% include 'new_competition_modal.html' %}
+
+    {% block NewCompetitionModal %}{% endblock %}
+
+</div>
+
+{% endblock %}

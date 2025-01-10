@@ -1,0 +1,11 @@
+{% block events_by_competition %}
+
+{% include 'new_event_modal.html' %}
+
+<sl-tree id="EventsList">
+        {% for event in events_list %}
+        {% include 'new_event.html' %}
+        {% endfor %}
+</sl-tree>
+
+{% endblock %}

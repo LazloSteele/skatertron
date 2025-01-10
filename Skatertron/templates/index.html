@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html
+        lang="en"
+        class="sl-theme-dark"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>Skatertron</title>
+
+    <!-- initialize htmx and shoelace -->
+    <script src="https://unpkg.com/htmx.org"></script>
+    <script
+            type="module"
+            src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.1/cdn/shoelace-autoloader.js">
+    </script>
+    <script
+            type="module"
+            src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.1/cdn/components/tree/tree.js">
+
+    </script>
+
+    <!-- include the stylesheet and favicon -->
+    <link
+            href="{{ url_for('static', path='favicon.ico') }}"
+            rel="shortcut icon"
+            type="image/png"
+    />
+    <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.19.1/cdn/themes/dark.css"
+    />
+</head>
+
+<body>
+<div class="AppFrame" id="AppFrame">
+    <div class="CompetitionBrowser">
+        <select name="Load Competition" id="Competition-Select"
+                hx-target="#EventBrowser"
+                autocomplete="off"
+        >
+            <option>--Please Select Competition--</option>
+            {% for competition in competitions_list %}
+            {% include 'new_competition.html' %}
+            {% endfor %}
+        </select>
+
+        <dialog id="new_competition_modal">
+            <h1>New Competition</h1>
+            <form>
+                <label for="competition_name">Competition Name: </label><br>
+                <input type="text" id="competition_name" name="competition_name" autocomplete="off"/><br>
+                <label for="competition_year">Competition Year: </label><br>
+                <input type="number" id="competition_year" name="competition_year" min="2016" autocomplete="off"/><br>
+                <label for="host_club">Host Club: </label><br>
+                <input type="text" id="host_club" name="host_club" autocomplete="off"/><br>
+                <button
+                        hx-post="/competitions/"
+                        onclick="new_competition_modal.close()"
+                        hx-target="#Competition-Select"
+                        hx-swap="beforeend"
+                >
+                    Submit
+                </button>
+                <button
+                        type="button"
+                        onclick="new_competition_modal.close()"
+                >
+                    Cancel
+                </button>
+            </form>
+        </dialog>
+
+        <button class="ModalButton" onclick="new_competition_modal.show()">New Competition</button>
+    </div>
+    <div class="EventBrowser" id="EventBrowser">
+        Please Select a Competition
+    </div>
+</div>
+</body>
+
+</html>
