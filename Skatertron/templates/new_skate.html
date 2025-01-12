@@ -1,13 +1,32 @@
-{% block NewCompetition %}
-
 <sl-tree-item
         class="skate_tree_item"
         id="skate_tree_item_{{ skate.id }}"
         hx-get="/skates/{{ skate.id }}/files"
-        hx-target=".FileBrowser"
-        hx-swap="outerHTML"
+        hx-trigger="load"
+        hx-target="this"
+        hx-swap="beforeend"
+        value="{{ skate.event_id }}"
 >
     {{skate.skater_name}}
+    <sl-button-group style="margin-left:1em">
+        <sl-button
+                class="add-file-btn"
+                data-event="{{ skate.event_id }}"
+                data-skate="{{ skate.id }}"
+        >
+            Add File
+        </sl-button>
+        <sl-dropdown>
+            <sl-button slot="trigger" caret>Exceptions</sl-button>
+            <sl-menu>
+                <sl-menu-item type="checkbox" value="">Skater Scratch</sl-menu-item>
+                <sl-divider></sl-divider>
+                <sl-menu-item type="checkbox">No Video</sl-menu-item>
+                <sl-menu-item type="checkbox">No Photos</sl-menu-item>
+                <sl-menu-item type="checkbox">Multiple Videos</sl-menu-item>
+            </sl-menu>
+        </sl-dropdown>
+
+    </sl-button-group>
 </sl-tree-item>
 
-{% endblock %}
