@@ -53,15 +53,16 @@ def create_event(event_name: Annotated[str, Form()],
 
 
 @router.post("/pdf_scraper", status_code=201, response_class=HTMLResponse)
-def create_event_by_pdf(request: Request,
-                        event_type: Annotated[str, Form()],
-                        competition_id: Annotated[int, Form()],
-                        pdf_file_list: list[UploadFile] = File(...)
-                        ):
+async def create_event_by_pdf(
+        request: Request,
+        event_type: Annotated[str, Form()],
+        competition_id: Annotated[int, Form()],
+        pdf_file_list: list[UploadFile] = File(...)
+):
     for pdf_file in pdf_file_list:
         content = BytesIO(pdf_file.file.read())
         print(content)
-        event_scraped = PDFScraper.stage_pdf(content, event_type)
+        event_scraped = await PDFScraper.stage_pdf(content, event_type)
 
         try:
             event = EventDBModel(event_name=event_scraped["event_name"],

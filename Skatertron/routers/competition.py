@@ -48,7 +48,7 @@ def create_competition(competition_name: Annotated[str, Form()],
 
 
 @router.get("/", response_model=list[CompetitionSchema])
-def get_all_competitions():
+async def get_all_competitions():
     all_competitions = get_db_session().__next__().query(CompetitionDBModel).all()
 
     return all_competitions

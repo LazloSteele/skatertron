@@ -9,12 +9,6 @@ import os
 # this is the app
 app = FastAPI(title="Skatertron", docs_url="/api/docs")
 
-# include fastapi routers to the data model endpoints
-app.include_router(competition.router)
-app.include_router(event.router)
-app.include_router(skate.router)
-app.include_router(file.router)
-
 # Mount a directory for serving static files like CSS and JavaScript
 app.mount(
     "/static",
@@ -25,10 +19,15 @@ app.mount(
 # initialize html templating engine
 templates = Jinja2Templates(directory="templates")
 
+# include fastapi routers to the data model endpoints
+app.include_router(competition.router)
+app.include_router(event.router)
+app.include_router(skate.router)
+app.include_router(file.router)
 
 # root path for main app frame
 @app.get("/", response_class=HTMLResponse)
-def root(request: Request):
+async def root(request: Request):
 
     competitions_list = competition.get_all_competitions()
 

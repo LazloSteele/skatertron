@@ -1,5 +1,11 @@
 {% block NewCompetition %}
 
-<sl-option hx-get="/competitions/{{ competition.id }}/events">{{ competition }}</sl-option>
+<!-- value needed for shoelace functionality -->
+<sl-option
+        value="competition_{{ competition.id }}"
+        hx-get="/competitions/{{ competition.id }}/events"
+>
+    {{ competition }}
+</sl-option>
 
 {% endblock %}

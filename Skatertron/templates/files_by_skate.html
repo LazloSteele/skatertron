@@ -1,0 +1,20 @@
+{% block FilesBySkate %}
+<sl-tree-item>
+    Video
+    {% for file in files_list %}
+        {% if "video" in file.file_type %}
+            {% include 'file.html' %}
+        {% endif %}
+    {% endfor %}
+</sl-tree-item>
+
+<sl-tree-item>
+    Photo
+    {% for file in files_list %}
+        {% if "image" in file.file_type %}
+            {% include 'file.html' %}
+        {% endif %}
+    {% endfor %}
+</sl-tree-item>
+
+{% endblock %}

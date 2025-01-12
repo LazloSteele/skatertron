@@ -1,6 +1,4 @@
-{% block events_by_competition %}
-
-{% include 'new_event_modal.html' %}
+<sl-button onclick="new_event_modal.show()">New Event</sl-button>
 
 <sl-tree id="EventsList">
         {% for event in events_list %}
@@ -8,4 +6,44 @@
         {% endfor %}
 </sl-tree>
 
-{% endblock %}
+<sl-dialog id="new_event_modal">
+        <h1>New Event</h1>
+        <h3>Bulk Upload with PDF</h3>
+        <form
+                hx-post="/events/pdf_scraper"
+                hx-trigger="submit"
+                hx-target="#EventBrowser"
+                hx-swap="innerhtml"
+                hx-encoding="multipart/form-data"
+        >
+            <label for="event_type">IJS/6.0: </label><br>
+            <input type="text" id="event_type" name="event_type" autocomplete="off"/><br>
+            <label for="pdf_file">Load PDF: </label><br>
+            <input type="file" id="pdf_file" name="pdf_file_list" autocomplete="off" accept="application/pdf" required multiple/><br>
+            <input type="hidden" name="competition_id" value={{ current_competition.id }}>
+
+            <button type="submit" onclick="new_event_modal.hide()">
+                By PDF!
+            </button>
+        </form>
+
+        <sl-divider></sl-divider>
+
+        <h3>Manual Single Event</h3>
+        <form>
+            <label for="event_number">Event Number: </label><br>
+            <input type="text" id="event_number" name="event_number" autocomplete="off"/><br>
+            <label for="event_name">Event Name: </label><br>
+            <input type="text" id="event_name" name="event_name" autocomplete="off"/><br>
+            <input type="hidden" name="competition_id" value={{ current_competition.id }}>
+
+            <button
+                    hx-post="/events/"
+                    onclick="new_event_modal.hide()"
+                    hx-target="#EventsList"
+                    hx-swap="beforeend"
+            >
+                Submit
+            </button>
+        </form>
+</sl-dialog>

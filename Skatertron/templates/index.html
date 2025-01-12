@@ -3,83 +3,133 @@
         lang="en"
         class="sl-theme-dark"
 >
-<head>
-    <meta charset="UTF-8">
-    <title>Skatertron</title>
+    <head>
+        <meta charset="UTF-8">
+        <title>Skatertron</title>
 
-    <!-- initialize htmx and shoelace -->
-    <script src="https://unpkg.com/htmx.org"></script>
-    <script
-            type="module"
-            src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.1/cdn/shoelace-autoloader.js">
-    </script>
-    <script
-            type="module"
-            src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.1/cdn/components/tree/tree.js">
+        <!-- initialize htmx, shoelace -->
+        <script src="https://unpkg.com/htmx.org"></script>
+        <script
+                type="module"
+                src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.1/cdn/shoelace-autoloader.js">
+        </script>
 
-    </script>
+        <!-- include the stylesheet and favicon -->
+        <link
+                href="{{ url_for('static', path='favicon.ico') }}"
+                rel="shortcut icon"
+                type="image/png"
+        />
+        <link
+                rel="stylesheet"
+                href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.19.1/cdn/themes/dark.css"
+        />
+        <!-- include alpineJS files for functionality -->
+    </head>
 
-    <!-- include the stylesheet and favicon -->
-    <link
-            href="{{ url_for('static', path='favicon.ico') }}"
-            rel="shortcut icon"
-            type="image/png"
-    />
-    <link
-            rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.19.1/cdn/themes/dark.css"
-    />
-</head>
+    <body>
 
-<body>
-<div class="AppFrame" id="AppFrame">
+        <div class="AppFrame" id="AppFrame">
+            <div class="CompetitionBrowser">
+                <sl-button-group label="Competition Button Group">
+                    <sl-select
 
-    <div class="CompetitionBrowser">
-        <sl-button-group label="Competition Button Group">
-            <sl-select
-                    name="Load Competition"
-                    id="Competition-Select"
-                    hx-target="#EventBrowser"
-                    hoist
-                    placeholder="--Please Select Competition--"
-            >
-                {% for competition in competitions_list %}
-                {% include 'new_competition.html' %}
-                {% endfor %}
-            </sl-select>
-            <sl-button class="ModalButton" onclick="new_competition_modal.show()">New Competition</sl-button>
-        </sl-button-group>
+                            placeholder="--Please Select Competition--"
+                            id="Competition-Select"
+                            hx-target="#EventBrowser"
+                            hoist
+                            clearable
+                    >
+                        {% for competition in competitions_list %}
+                        {% include 'new_competition.html' %}
+                        {% endfor %}
+                    </sl-select>
+                    <sl-button class="ModalButton" onclick="new_competition_modal.show()">New Competition</sl-button>
+                </sl-button-group>
 
-        <dialog id="new_competition_modal">
-            <h1>New Competition</h1>
-            <form>
-                <label for="competition_name">Competition Name: </label><br>
-                <input type="text" id="competition_name" name="competition_name" autocomplete="off"/><br>
-                <label for="competition_year">Competition Year: </label><br>
-                <input type="number" id="competition_year" name="competition_year" min="2016" autocomplete="off"/><br>
-                <label for="host_club">Host Club: </label><br>
-                <input type="text" id="host_club" name="host_club" autocomplete="off"/><br>
-                <button
-                        hx-post="/competitions/"
-                        onclick="new_competition_modal.close()"
-                        hx-target="#Competition-Select"
-                        hx-swap="beforeend"
-                >
-                    Submit
-                </button>
-                <button
-                        type="button"
-                        onclick="new_competition_modal.close()"
-                >
-                    Cancel
-                </button>
-            </form>
-        </dialog>
-    </div>
-    <div class="EventBrowser" id="EventBrowser">
-        Please Select a Competition
-    </div>
-</div>
-</body>
+                <sl-dialog id="new_competition_modal">
+                    <h1>New Competition</h1>
+                    <form>
+                        <label for="competition_name">Competition Name: </label><br>
+                        <input type="text" id="competition_name" name="competition_name" autocomplete="off"/><br>
+                        <label for="competition_year">Competition Year: </label><br>
+                        <input type="number" id="competition_year" name="competition_year" min="2016" autocomplete="off"/><br>
+                        <label for="host_club">Host Club: </label><br>
+                        <input type="text" id="host_club" name="host_club" autocomplete="off"/><br>
+                        <button
+                                hx-post="/competitions/"
+                                onclick="new_competition_modal.hide()"
+                                hx-target="#Competition-Select"
+                                hx-swap="beforeend"
+                        >
+                            Submit
+                        </button>
+                    </form>
+                </sl-dialog>
+            </div>
+            <div class="EventBrowser" id="EventBrowser">
+                Please Select a Competition
+            </div>
+        </div>
+        <script src="{{ url_for('static', path='js/app.js') }}"></script>
+        <script>
+            document.getElementById('EventBrowser').addEventListener('click', event => {
+                if (event.target.matches('.add-file-btn')) {
+                    const eventId = event.target.dataset.event;
+                    const skateId = event.target.dataset.skate;
+
+                    // Handle the file selection
+                    const fileInput = document.createElement('input');
+                    fileInput.type = 'file';
+                    fileInput.accept = 'video/*, image/*';
+                    fileInput.onchange = async e => {
+                        const file = e.target.files[0];
+                        if (file) {
+                            // TODO: add file api call
+                            await populateFiles(file, eventId, skateId);
+                        }
+                    };
+                    fileInput.click();
+                }
+            });
+        </script>
+        <script>
+            async function populateFiles(videoFile, eventId, skateId) {
+                const formData = new FormData();
+                formData.append('video', videoFile);
+                formData.append('event_id', eventId);
+                formData.append('skate_id', skateId);
+
+                // Call API to get matching files
+                const response = await fetch('/api/populate-files', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    const { videos, photos } = await response.json();
+
+                    // Append videos and photos to the DOM
+                    const skateElement = document.getElementById(`event-${eventId}-skate-${skateId}`);
+                    const videoList = skateElement.querySelector('.video-list');
+                    const photoList = skateElement.querySelector('.photo-list');
+
+                    videos.forEach(video => {
+                        const videoElement = document.createElement('div');
+                        videoElement.textContent = video.name;
+                        videoList.appendChild(videoElement);
+                    });
+
+                    photos.forEach(photo => {
+                        const photoElement = document.createElement('div');
+                        photoElement.textContent = photo.name;
+                        photoList.appendChild(photoElement);
+                    });
+                } else {
+                    console.error('Failed to populate files.');
+                }
+            }
+        </script>
+    </body>
 
 </html>

@@ -1,16 +1,39 @@
-{% block NewCompetition %}
-
 <sl-tree-item
         hx-get="/events/{{ event.id }}/skates"
         hx-target="#skate_tree_{{ event.id }}"
         hx-swap="outerHTML"
         hx-trigger="load"
-        class="event_tree"
+        id="event_tree_{{ event.id }}"
+        value={{ event.id }}
 >
     #{{event.event_number}} {{event.event_name}}
 
+    <sl-tree-item>
+        <sl-button onclick="new_skate_modal_{{ event.id }}.show()">New Skate</sl-button>
+    </sl-tree-item>
     <sl-tree-item class="skate_tree_item" id="skate_tree_{{ event.id }}"></sl-tree-item>
 
 </sl-tree-item>
 
-{% endblock %}
+<sl-dialog
+        class="new_skate_modal"
+        id="new_skate_modal_{{ event.id }}"
+
+>
+        <h1>New Skate</h1>
+        <form>
+            <label for="skater_name">Skater Name: </label><br>
+            <input type="text" id="skater_name" name="skater_name" autocomplete="off"/><br>
+            <input type="hidden" name="event_id" value={{ event.id }}>
+
+            <button
+                    hx-post="/skates/"
+                    onclick="new_skate_modal_{{ event.id }}.hide()"
+                    hx-target="#event_tree_{{ event.id }}"
+                    hx-swap="beforeend"
+            >
+                Submit
+            </button>
+        </form>
+</sl-dialog>
+
