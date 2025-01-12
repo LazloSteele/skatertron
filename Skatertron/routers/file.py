@@ -105,7 +105,6 @@ def get_media_by_id(file_id: int, request: Request):
     except IntegrityError:
         raise HTTPException(404, f"File with id #{file_id} not found.")
 
-
 @router.get("/files_by_skate/{skate_id}", response_class=HTMLResponse)
 def get_files_by_skate(request: Request, skate_id: int):
     try:

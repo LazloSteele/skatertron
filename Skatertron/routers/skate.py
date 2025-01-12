@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Request, Form
+from fastapi import APIRouter, HTTPException, Request, Form, UploadFile, File
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 
@@ -13,6 +13,7 @@ from Skatertron.models.event import Event as EventDBModel
 from Skatertron.models.competition import Competition as CompetitionDBModel
 from Skatertron.models.file import File as FileDBModel
 from Skatertron.database import get_db_session
+from Skatertron.utils import extract_metadata
 
 router = APIRouter(
     prefix="/skates",
@@ -133,3 +134,8 @@ def delete_event(skate_id: int):
             session.commit()
         except UnmappedInstanceError:
             raise HTTPException(404, f"Skate with id: #{skate_id} not found.")
+
+
+@router.post("/{skate_id}/stage_file")
+def stage_file(file: UploadFile = File(...), skate_id: int = Form(...)):
+    pass
