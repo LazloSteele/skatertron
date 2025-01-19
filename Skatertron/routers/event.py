@@ -26,15 +26,16 @@ templates = Jinja2Templates(directory="templates")
 
 
 @router.post("/", status_code=201, response_class=HTMLResponse)
-def create_event(event_name: Annotated[str, Form()],
+async def create_event(event_name: Annotated[str, Form()],
                  event_number: Annotated[str, Form()],
                  competition_id: Annotated[int, Form()],
                  request: Request):
     try:
-        event = EventDBModel(event_name=event_name,
-                             event_number=event_number,
-                             competition_id=competition_id
-                             )
+        event = await EventDBModel(
+            event_name=event_name,
+            event_number=event_number,
+            competition_id=competition_id
+        )
         with get_db_session().__next__() as session:
             session.add(event)
             session.commit()
@@ -75,7 +76,7 @@ async def create_event_by_pdf(
                 session.commit()
 
             for skater in event_scraped["skaters"]:
-                skate = SkateDBModel(event_id=event.id, skater_name=skater)
+                skate = await SkateDBModel(event_id=event.id, skater_name=skater)
                 with get_db_session().__next__() as session:
                     session.add(skate)
                     session.commit()
@@ -84,8 +85,8 @@ async def create_event_by_pdf(
             raise HTTPException(422, "Missing data from event model.")
 
     with get_db_session().__next__() as session:
-        events_list = session.query(EventDBModel).filter_by(competition_id=competition_id).all()
-        current_competition = session.query(CompetitionDBModel).filter_by(id=competition_id).first()
+        events_list = await session.query(EventDBModel).filter_by(competition_id=competition_id).all()
+        current_competition = await session.query(CompetitionDBModel).filter_by(id=competition_id).first()
 
     return templates.TemplateResponse(
         request=request,
@@ -98,7 +99,7 @@ async def create_event_by_pdf(
 
 
 @router.get("/{event_id}", response_model=EventSchema)
-def get_event_by_id(event_id: int):
+async def get_event_by_id(event_id: int):
     try:
         with get_db_session().__next__() as session:
             event = session.query(EventDBModel).filter_by(id=event_id).first()
@@ -109,12 +110,12 @@ def get_event_by_id(event_id: int):
 
 
 @router.get("/{event_id}/skates/", response_class=HTMLResponse)
-def get_skates_by_event_id(event_id: int, request: Request):
+async def get_skates_by_event_id(event_id: int, request: Request):
     try:
         with get_db_session().__next__() as session:
             skates = session.query(SkateDBModel).filter_by(event_id=event_id).all()
 
-            current_event = get_event_by_id(event_id)
+            current_event = await get_event_by_id(event_id)
             current_competition = session.query(CompetitionDBModel).filter_by(id=current_event.competition_id)
 
             return templates.TemplateResponse(

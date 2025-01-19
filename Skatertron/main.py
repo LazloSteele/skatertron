@@ -25,11 +25,12 @@ app.include_router(event.router)
 app.include_router(skate.router)
 app.include_router(file.router)
 
+
 # root path for main app frame
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request):
 
-    competitions_list = competition.get_all_competitions()
+    competitions_list = await competition.get_all_competitions()
 
     return templates.TemplateResponse(
         request=request,

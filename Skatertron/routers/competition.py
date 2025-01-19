@@ -20,16 +20,18 @@ templates = Jinja2Templates(directory="templates")
 
 
 @router.post("/", status_code=201, response_class=HTMLResponse)
-def create_competition(competition_name: Annotated[str, Form()],
-                       competition_year: Annotated[int, Form()],
-                       host_club: Annotated[str, Form()],
-                       request: Request
-                       ):
+async def create_competition(
+        competition_name: Annotated[str, Form()],
+        competition_year: Annotated[int, Form()],
+        host_club: Annotated[str, Form()],
+        request: Request
+):
     try:
-        competition = CompetitionDBModel(competition_name=competition_name,
-                                         competition_year=competition_year,
-                                         host_club=host_club
-                                         )
+        competition = await CompetitionDBModel(
+            competition_name=competition_name,
+            competition_year=competition_year,
+            host_club=host_club
+        )
 
         with get_db_session().__next__() as session:
             session.add(competition)
@@ -55,10 +57,10 @@ async def get_all_competitions():
 
 
 @router.get("/{competition_id}", response_model=CompetitionSchema)
-def get_competition_by_id(competition_id: int):
+async def get_competition_by_id(competition_id: int):
     try:
         with get_db_session().__next__() as session:
-            competition = session.query(CompetitionDBModel).filter_by(id=competition_id).first()
+            competition = await session.query(CompetitionDBModel).filter_by(id=competition_id).first()
 
             return competition
     except IntegrityError:
@@ -66,7 +68,7 @@ def get_competition_by_id(competition_id: int):
 
 
 @router.get("/{competition_id}/events/", response_class=HTMLResponse)
-def get_events_by_competition_id(competition_id: int, request: Request):
+async def get_events_by_competition_id(competition_id: int, request: Request):
     with get_db_session().__next__() as session:
         events_list = session.query(EventDBModel).filter_by(competition_id=competition_id).all()
         current_competition = get_competition_by_id(competition_id)

@@ -3,6 +3,8 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 
 from typing import Annotated
+from tempfile import NamedTemporaryFile
+import subprocess
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import UnmappedInstanceError
@@ -137,5 +139,21 @@ def delete_event(skate_id: int):
 
 
 @router.post("/{skate_id}/stage_file")
-def stage_file(file: UploadFile = File(...), skate_id: int = Form(...)):
-    pass
+async def stage_file(skate_id: int, file: UploadFile = File(...)):
+    # Save a temporary file
+    with open("temp_file", "wb") as temp:
+        temp.write(await file.read(1024 * 100))  # Read only the first 100 KB
+
+    # Use ffprobe to extract metadata
+    result = subprocess.run(
+        ["ffprobe", "-v", "error", "-show_entries", "format_tags=creation_time", "-of", "default=nw=1", "temp_file"],
+        capture_output=True,
+        text=True,
+    )
+
+    return {
+        "skate_id": skate_id,
+        "filename": file.filename,
+        "content_type": file.content_type,
+        "creation_time": result.stdout.strip()[18:],
+    }

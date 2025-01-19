@@ -96,12 +96,12 @@
         <script>
             async function populateFiles(videoFile, eventId, skateId) {
                 const formData = new FormData();
-                formData.append('video', videoFile);
+                formData.append('file', videoFile.slice(0, 1024 * 100));
                 formData.append('event_id', eventId);
                 formData.append('skate_id', skateId);
 
                 // Call API to get matching files
-                const response = await fetch('/api/populate-files', {
+                const response = await fetch(`/skates/${skateId}/stage_file`, {
                     method: 'POST',
                     body: formData,
                 });
