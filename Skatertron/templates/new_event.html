@@ -1,22 +1,22 @@
-<div>
-    <input type="hidden" name="item" value={{ event.event_position }}>
-        <sl-tree-item
-            hx-get="/events/{{ event.id }}/skates"
-            hx-target="#skate_tree_{{ event.id }}"
-            hx-swap="outerHTML"
-            hx-trigger="load"
-            id="event_tree_{{ event.id }}"
-            value={{ event.id }}
-        >
-            #{{event.event_number}} {{event.event_name}}
+<sl-tree-item
+        hx-get="/events/{{ event.id }}/skates"
+        hx-target="#skate_tree_{{ event.id }}"
+        hx-swap="outerHTML"
+        hx-trigger="load"
+        data-id="{{ event.id }}"
+        id="event_tree_{{ event.id }}"
+        value={{ event.id }}
+>
 
-            <sl-tree-item>
-                <sl-button onclick="new_skate_modal_{{ event.id }}.show()">New Skate</sl-button>
-            </sl-tree-item>
-            <sl-tree-item class="skate_tree_item" id="skate_tree_{{ event.id }}"></sl-tree-item>
+    #{{event.event_number}} {{event.event_name}}
 
-        </sl-tree-item>
-</div>
+    <sl-tree-item>
+        <sl-button onclick="new_skate_modal_{{ event.id }}.show()">New Skate</sl-button>
+    </sl-tree-item>
+
+    <sl-tree-item class="skate_tree_item" id="skate_tree_{{ event.id }}"></sl-tree-item>
+
+</sl-tree-item>
 
 <sl-dialog
         class="new_skate_modal"

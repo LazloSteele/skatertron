@@ -70,7 +70,8 @@ async def get_competition_by_id(competition_id: int):
 @router.get("/{competition_id}/events/", response_class=HTMLResponse)
 async def get_events_by_competition_id(competition_id: int, request: Request):
     with get_db_session().__next__() as session:
-        events_list = session.query(EventDBModel).filter_by(competition_id=competition_id).all()
+        events_list = session.query(EventDBModel).filter_by(competition_id=competition_id).order_by(
+            EventDBModel.event_position).all()
         current_competition = get_competition_by_id(competition_id)
 
     return templates.TemplateResponse(

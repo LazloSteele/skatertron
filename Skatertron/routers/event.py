@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, Request, Form, File, UploadFile
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 
+from sqlalchemy import desc
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import UnmappedInstanceError
 
@@ -131,12 +132,45 @@ async def get_skates_by_event_id(event_id: int, request: Request):
         raise HTTPException(404, f"Event with id #{event_id} not found.")
 
 
+@router.put("/update_position")
+def update_event_position(
+        event_id: int,
+        event_position: int,
+        new_event_position: int
+):
+
+    pass
+
+    """
+    with get_db_session().__next__() as session:
+        try:
+            event = session.query(EventDBModel).filter_by(id=event_id).first()
+            event_range = session.query(EventDBModel).filter(
+                EventDBModel.event_position.between(
+                    new_event_position,
+                    event_position-1
+                )
+            ).order_by(desc(EventDBModel.event_position)).all()
+
+            event.event_position = 999999999999
+
+            for item in event_range:
+                item.event_position += 1
+
+            event.event_position = new_event_position
+
+        except UnmappedInstanceError:
+            raise HTTPException(404, f"Event with id: #{event_id} not found.")
+    """
+
+
 @router.put("/{event_id}")
-def update_event(event_id: int,
-                 new_event_name: str | None = None,
-                 new_event_number: str | None = None,
-                 new_competition_id: int | None = None
-                 ):
+def update_event(
+        event_id: int,
+        new_event_name: str | None = None,
+        new_event_number: str | None = None,
+        new_competition_id: int | None = None
+):
     with get_db_session().__next__() as session:
         try:
             event = session.query(EventDBModel).filter_by(id=event_id).first()

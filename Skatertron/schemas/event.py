@@ -8,4 +8,6 @@ class Event(BaseModel):
     competition_id: int
     event_number: str
     event_name: str
+    event_rink: str
+    event_position: int
     
