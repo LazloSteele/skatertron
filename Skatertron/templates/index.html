@@ -24,7 +24,9 @@
                 rel="stylesheet"
                 href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.19.1/cdn/themes/dark.css"
         />
-        <!-- include alpineJS files for functionality -->
+        <!-- include sortable.js for list sorting -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+
     </head>
 
     <body>
@@ -70,6 +72,17 @@
             <div class="EventBrowser" id="EventBrowser">
                 Please Select a Competition
             </div>
+
+            <!-- this is the text form for sortable!!! -->
+            <form class="sortable" hx-post="/items" hx-trigger="end">
+                <div class="htmx-indicator">Updating...</div>
+                <div><input type='hidden' name='item' value='1'/>Item 1</div>
+                <div><input type='hidden' name='item' value='2'/>Item 2</div>
+                <div><input type='hidden' name='item' value='3'/>Item 3</div>
+                <div><input type='hidden' name='item' value='4'/>Item 4</div>
+                <div><input type='hidden' name='item' value='5'/>Item 5</div>
+            </form>
+
         </div>
         <script src="{{ url_for('static', path='js/app.js') }}"></script>
         <script>
