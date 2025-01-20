@@ -1,10 +1,12 @@
 <sl-button onclick="new_event_modal.show()">New Event</sl-button>
 
 <sl-tree class="sortable" id="EventsList">
-    <div class="htmx-indicator">Updating...</div>
-    {% for event in events_list %}
-    {% include 'new_event.html' %}
-    {% endfor %}
+    <form class="sortable" hx-post="/events/update_position" hx-trigger="end">
+        <div class="htmx-indicator">Updating...</div>
+        {% for event in events_list %}
+        {% include 'new_event.html' %}
+        {% endfor %}
+    </form>
 </sl-tree>
 
 <sl-dialog id="new_event_modal">
