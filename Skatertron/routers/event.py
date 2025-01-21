@@ -3,7 +3,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 
 from sqlalchemy import desc
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm.exc import UnmappedInstanceError
 
 from typing import Annotated
@@ -11,6 +11,7 @@ from io import BytesIO
 
 from Skatertron.models.event import Event as EventDBModel
 from Skatertron.schemas.event import Event as EventSchema
+from Skatertron.schemas.update_position_request import UpdateEventPositionRequest as PutPositionRequest
 from Skatertron.models.skate import Skate as SkateDBModel
 from Skatertron.models.competition import Competition as CompetitionDBModel
 from Skatertron.database import get_db_session
@@ -133,15 +134,12 @@ async def get_skates_by_event_id(event_id: int, request: Request):
 
 
 @router.put("/update_position")
-def update_event_position(
-        event_id: int,
-        event_position: int,
-        new_event_position: int
-):
+def update_event_position(request: PutPositionRequest):
+    print("Updating event positions!")
+    event_id = request.event_id
+    event_position = request.event_position
+    new_event_position = request.new_event_position
 
-    pass
-
-    """
     with get_db_session().__next__() as session:
         try:
             event = session.query(EventDBModel).filter_by(id=event_id).first()
@@ -159,9 +157,12 @@ def update_event_position(
 
             event.event_position = new_event_position
 
+            session.commit()
         except UnmappedInstanceError:
             raise HTTPException(404, f"Event with id: #{event_id} not found.")
-    """
+        except SQLAlchemyError as e:
+            db.rollback()  # Rollback on error
+            raise HTTPException(status_code=500, detail="Database update failed")
 
 
 @router.put("/{event_id}")

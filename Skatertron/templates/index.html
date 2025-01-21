@@ -7,6 +7,13 @@
         <meta charset="UTF-8">
         <title>Skatertron</title>
 
+        <!-- Hide custom elements until they are defined -->
+        <style>
+            :not(:defined) {
+                visibility: hidden;
+            }
+        </style>
+
         <!-- initialize htmx, shoelace -->
         <script src="https://unpkg.com/htmx.org"></script>
         <script
@@ -72,17 +79,6 @@
             <div class="EventBrowser" id="EventBrowser">
                 Please Select a Competition
             </div>
-
-            <!-- this is the text form for sortable!!! -->
-            <form class="sortable" hx-post="/items" hx-trigger="end">
-                <div class="htmx-indicator">Updating...</div>
-                <div><input type='hidden' name='item' value='1'/>Item 1</div>
-                <div><input type='hidden' name='item' value='2'/>Item 2</div>
-                <div><input type='hidden' name='item' value='3'/>Item 3</div>
-                <div><input type='hidden' name='item' value='4'/>Item 4</div>
-                <div><input type='hidden' name='item' value='5'/>Item 5</div>
-            </form>
-
         </div>
         <script src="{{ url_for('static', path='js/app.js') }}"></script>
         <script>
@@ -143,7 +139,86 @@
                 }
             }
         </script>
+        <script>
+            console.log('sortable_loaded');
 
+            // Throttle timer variables to track the last HTMX swap
+            let lastSwapTime = 0;
+            const throttleDelay = 2000; // 2 seconds delay to limit reinitialization frequency
+
+            // Function to initialize Sortable.js
+            const initializeSortable = () => {
+                const EventsList = document.querySelector('#EventsList');
+
+                console.log(`EventsList: ${EventsList} loaded`);
+
+                let sortableInitialized = false;
+                let sortableInstance = null;
+
+                if (EventsList) {
+
+                    if (sortableInstance) {
+                        sortableInstance.destroy();
+                        console.log('Previous Sortable instance destroyed.');
+                    }
+
+                    // Initialize Sortable.js
+                    Sortable.create(EventsList, {
+                        animation: 150,
+                        handle: 'sl-tree-item', // Handle for drag
+                        draggable: 'sl-tree-item', // Draggable selector
+                        
+                        onEnd: async (evt) => {
+                            const itemId = evt.item.dataset.id; // Assuming each item has a `data-id` attribute
+                            const oldIndex = evt.oldIndex;
+                            const newIndex = evt.newIndex;
+
+                            console.log(`Item ${itemId} moved from ${oldIndex} to ${newIndex}`);
+
+                            try {
+                                const response = await fetch('/events/update_position', {
+                                    method: 'PUT', // Use appropriate HTTP method
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({
+                                        event_id: itemId,
+                                        event_position: oldIndex,
+                                        new_event_position: newIndex,
+                                    }),
+                                });
+
+                                if (!response.ok) {
+                                    console.error('Error updating position:', await response.text());
+                                } else {
+                                    console.log('Position updated successfully');
+                                }
+                            } catch (error) {
+                                console.error('Error hitting FastAPI endpoint:', error);
+                            }
+                        },
+                    });
+                    sortableInitialized = true;
+                    console.log('Sortable.js initialized');
+                } else {
+                    console.error('Element with ID "EventsList" not found.');
+                }
+            };
+
+            // Function to handle HTMX swap events, with delay
+            const handleHTMXSwap = () => {
+                const currentTime = Date.now();
+
+                // If enough time has passed since the last initialization, initialize again
+                if (currentTime - lastSwapTime >= throttleDelay) {
+                    console.log('HTMX swap finished, initializing Sortable.js');
+                    initializeSortable();
+                    lastSwapTime = currentTime; // Update the last swap time
+                }
+            };
+
+            document.body.addEventListener('htmx:afterSwap', handleHTMXSwap);
+        </script>
     </body>
 
 </html>
