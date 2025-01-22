@@ -165,9 +165,10 @@
                     // Initialize Sortable.js
                     Sortable.create(EventsList, {
                         animation: 150,
-                        handle: 'sl-tree-item', // Handle for drag
-                        draggable: 'sl-tree-item', // Draggable selector
-                        
+                        handle: 'sl-tree-item.event_branch', // Handle for drag
+                        draggable: 'sl-tree-item.event_branch', // Draggable selector
+
+
                         onEnd: async (evt) => {
                             const itemId = evt.item.dataset.id; // Assuming each item has a `data-id` attribute
                             const oldIndex = evt.oldIndex;
@@ -218,6 +219,7 @@
             };
 
             document.body.addEventListener('htmx:afterSwap', handleHTMXSwap);
+            document.body.addEventListener('sortable:end', initializeSortable);
         </script>
     </body>
 
