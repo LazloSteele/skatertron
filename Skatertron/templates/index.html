@@ -174,7 +174,7 @@
                             let eventIdList = [];
 
                             allItems.forEach((item, index) => {
-                                eventIdList.push(item.dataset.id);
+                                eventIdList.push(parseInt(item.dataset.id, 10));
                             });
 
                             try {

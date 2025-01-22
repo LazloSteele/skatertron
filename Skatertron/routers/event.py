@@ -137,48 +137,27 @@ async def get_skates_by_event_id(event_id: int, request: Request):
 def update_event_position(request: PutPositionRequest):
     print("\n\n\nUpdating event positions!\n\n\n")
 
-    event_id = request.event_id
-    event_position = request.event_position
-    new_event_position = request.new_event_position
+    event_list = request.event_id_list
+
+    print(event_list)
 
     with get_db_session().__next__() as session:
         try:
-            event = session.query(EventDBModel).filter_by(id=event_id).first()
-            print(f"#{event.event_number} {event.event_name} with position {event_position} will be move to:")
-            print(f"    position {new_event_position}")
+            i = 0
+            for event_id in event_list:
+                event = session.query(EventDBModel).filter_by(id=int(event_id)).first()
 
-            if event_position > new_event_position:
-                event_range = session.query(EventDBModel).filter(
-                    EventDBModel.event_position.between(
-                        new_event_position,
-                        event_position-1
-                    )
-                ).order_by(desc(EventDBModel.event_position)).all()
+                print(event_id)
+                event.event_position = i
 
-                for item in event_range:
-                    item.event_position += 1
-
-            elif event_position < new_event_position:
-                event_range = session.query(EventDBModel).filter(
-                    EventDBModel.event_position.between(
-                        event_position + 1,
-                        new_event_position
-                    )
-                ).order_by(EventDBModel.event_position).all()
-
-                for item in event_range:
-                    item.event_position -= 1
-
-            event.event_position = new_event_position
+                i += 1
 
             session.commit()
-
-
 
         except UnmappedInstanceError:
             raise HTTPException(404, f"Event with id: #{event_id} not found.")
         except SQLAlchemyError as e:
-            db.rollback()  # Rollback on error
+            session.rollback()  # Rollback on error
             raise HTTPException(status_code=500, detail="Database update failed")
 
 
