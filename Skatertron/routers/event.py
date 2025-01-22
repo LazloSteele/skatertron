@@ -158,7 +158,7 @@ def update_event_position(request: PutPositionRequest):
             raise HTTPException(404, f"Event with id: #{event_id} not found.")
         except SQLAlchemyError as e:
             session.rollback()  # Rollback on error
-            raise HTTPException(status_code=500, detail="Database update failed")
+            raise HTTPException(status_code=500, detail=f"Database update failed: {e}")
 
 
 @router.put("/{event_id}")
