@@ -170,11 +170,12 @@
 
 
                         onEnd: async (evt) => {
-                            const itemId = evt.item.dataset.id; // Assuming each item has a `data-id` attribute
-                            const oldIndex = evt.oldIndex;
-                            const newIndex = evt.newIndex;
+                            const allItems = EventsList.querySelectorAll('.event_branch');
+                            let eventIdList = [];
 
-                            console.log(`Item ${itemId} moved from ${oldIndex} to ${newIndex}`);
+                            allItems.forEach((item, index) => {
+                                eventIdList.push(item.dataset.id);
+                            });
 
                             try {
                                 const response = await fetch('/events/update_position', {
@@ -183,9 +184,7 @@
                                         'Content-Type': 'application/json',
                                     },
                                     body: JSON.stringify({
-                                        event_id: itemId,
-                                        event_position: oldIndex,
-                                        new_event_position: newIndex,
+                                        event_id_list: eventIdList
                                     }),
                                 });
 
