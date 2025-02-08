@@ -10,6 +10,8 @@
 >
 
     #{{event.event_number}} {{event.event_name}}
+    <sl-icon-button hx-delete="/events/{{ event.id }}" name="trash">
+    </sl-icon-button>
 
     <sl-tree-item>
         <sl-button onclick="new_skate_modal_{{ event.id }}.show()">New Skate</sl-button>

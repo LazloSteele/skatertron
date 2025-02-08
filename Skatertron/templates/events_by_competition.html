@@ -3,7 +3,9 @@
 <sl-tree class="sortable" id="EventsList">
     <div class="htmx-indicator">Updating...</div>
     {% for event in events_list %}
-    {% include 'new_event.html' %}
+    {% if event.event_rink %}
+        {% include 'new_event.html' %}
+    {% endif %}
     {% endfor %}
 </sl-tree>
 
@@ -19,6 +21,8 @@
         >
             <label for="event_type">IJS/6.0: </label><br>
             <input type="text" id="event_type" name="event_type" autocomplete="off"/><br>
+            <label for="event_rink">Event Rink: </label><br>
+            <input type="text" id="event_rink" name="event_rink" autocomplete="off"/><br>
             <label for="pdf_file">Load PDF: </label><br>
             <input type="file" id="pdf_file" name="pdf_file_list" autocomplete="off" accept="application/pdf" required multiple/><br>
             <input type="hidden" name="competition_id" value={{ current_competition.id }}>

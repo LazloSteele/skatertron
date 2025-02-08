@@ -14,6 +14,7 @@ from Skatertron.schemas.event import Event as EventSchema
 from Skatertron.schemas.update_position_request import UpdateEventPositionRequest as PutPositionRequest
 from Skatertron.models.skate import Skate as SkateDBModel
 from Skatertron.models.competition import Competition as CompetitionDBModel
+from Skatertron.models.file import File as FileDBModel
 from Skatertron.database import get_db_session
 from Skatertron.utils.pdf_scraper import PDFScraper
 
@@ -28,14 +29,18 @@ templates = Jinja2Templates(directory="templates")
 
 
 @router.post("/", status_code=201, response_class=HTMLResponse)
-async def create_event(event_name: Annotated[str, Form()],
-                 event_number: Annotated[str, Form()],
-                 competition_id: Annotated[int, Form()],
-                 request: Request):
+async def create_event(
+        event_name: Annotated[str, Form()],
+        event_number: Annotated[str, Form()],
+        event_rink: Annotated[str, Form()],
+        competition_id: Annotated[int, Form()],
+        request: Request
+):
     try:
         event = await EventDBModel(
             event_name=event_name,
             event_number=event_number,
+            event_rink=event_rink,
             competition_id=competition_id
         )
         with get_db_session().__next__() as session:
@@ -60,6 +65,7 @@ async def create_event_by_pdf(
         request: Request,
         event_type: Annotated[str, Form()],
         competition_id: Annotated[int, Form()],
+        event_rink: Annotated[str, Form()],
         pdf_file_list: list[UploadFile] = File(...)
 ):
     for pdf_file in pdf_file_list:
@@ -70,6 +76,7 @@ async def create_event_by_pdf(
         try:
             event = EventDBModel(event_name=event_scraped["event_name"],
                                  event_number=event_scraped["event_number"],
+                                 event_rink=event_rink,
                                  competition_id=competition_id
                                  )
 
@@ -188,6 +195,13 @@ def delete_event(event_id: int):
     with get_db_session().__next__() as session:
         try:
             event = session.query(EventDBModel).filter_by(id=event_id).first()
+            skates = session.query(SkateDBModel).filter_by(event_id=event.id).all()
+
+            for skate in skates:
+                files = session.query(FileDBModel).filter_by(skate_id=skate.id).all()
+                for my_file in files:
+                    session.delete(my_file)
+                session.delete(skate)
 
             session.delete(event)
             session.commit()
