@@ -2,8 +2,8 @@ from enum import Enum
 
 
 class FootageExceptions(Enum):
-    SCRATCH = 'scratch'
-    NO_VIDEO = 'no video'
-    NO_PHOTO = 'no photo'
-    MULTIPLE_VIDEOS = 'multiple videos'
+    SCRATCH = 'SCRATCH'
+    NO_VIDEO = 'NO_VIDEO'
+    NO_PHOTO = 'NO_PHOTO'
+    MULTIPLE_VIDEOS = 'MULTIPLE_VIDEOS'
     

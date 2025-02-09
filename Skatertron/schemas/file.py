@@ -1,4 +1,7 @@
+import datetime
+
 from pydantic import BaseModel, ConfigDict
+from Skatertron.enums.file_status import FileStatus
 
 
 class File(BaseModel):
@@ -8,3 +11,5 @@ class File(BaseModel):
     file_name: str
     file_path: str
     file_type: str
+    creation_time: datetime.datetime
+    file_status_enum: FileStatus
