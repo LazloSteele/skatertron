@@ -180,4 +180,5 @@ async def upload_from_queue(
         contents = await file.read()  # Read the contents of the file
         print(f"Received file: {file.filename} with skate_id: {skate_id}")
 
+
     return {"message": "Upload successful"}

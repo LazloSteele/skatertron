@@ -7,7 +7,17 @@ document.addEventListener('click', async (event) => {
 
     try {
         // Open file picker
-        const [fileHandle] = await window.showOpenFilePicker();
+        const [fileHandle] = await window.showOpenFilePicker({
+            types: [
+                {
+                    description: 'Image and Video files',
+                    accept: {
+                        'image/*': ['.png', '.jpg', '.jpeg', '.gif'],
+                        'video/*': ['.mp4', '.mov', '.avi', '.mkv']
+                    }
+                }
+            ]
+        });
         const skate_id = button.getAttribute('skate-id');
 
         const uploadRequest = {
