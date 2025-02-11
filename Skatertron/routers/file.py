@@ -1,15 +1,18 @@
-from fastapi import APIRouter, HTTPException, Request, UploadFile, File, Form
+from fastapi import APIRouter, HTTPException, Request, UploadFile, File, Form, WebSocket
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+import json
+import asyncio
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import UnmappedInstanceError
 
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, List, Dict
 
 from Skatertron.models.file import File as FileDBModel
 from Skatertron.schemas.file import File as FileSchema
+from Skatertron.schemas.upload_item import UploadItem
 from Skatertron.database import get_db_session
 
 import shutil
@@ -63,6 +66,11 @@ def create_file(competition: Annotated[str, Form()],
         raise HTTPException(422, "Missing data from file model.")
 
 
+@router.get("/{file_id}/status")
+def get_file_status_by_id(file_id: int):
+    pass
+
+
 @router.get("/", response_model=list[FileSchema])
 def get_all_files():
     all_files = get_db_session().__next__().query(FileDBModel).all()
@@ -104,6 +112,7 @@ def get_media_by_id(file_id: int, request: Request):
             )
     except IntegrityError:
         raise HTTPException(404, f"File with id #{file_id} not found.")
+
 
 @router.get("/files_by_skate/{skate_id}", response_class=HTMLResponse)
 def get_files_by_skate(request: Request, skate_id: int):
@@ -152,3 +161,23 @@ def delete_file(file_id: int):
             session.commit()
         except UnmappedInstanceError:
             raise HTTPException(404, f"File with id: #{file_id} not found.")
+
+
+@router.post("/{file_id}/stage")
+def stage_file(
+        upload_request: dict
+):
+    pass
+
+
+@router.post("/bulk_upload")
+async def upload_from_queue(
+        files: List[UploadFile] = File(...),
+        skate_ids: str = Form(...),
+):
+    skate_ids_list = json.loads(skate_ids)  # Deserialize skate_ids from JSON string
+    for file, skate_id in zip(files, skate_ids_list):
+        contents = await file.read()  # Read the contents of the file
+        print(f"Received file: {file.filename} with skate_id: {skate_id}")
+
+    return {"message": "Upload successful"}

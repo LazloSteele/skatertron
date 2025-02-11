@@ -1,4 +1,14 @@
-<sl-button onclick="new_event_modal.show()">New Event</sl-button>
+<sl-button-group>
+    <sl-button onclick="new_event_modal.show()">New Event</sl-button>
+    <div
+            id="bulk_upload_placeholder"
+            hx-get="/messages/upload_queue"
+            hx-swap="outerHTML"
+    >
+
+    </div>
+</sl-button-group>
+
 
 <sl-tree class="sortable" id="EventsList">
     <div class="htmx-indicator">Updating...</div>
@@ -9,8 +19,7 @@
     {% endfor %}
 </sl-tree>
 
-<sl-dialog id="new_event_modal">
-        <h1>New Event</h1>
+<sl-dialog id="new_event_modal" label="New Event">
         <h3>Bulk Upload with PDF</h3>
         <form
                 hx-post="/events/pdf_scraper"

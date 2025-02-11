@@ -10,12 +10,15 @@
     {{skate.skater_name}}
     <sl-button-group style="margin-left:1em">
         <sl-button
-                class="add-file-btn"
-                data-event="{{ skate.event_id }}"
-                data-skate="{{ skate.id }}"
+                data-file-picker
+                class="filePicker"
+                variant="primary"
+                event-id="{{ skate.event_id }}"
+                skate-id="{{ skate.id }}"
         >
             Add File
         </sl-button>
+        <p id="filePath"></p>
         <sl-dropdown>
             <sl-button slot="trigger" caret>Exceptions</sl-button>
             <sl-menu>
@@ -26,7 +29,7 @@
                 <sl-menu-item type="checkbox">Multiple Videos</sl-menu-item>
             </sl-menu>
         </sl-dropdown>
-
+        <div id="staged_message_{{ skate.id }}" hx-get="/messages/staged"></div>
     </sl-button-group>
 </sl-tree-item>
 

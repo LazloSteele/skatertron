@@ -2,7 +2,6 @@ from pydantic import BaseModel, ConfigDict, conint
 from Skatertron.enums.footage_exceptions import FootageExceptions
 
 
-
 class Skate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

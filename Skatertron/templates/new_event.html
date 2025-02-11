@@ -21,14 +21,9 @@
 
 </sl-tree-item>
 
-<sl-dialog
-        class="new_skate_modal"
-        id="new_skate_modal_{{ event.id }}"
-
->
-        <h1>New Skate</h1>
+<sl-dialog id="new_skate_modal_{{ event.id }}" label="New Skate">
         <form>
-            <label for="skater_name">Skater Name: </label><br>
+            <label for="skater_name">Skater Name: </label>
             <input type="text" id="skater_name" name="skater_name" autocomplete="off"/><br>
             <input type="hidden" name="event_id" value={{ event.id }}>
 

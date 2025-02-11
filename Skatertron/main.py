@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from routers import competition, event, skate, file
+from routers import competition, event, skate, file, messages
 import uvicorn
 import os
 
@@ -24,6 +24,7 @@ app.include_router(competition.router)
 app.include_router(event.router)
 app.include_router(skate.router)
 app.include_router(file.router)
+app.include_router(messages.router)
 
 
 # root path for main app frame
