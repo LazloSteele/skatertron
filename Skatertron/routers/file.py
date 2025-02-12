@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Request, UploadFile, File, Form, WebSocket
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 import json
 import asyncio
@@ -14,6 +14,7 @@ from Skatertron.models.file import File as FileDBModel
 from Skatertron.schemas.file import File as FileSchema
 from Skatertron.schemas.upload_item import UploadItem
 from Skatertron.database import get_db_session
+from Skatertron.utils import extract_metadata
 
 import shutil
 
@@ -180,5 +181,13 @@ async def upload_from_queue(
         contents = await file.read()  # Read the contents of the file
         print(f"Received file: {file.filename} with skate_id: {skate_id}")
 
-
     return {"message": "Upload successful"}
+
+
+@router.post("/get_creation_datetime")
+async def get_creation_datetime(file_slice: UploadFile = File(...)):
+    file_contents = await file_slice.read()
+
+    metadata = await extract_metadata.get_video_metadata(file_contents)
+
+    return JSONResponse(content={"metadata": metadata})

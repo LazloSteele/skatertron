@@ -18,11 +18,14 @@ document.addEventListener('click', async (event) => {
                 }
             ]
         });
+        const file = await fileHandle.getFile();
         const skate_id = button.getAttribute('skate-id');
+        const creation_datetime = await extractCreationTime(file);
 
         const uploadRequest = {
-            file_handle: fileHandle,
-            skate_id: skate_id
+            file: file,
+            skate_id: skate_id,
+            creation_datetime: creation_datetime
         };
 
         if (uploadQueue.length === 0) {
@@ -55,7 +58,6 @@ async function uploadFilesToServer() {
     const skateIds = [];
     // Iterate through the uploadQueue and add files to FormData
     for (const request of uploadQueue) {
-        const file = await request.file_handle.getFile();
         formData.append('files', file);
         skateIds.push(request.skate_id);
     }
@@ -82,4 +84,26 @@ async function uploadFilesToServer() {
     }
 
 }
+
+async function extractCreationTime(file) {
+    // Convert the file to an ArrayBuffer asynchronously using FileReader
+    try {
+    const slice = file.slice(0, 25 * 1024); // get first 20kb for ensuring metadata is contained
+
+    const formData = new FormData();
+    formData.append("file_slice", slice, file.name);
+
+    const response = await fetch('/files/get_creation_datetime', {
+        method: 'POST',
+        body: formData
+    });
+
+    const result = await response.json();
+    console.log(result);
+    } catch (error) {
+        console.error('Error while sending file slice...', error);
+    }
+}
+
+
 
