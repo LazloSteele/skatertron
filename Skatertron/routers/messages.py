@@ -12,11 +12,14 @@ router = APIRouter(
 templates = Jinja2Templates(directory="templates")
 
 
-@router.get("/staged", response_class=HTMLResponse)
-def get_staged_message(request: Request):
+@router.get("/{skate_id}/staged", response_class=HTMLResponse)
+def get_staged_message(request: Request, skate_id: int):
     return templates.TemplateResponse(
         request=request,
-        name="staged.html"
+        name="staged.html",
+        context={
+            "skate_id": skate_id
+        }
     )
 
 

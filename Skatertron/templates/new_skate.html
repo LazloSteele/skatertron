@@ -29,7 +29,7 @@
                 <sl-menu-item type="checkbox">Multiple Videos</sl-menu-item>
             </sl-menu>
         </sl-dropdown>
-        <div id="staged_message_{{ skate.id }}" hx-get="/messages/staged"></div>
+        <div id="staged_message_{{ skate.id }}" hx-get="/messages/{{ skate.id }}/staged"></div>
     </sl-button-group>
 </sl-tree-item>
 

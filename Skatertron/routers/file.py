@@ -190,4 +190,4 @@ async def get_creation_datetime(file_slice: UploadFile = File(...)):
 
     metadata = await extract_metadata.get_video_metadata(file_contents)
 
-    return JSONResponse(content={"metadata": metadata})
+    return JSONResponse(content=metadata)

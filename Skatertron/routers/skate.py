@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Request, Form, UploadFile, File
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 
 from typing import Annotated
 from tempfile import NamedTemporaryFile
@@ -84,6 +84,27 @@ def get_context_by_skate_id(skate_id: int, request: Request):
         raise HTTPException(404, f"Skate with id #{skate_id} not found.")
 
 
+@router.get("/{skate_id}/details/json", response_class=JSONResponse)
+def get_context_by_skate_id_json(skate_id: int, request: Request):
+    try:
+        with get_db_session().__next__() as session:
+            current_skate = get_skate_by_id(skate_id)
+
+        content = {
+            "id": skate_id,
+            "event_id": current_skate.event_id,
+            "skater_name": current_skate.skater_name,
+            "footage_exceptions": current_skate.footage_exceptions,
+            "skate_position": current_skate.skate_position
+        }
+        print(content)
+        return JSONResponse(
+            content=content,
+            status_code=200
+        )
+
+    except IntegrityError:
+        raise HTTPException(404, f"Skate with id #{skate_id} not found.")
 @router.get("/{skate_id}/files", response_class=HTMLResponse)
 def get_files_by_skate_id(request: Request, skate_id: int):
     try:

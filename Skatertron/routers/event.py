@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Request, Form, File, UploadFile
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 
 from sqlalchemy import desc
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
@@ -207,3 +207,28 @@ def delete_event(event_id: int):
             session.commit()
         except UnmappedInstanceError:
             raise HTTPException(404, f"Event with id: #{event_id} not found.")
+
+
+@router.get("/{event_id}/details/json", response_class=JSONResponse)
+def get_event_details_json(event_id:int):
+    try:
+        with get_db_session().__next__() as session:
+            event = session.query(EventDBModel).filter_by(id=event_id).first()
+
+            content = {
+                "id": event.id,
+                "competition_id": event.competition_id,
+                "event_number": event.event_number,
+                "event_name": event.event_name,
+                "event_rink": event.event_rink,
+                "event_position": event.event_position
+            }
+            print(content)
+
+            return JSONResponse(
+                content=content,
+                status_code=200
+            )
+
+    except IntegrityError:
+        raise HTTPException(404, f"Event with id #{event_id} not found.")
