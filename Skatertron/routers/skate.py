@@ -89,13 +89,16 @@ def get_context_by_skate_id_json(skate_id: int, request: Request):
     try:
         with get_db_session().__next__() as session:
             current_skate = get_skate_by_id(skate_id)
+            current_event = session.query(EventDBModel).filter_by(id=current_skate.event_id).first()
 
         content = {
             "id": skate_id,
             "event_id": current_skate.event_id,
             "skater_name": current_skate.skater_name,
             "footage_exceptions": current_skate.footage_exceptions,
-            "skate_position": current_skate.skate_position
+            "skate_position": current_skate.skate_position,
+            "competition_id": current_event.competition_id,
+            "event_rink": current_event.event_rink
         }
         print(content)
         return JSONResponse(
@@ -105,6 +108,32 @@ def get_context_by_skate_id_json(skate_id: int, request: Request):
 
     except IntegrityError:
         raise HTTPException(404, f"Skate with id #{skate_id} not found.")
+
+
+@router.get("/details/json", response_class=JSONResponse)
+def get_context_all_json(request: Request):
+    try:
+        with get_db_session().__next__() as session:
+            all_skates = [
+                {**skate.to_dict(), 'competition_id': event.competition_id, 'event_rink': event.event_rink}
+                for skate, event in session.query(SkateDBModel, EventDBModel)
+                .join(EventDBModel, EventDBModel.id == SkateDBModel.event_id)
+                .all()
+            ]
+
+        content = {
+            "all_skates": all_skates
+        }
+
+        return JSONResponse(
+            content=content,
+            status_code=200
+        )
+
+    except IntegrityError:
+        raise HTTPException(404, f"Skates not found!")
+
+
 @router.get("/{skate_id}/files", response_class=HTMLResponse)
 def get_files_by_skate_id(request: Request, skate_id: int):
     try:

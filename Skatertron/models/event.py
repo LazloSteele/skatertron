@@ -14,5 +14,9 @@ class Event(Base):
     event_rink: Mapped[str] = mapped_column(String(25))
     event_position: Mapped[int] = mapped_column(Integer)
 
+    def to_dict(self):
+        obj_dict = {column.key: getattr(self, column.key) for column in self.__mapper__.columns}
+        return obj_dict
+
     def __repr__(self) -> str:
         return f"#{self.event_number} {self.event_name}"
