@@ -163,7 +163,7 @@ async function auto_populate_video(starting_skate_id) {
                 const creation_datetime = await extractCreationTime(file);
 
                 // Check if the creation_datetime exists in uploadQueue, ascending with skate_position for this competition_id
-                const competitionKey = `${result.competition_id}-${result.event_rink}`; // TODO: add join to events table to get these values correctly
+                const competitionKey = `${result.competition_id}-${result.event_rink}`; // add join to events table to get these values correctly
                 const existingSkates = skatesByCompetition[competitionKey];
 
                 // Debugging: Check if the existing skates are correctly matched by competition_id and event_rink
