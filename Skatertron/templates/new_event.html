@@ -10,12 +10,21 @@
 >
 
     #{{event.event_number}} {{event.event_name}}
-    <sl-icon-button hx-delete="/events/{{ event.id }}" name="trash">
-    </sl-icon-button>
+    <sl-button-group>
 
-    <sl-tree-item>
-        <sl-button onclick="new_skate_modal_{{ event.id }}.show()">New Skate</sl-button>
-    </sl-tree-item>
+        <sl-tooltip content="Add new skate to {{ event.event_name }}!">
+            <sl-icon-button onclick="new_skate_modal_{{ event.id }}.show()" name="file-earmark-plus"></sl-icon-button>
+        </sl-tooltip>
+
+        <sl-tooltip content="Edit {{ event.event_name }}!">
+            <sl-icon-button name="pencil"></sl-icon-button>
+        </sl-tooltip>
+
+        <sl-tooltip content="Delete {{ event.event_name }}!">
+            <sl-icon-button hx-delete="/events/{{ event.id }}" name="trash"></sl-icon-button>
+        </sl-tooltip>
+
+    </sl-button-group>
 
     <sl-tree-item class="skate_tree_item" id="skate_tree_{{ event.id }}"></sl-tree-item>
 

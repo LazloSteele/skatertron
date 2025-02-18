@@ -43,6 +43,7 @@
         <div class="AppFrame" id="AppFrame">
             <div class="CompetitionBrowser">
                 <sl-button-group label="Competition Button Group">
+
                     <sl-select
 
                             placeholder="--Please Select Competition--"
@@ -50,12 +51,25 @@
                             hx-target="#EventBrowser"
                             hoist
                             clearable
+                            style="width: 20em;"
                     >
                         {% for competition in competitions_list %}
                         {% include 'new_competition.html' %}
                         {% endfor %}
                     </sl-select>
-                    <sl-button class="ModalButton" onclick="new_competition_modal.show()">New Competition</sl-button>
+
+                    <sl-tooltip content="Add new competition!">
+                        <sl-icon-button onclick="new_competition_modal.show()" name="file-earmark-plus"></sl-icon-button>
+                    </sl-tooltip>
+
+                    <sl-tooltip content="Edit selected competition! [UNDER CONSTRUCTION]">
+                        <sl-icon-button name="pencil"></sl-icon-button>
+                    </sl-tooltip>
+
+                    <sl-tooltip content="Delete selected competition! [UNDER CONSTRUCTION]">
+                        <sl-icon-button name="trash"></sl-icon-button>
+                    </sl-tooltip>
+
                 </sl-button-group>
 
                 <sl-dialog id="new_competition_modal">
@@ -79,7 +93,6 @@
                 </sl-dialog>
             </div>
             <div class="EventBrowser" id="EventBrowser">
-                Please Select a Competition
             </div>
         </div>
         <script src="{{ url_for('static', path='js/app.js') }}"></script>

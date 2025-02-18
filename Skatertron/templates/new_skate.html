@@ -9,16 +9,6 @@
 >
     {{skate.skater_name}}
     <sl-button-group style="margin-left:1em">
-        <sl-button
-                data-file-picker
-                class="filePicker"
-                variant="primary"
-                event-id="{{ skate.event_id }}"
-                skate-id="{{ skate.id }}"
-        >
-            Add File
-        </sl-button>
-        <p id="filePath"></p>
         <sl-dropdown>
             <sl-button slot="trigger" caret>Exceptions</sl-button>
             <sl-menu>
@@ -29,6 +19,27 @@
                 <sl-menu-item type="checkbox">Multiple Videos</sl-menu-item>
             </sl-menu>
         </sl-dropdown>
+
+        <sl-tooltip content="Add file to {{ skate.skater_name }}!">
+            <sl-icon-button
+                data-file-picker
+                class="filePicker"
+                variant="primary"
+                event-id="{{ skate.event_id }}"
+                skate-id="{{ skate.id }}"
+                name="file-earmark-plus"
+            >
+            </sl-icon-button>
+        </sl-tooltip>
+
+        <sl-tooltip content="Edit {{ skate.skater_name }}! [UNDER CONSTRUCTION]">
+            <sl-icon-button name="pencil"></sl-icon-button>
+        </sl-tooltip>
+
+        <sl-tooltip content="Delete {{ skate.skater_name }}! [UNDER CONSTRUCTION]">
+            <sl-icon-button name="trash"></sl-icon-button>
+        </sl-tooltip>
+
         <div id="staged_message_{{ skate.id }}" hx-get="/messages/{{ skate.id }}/staged"></div>
     </sl-button-group>
 </sl-tree-item>

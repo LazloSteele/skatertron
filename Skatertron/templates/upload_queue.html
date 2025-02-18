@@ -1,7 +1,8 @@
-<sl-button
-        id="upload_queue_btn"
-        variant="primary"
-        onclick="uploadFilesToServer()"
->
-    Upload Queue!
-</sl-button>
+<sl-tooltip content="Upload Queue!">
+    <sl-icon-button
+            id="upload_queue_btn"
+            onclick="uploadFilesToServer()"
+            name="cloud-upload"
+    >
+    </sl-icon-button>
+</sl-tooltip>
