@@ -1,17 +1,26 @@
 <sl-tree-item>
-    Video
     {% for file in files_list %}
         {% if "video" in file.file_type %}
-            {% include 'file.html' %}
+            <video width="320" height="240" controls>
+                <source src="{{ file.file_path }}{{ file.file_name }}" type="video/mp4">
+                <source src="{{ file.file_path }}{{ file.file_name }}" type="video/mov">
+
+                Your browser does not support the video tag.
+            </video>
         {% endif %}
     {% endfor %}
 </sl-tree-item>
 
 <sl-tree-item>
-    Photo
-    {% for file in files_list %}
-        {% if "image" in file.file_type %}
-            {% include 'file.html' %}
-        {% endif %}
-    {% endfor %}
+    <div class="mouse-dragging">
+        <sl-carousel class="scroll-hint" navigation style="--scroll-hint: 10%;">
+            {% for file in files_list %}
+                {% if "image" in file.file_type %}
+                    <sl-carousel-item>
+                        {% include 'photo.html' %}
+                    </sl-carousel-item>
+                {% endif %}
+            {% endfor %}
+        </sl-carousel>
+    </div>
 </sl-tree-item>

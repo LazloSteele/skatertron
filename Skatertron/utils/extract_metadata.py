@@ -1,15 +1,12 @@
-import os
-import subprocess
-import json
-import tempfile
-
-
 import subprocess
 import tempfile
 import json
 from fastapi import APIRouter, UploadFile, File
-from fastapi.responses import JSONResponse
 import os
+
+from io import BytesIO
+from PIL import Image
+from datetime import datetime
 
 router = APIRouter()
 
@@ -63,6 +60,28 @@ async def get_video_metadata(file_contents):
         return {"error": str(e)}
 
 
+async def get_image_metadata(file_contents):
+    try:
+        # Use PIL (Pillow) to extract EXIF metadata from image files
+        image = Image.open(BytesIO(file_contents))
+        creation_time = None
 
-if __name__ == "__main__":
-    print(json.dumps(get_video_metadata(r"C:\Users\Laurie Steele\Downloads\2023 Aspen-031 Basic 4 Program-Mary Grace Crump.MP4"),indent=2))
+        if image.format == "JPEG":
+            # Extract EXIF data
+            exif_data = image._getexif()
+            if exif_data:
+                for tag, value in exif_data.items():
+                    # Look for DateTimeOriginal in EXIF data
+                    if tag == 36867:  # DateTimeOriginal tag
+                        creation_time = value
+                        break
+
+        if not creation_time:
+            # If no EXIF data, return the file's last-modified time or current time
+            creation_time = datetime.utcnow().isoformat()
+
+        return {"creation_time": creation_time}
+
+    except Exception as e:
+        print(f"Error extracting image metadata: {e}")
+        return {"error": str(e)}

@@ -3,6 +3,9 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 import json
 import asyncio
+from datetime import datetime
+
+from sqlalchemy.orm import aliased
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import UnmappedInstanceError
@@ -11,12 +14,17 @@ from pathlib import Path
 from typing import Annotated, List, Dict
 
 from Skatertron.models.file import File as FileDBModel
+from Skatertron.models.skate import Skate as SkateDBModel
+from Skatertron.models.event import Event as EventDBModel
+from Skatertron.models.competition import Competition as CompetitionDBModel
 from Skatertron.schemas.file import File as FileSchema
 from Skatertron.schemas.upload_item import UploadItem
 from Skatertron.database import get_db_session
+from Skatertron.database import session_manager
 from Skatertron.utils import extract_metadata
 
 import shutil
+import magic
 
 router = APIRouter(
     prefix="/files",
@@ -28,16 +36,27 @@ templates = Jinja2Templates(directory="templates")
 
 
 @router.post("/", status_code=201, response_class=HTMLResponse)
-def create_file(competition: Annotated[str, Form()],
-                event: Annotated[str, Form()],
-                skater: Annotated[str, Form()],
+async def create_file(
                 skate_id: Annotated[str, Form()],
+                file_name: Annotated[str, Form()],
+                creation_datetime: Annotated[datetime, Form()],
                 request: Request,
                 uploaded_file: UploadFile = File(...)
                 ):
+    try:
+        with session_manager.session() as session:
+            current_skate = session.query(SkateDBModel).filter_by(id=int(skate_id)).first()
+            current_event = session.query(EventDBModel).filter_by(id=current_skate.event_id).first()
+            current_competition = session.query(CompetitionDBModel).filter_by(id=current_event.competition_id).first()
 
-    file_name = f"{competition} - {event} - {skater} - {uploaded_file.filename}"
-    file_path = f"static/media/{competition}/{event}/"
+            competition_path = f"{current_competition.competition_year}_{current_competition.competition_name}"
+            event_path = f"{current_event.event_number}_{current_event.event_name}"
+
+    except IntegrityError:
+        raise HTTPException(404, "Data not found.")
+
+    file_name = f"{current_skate.skater_name}_{file_name}"
+    file_path = f"static/media/{competition_path}/{event_path}/"
     path = Path(f"{file_path}{file_name}")
     path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -48,10 +67,11 @@ def create_file(competition: Annotated[str, Form()],
         file = FileDBModel(skate_id=int(skate_id),
                            file_name=file_name,
                            file_path=file_path,
-                           file_type=uploaded_file.content_type
+                           file_type=uploaded_file.content_type,
+                           creation_time=creation_datetime,
                            )
 
-        with get_db_session().__next__() as session:
+        with session_manager.session() as session:
             session.add(file)
             session.commit()
 
@@ -188,6 +208,19 @@ async def upload_from_queue(
 async def get_creation_datetime(file_slice: UploadFile = File(...)):
     file_contents = await file_slice.read()
 
-    metadata = await extract_metadata.get_video_metadata(file_contents)
+    file_type = await get_file_type(file_contents)
+
+    if file_type.startswith("image/"):
+        metadata = await extract_metadata.get_image_metadata(file_contents)
+    elif file_type.startswith("video/"):
+        metadata = await extract_metadata.get_video_metadata(file_contents)
+    else:
+        raise HTTPException(status_code=400, detail="Unsupported file type!")
 
     return JSONResponse(content=metadata)
+
+
+async def get_file_type(file_path):
+    loop = asyncio.get_event_loop()
+    mime = await loop.run_in_executor(None, lambda: magic.Magic(mime=True).from_buffer(file_path))
+    return mime

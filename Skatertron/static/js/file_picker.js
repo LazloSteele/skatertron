@@ -53,6 +53,7 @@ async function stage_file(file, filename, skate_id, creation_datetime) {
 
             const triggerElement = document.querySelector(`#staged_message_${skate_id}`);
             if (triggerElement) {
+                console.log(`staging file ${filename} to skate id #${skate_id}!`)
                 // Dispatch a custom event or simulate the event that triggers htmx (e.g., 'click', 'change', etc.)
                 htmx.trigger(triggerElement, 'click');
 
@@ -63,43 +64,50 @@ async function stage_file(file, filename, skate_id, creation_datetime) {
 }
 
 // Function to actually upload the files
-async function uploadFilesToServer() {
-    const formData = new FormData();
+async function uploadFilesToServer(limit=3) {
+    const queue = [...uploadQueue]; // Clone the array
+    const activeUploads = new Set();
 
-    const skateIds = [];
-    // Iterate through the uploadQueue and add files to FormData
-    for (const request of uploadQueue) {
-        formData.append('files', file);
-        skateIds.push(request.skate_id);
+    async function processNext() {
+        if (queue.length === 0) return;
+
+        const upload = queue.shift(); // Take the next file
+        const formData = new FormData();
+        formData.append("uploaded_file", upload.file);
+        formData.append("file_name", upload.filename);
+        formData.append("skate_id", upload.skate_id);
+        formData.append("creation_datetime", upload.creation_datetime);
+
+        const uploadPromise = fetch("/files", {
+            method: "POST",
+            body: formData,
+        }).then(response => {
+            if (!response.ok) throw new Error(`Failed to upload ${upload.filename}`);
+            console.log(`Successfully uploaded ${upload.filename}`);
+        }).catch(error => {
+            console.error(`Error uploading ${upload.filename}:`, error);
+        }).finally(() => {
+            activeUploads.delete(uploadPromise);
+            processNext(); // Start the next upload
+        });
+
+        activeUploads.add(uploadPromise);
+
+        // Wait if we have reached the limit
+        if (activeUploads.size >= limit) {
+            await Promise.race(activeUploads);
+        }
+
+        processNext();
     }
 
-    // Append the skate_ids as a separate form field, serialized as a JSON string
-    formData.append('skate_ids', JSON.stringify(skateIds));
-
-    // Send the request via fetch
-    const response = await fetch('/files/bulk_upload', {
-        method: 'POST',
-        body: formData
-    });
-
-    // Check the response status (200 OK) and clear the queue if successful
-    if (response.ok) {
-        const result = await response.json();
-        console.log(result);  // Log the result of the upload
-
-        // Clear the upload queue after successful upload
-        uploadQueue.length = 0;  // This will empty the uploadQueue array
-        console.log("Upload queue cleared.");
-    } else {
-        console.error("Upload failed with status:", response.status);
-    }
-
+    await Promise.all([...Array(limit)].map(() => processNext())); // Start limited workers
 }
 
 async function extractCreationTime(file) {
     // Convert the file to an ArrayBuffer asynchronously using FileReader
     try {
-        const slice = file.slice(0, 50 * 1024); // get first 50kb for ensuring metadata is contained
+        const slice = file.slice(0, 200 * 1024); // get first 50kb for ensuring metadata is contained
 
         const formData = new FormData();
         formData.append("file_slice", slice, file.name);
@@ -119,16 +127,20 @@ async function extractCreationTime(file) {
     }
 }
 
-async function auto_populate_video(starting_skate_id) {
-    try {
-        const directoryHandle = await window.showDirectoryPicker();
+async function auto_populate_files(starting_skate_id) {
+    const directoryHandle = await window.showDirectoryPicker();
+    auto_populate_video(starting_skate_id, directoryHandle);
 
+}
+
+async function auto_populate_video(starting_skate_id, directoryHandle) {
+    try {
         // Fetch details of the starting skate
         const response = await fetch(`skates/${starting_skate_id}/details/json`);
         const result = await response.json();
 
-        const starting_skate_position = result.skate_position;
-        let current_skate_position = starting_skate_position + 1;
+        const starting_skate_position = result.skate_position + 1;
+        let current_skate_position = starting_skate_position;
         console.log(`next skate position: ${current_skate_position}`)
 
         // Fetch all skates to check for existing creation_datetime in upload queue

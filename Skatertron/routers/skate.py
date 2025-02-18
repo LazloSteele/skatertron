@@ -34,7 +34,7 @@ def create_skate(event_id: Annotated[int, Form()],
                              skater_name=skater_name
                              )
 
-        with get_db_session().__next__() as session:
+        with get_db_session() as session:
             session.add(skate)
             session.commit()
 
