@@ -1,5 +1,6 @@
 <sl-button-group>
     <sl-button onclick="new_event_modal.show()">New Event</sl-button>
+    <sl-button onclick="auto_populate_files({{ skate_id }})">Auto-Populate</sl-button>
     <div
             id="bulk_upload_placeholder"
             hx-get="/messages/upload_queue"
@@ -9,8 +10,10 @@
     </div>
 </sl-button-group>
 
-
 <sl-tree class="sortable" id="EventsList">
+    <sl-icon name="plus-square" slot="expand-icon"></sl-icon>
+    <sl-icon name="dash-square" slot="collapse-icon"></sl-icon>
+
     <div class="htmx-indicator">Updating...</div>
     {% for event in events_list %}
     {% if event.event_rink %}

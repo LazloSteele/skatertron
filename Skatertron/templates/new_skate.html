@@ -6,6 +6,7 @@
         hx-target="this"
         hx-swap="beforeend"
         value="{{ skate.event_id }}"
+        onclick="selectSkateItem({{ skate.id }})"
 >
     {{skate.skater_name}}
     <sl-button-group style="margin-left:1em">
@@ -41,7 +42,12 @@
             <sl-icon-button name="trash"></sl-icon-button>
         </sl-tooltip>
 
-        <div id="staged_message_{{ skate.id }}" hx-get="/messages/{{ skate.id }}/staged"></div>
+        <div
+                id="staged_message_{{ skate.id }}"
+                hx-get="/messages/{{ skate.id }}/staged"
+                hx-trigger="click once"
+        >
+        </div>
     </sl-button-group>
 </sl-tree-item>
 

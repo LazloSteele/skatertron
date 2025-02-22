@@ -1,4 +1,11 @@
 const uploadQueue = [];
+let selectedSkateId = null;
+
+// Function to set the selected skate_id when a tree item is clicked
+function selectSkateItem(skateId) {
+    selectedSkateId = skateId;
+    console.log("Selected Skate ID:", selectedSkateId);  // For debugging
+}
 
 document.addEventListener('click', async (event) => {
     // Look for an <sl-button> with the 'data-file-picker' attribute
@@ -41,6 +48,17 @@ async function stage_file(file, filename, skate_id, creation_datetime) {
                 creation_datetime: creation_datetime
             };
 
+        const exists = uploadQueue.some(u => {
+            console.log(uploadRequest.file.fileType);
+            const isVideo = u.fileType === 'video' && uploadRequest.fileType === 'video';
+            const isImage = u.fileType === 'image' && uploadRequest.fileType === 'image';
+
+            return (isVideo || isImage) && u.creation_datetime === uploadRequest.creation_datetime;
+        });
+
+        if (exists) {
+            throw new Error(`A video with the creation datetime ${uploadRequest.creation_datetime} already exists. Skipping this file.`)
+        } else {
             if (uploadQueue.length === 0) {
                 const triggerElement = document.querySelector("#bulk_upload_placeholder");
                 if (triggerElement) {
@@ -48,16 +66,16 @@ async function stage_file(file, filename, skate_id, creation_datetime) {
                     htmx.trigger(triggerElement, 'click');
                 }
             }
-
             uploadQueue.push(uploadRequest);
+        }
 
-            const triggerElement = document.querySelector(`#staged_message_${skate_id}`);
-            if (triggerElement) {
-                console.log(`staging file ${filename} to skate id #${skate_id}!`)
-                // Dispatch a custom event or simulate the event that triggers htmx (e.g., 'click', 'change', etc.)
-                htmx.trigger(triggerElement, 'click');
+        const triggerElement = document.querySelector(`#staged_message_${skate_id}`);
+        if (triggerElement) {
+            console.log(`staging file ${filename} to skate id #${skate_id}!`)
+            // Dispatch a custom event or simulate the event that triggers htmx (e.g., 'click', 'change', etc.)
+            htmx.trigger(triggerElement, 'click');
+        }
 
-            }
     } catch (error) {
         console.error('File not staged.', error)
     }
