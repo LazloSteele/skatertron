@@ -2,7 +2,7 @@ const uploadQueue = [];
 
 document.addEventListener('click', async (event) => {
     // Look for an <sl-button> with the 'data-file-picker' attribute
-    const button = event.target.closest('sl-button[data-file-picker]');
+    const button = event.target.closest('sl-icon-button[data-file-picker]');
     if (!button) return; // Ignore unrelated buttons
 
     try {
@@ -130,7 +130,7 @@ async function extractCreationTime(file) {
 async function auto_populate_files(starting_skate_id) {
     const directoryHandle = await window.showDirectoryPicker();
     auto_populate_video(starting_skate_id, directoryHandle);
-
+    auto_populate_images(directoryHandle)
 }
 
 async function auto_populate_video(starting_skate_id, directoryHandle) {
@@ -147,7 +147,6 @@ async function auto_populate_video(starting_skate_id, directoryHandle) {
         const allSkatesResponse = await fetch(`skates/details/json`);
         const responseData = await allSkatesResponse.json();
         const allSkates = responseData.all_skates;  // Access the "skates" property that contains the array
-
 
         // Organize skates by competition_id and event_rink
         const skatesByCompetition = allSkates.reduce((acc, skate) => {
@@ -171,7 +170,6 @@ async function auto_populate_video(starting_skate_id, directoryHandle) {
             if (entry.kind === 'file' && isVideoFile(entry.name)) {
                 const file = await entry.getFile();
                 const filename = entry.name;
-                const skate_id = 1;
                 const creation_datetime = await extractCreationTime(file);
 
                 // Check if the creation_datetime exists in uploadQueue, ascending with skate_position for this competition_id
@@ -184,7 +182,6 @@ async function auto_populate_video(starting_skate_id, directoryHandle) {
                 // Add new file to the temporary list of uploads with its creation_datetime and skate_position
                 newUploads.push({
                     file,
-                    skate_id,
                     filename,
                     creation_datetime,
                     skate_position: current_skate_position++
@@ -232,7 +229,84 @@ async function auto_populate_video(starting_skate_id, directoryHandle) {
     }
 }
 
+// Function that processes all images in a directory handle
+async function auto_populate_images(directoryHandle) {
+    try {
+        // Read all entries from the directory into an array
+        const entries = [];
+        for await (const entry of directoryHandle.values()) {
+            entries.push(entry);
+        }
+
+        // Filter for image files
+        const imageFiles = entries.filter(
+            entry => entry.kind === 'file' && isImageFile(entry.name)
+        );
+
+        // Process each image file
+        for (const imageEntry of imageFiles) {
+            // Get the File object for this entry
+            const file = await imageEntry.getFile();
+            // Extract the creation time (assuming extractCreationTime returns an ISO string)
+            const creationDatetime = await extractCreationTime(file);
+
+            if (!creationDatetime) {
+                console.warn(`Could not extract creation time for ${imageEntry.name}`);
+                continue;
+            }
+
+            const imageCreationDate = new Date(creationDatetime);
+
+            // Determine which video range this image falls into
+            let assignedSkateId = null;
+
+            const videoQueue = uploadQueue.filter(item => isVideoFile(item.filename));
+            for (let i = 0; i < uploadQueue.length - 1; i++) {
+                const videoA = uploadQueue[i];
+                const videoB = uploadQueue[i + 1];
+                const videoADate = new Date(videoA.creation_datetime);
+                const videoBDate = new Date(videoB.creation_datetime);
+                // Check if the image's creation time is between videoA and videoB
+                if (imageCreationDate >= videoADate && imageCreationDate < videoBDate) {
+                    assignedSkateId = videoA.skate_id;
+                    break;
+                }
+            }
+
+            // Optionally, handle images outside any video range:
+            if (!assignedSkateId && uploadQueue.length > 0) {
+                const firstVideo = uploadQueue[0];
+                const lastVideo = uploadQueue[uploadQueue.length - 1];
+                const firstVideoDate = new Date(firstVideo.creation_datetime);
+                const lastVideoDate = new Date(lastVideo.creation_datetime);
+                if (imageCreationDate < firstVideoDate) {
+                    assignedSkateId = firstVideo.skate_id;
+                } else if (imageCreationDate >= lastVideoDate) {
+                    assignedSkateId = lastVideo.skate_id;
+                }
+            }
+
+            // If we found an assignment, stage the file for further processing
+            if (assignedSkateId !== null) {
+                stage_file(file, imageEntry.name, assignedSkateId, creationDatetime);
+                console.log(`Image ${imageEntry.name} assigned skate_id ${assignedSkateId}`);
+            } else {
+                console.log(`No matching video range found for image ${imageEntry.name}`);
+            }
+        }
+    } catch (error) {
+        console.error("Error while auto populating images:", error);
+    }
+}
+
 function isVideoFile(fileName) {
     const videoExtensions = ['.mp4', '.mov', '.avi', '.mkv', '.flv', '.webm'];
     return videoExtensions.some(ext => fileName.toLowerCase().endsWith(ext));
 }
+
+// Helper to determine if a file is an image (based on file extension)
+function isImageFile(fileName) {
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.webp'];
+    return imageExtensions.some(ext => fileName.toLowerCase().endsWith(ext));
+}
+

@@ -6,7 +6,7 @@ import os
 
 from io import BytesIO
 from PIL import Image
-from datetime import datetime
+from datetime import datetime, timedelta
 
 router = APIRouter()
 
@@ -66,14 +66,15 @@ async def get_image_metadata(file_contents):
         image = Image.open(BytesIO(file_contents))
         creation_time = None
 
-        if image.format == "JPEG":
+        if image.format in ["JPEG", "MPO"]:
             # Extract EXIF data
             exif_data = image._getexif()
             if exif_data:
                 for tag, value in exif_data.items():
                     # Look for DateTimeOriginal in EXIF data
                     if tag == 36867:  # DateTimeOriginal tag
-                        creation_time = value
+                        creation_time = datetime.strptime(value, "%Y:%m:%d %H:%M:%S") - timedelta(minutes=371)
+                        creation_time = creation_time.isoformat()
                         break
 
         if not creation_time:

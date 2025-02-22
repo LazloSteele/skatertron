@@ -14,7 +14,7 @@ from Skatertron.schemas.skate import Skate as SkateSchema
 from Skatertron.models.event import Event as EventDBModel
 from Skatertron.models.competition import Competition as CompetitionDBModel
 from Skatertron.models.file import File as FileDBModel
-from Skatertron.database import get_db_session
+from Skatertron.database import session_manager, get_db_session
 from Skatertron.utils import extract_metadata
 
 router = APIRouter(
@@ -34,7 +34,7 @@ def create_skate(event_id: Annotated[int, Form()],
                              skater_name=skater_name
                              )
 
-        with get_db_session() as session:
+        with session_manager.session() as session:
             session.add(skate)
             session.commit()
 
