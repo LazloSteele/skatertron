@@ -1,6 +1,5 @@
 const uploadQueue = [];
 
-
 document.addEventListener('click', async (event) => {
     // Look for an <sl-button> with the 'data-file-picker' attribute
     const button = event.target.closest('sl-icon-button[data-file-picker]');
@@ -55,20 +54,8 @@ async function stage_file(file, filename, skate_id, creation_datetime) {
             uploadQueue.push(uploadRequest);
         }
 
-        let triggerElement = document.querySelector("#bulk_upload_placeholder");
-        if (triggerElement) {
-            // Dispatch a custom event or simulate the event that triggers htmx (e.g., 'click', 'change', etc.)
-            htmx.trigger(triggerElement, 'click');
-        }
-
-        triggerElement = document.querySelector(`#staged_message_${skate_id}`);
-
-        if (triggerElement) {
-            console.log(`staging file ${filename} to skate id #${skate_id}!`)
-            // Dispatch a custom event or simulate the event that triggers htmx (e.g., 'click', 'change', etc.)
-            htmx.trigger(triggerElement, 'click');
-        }
-
+        add_staged_badges(skate_id)
+        console.log(`File ${filename} added to skate #${skate_id}!`)
     } catch (error) {
         console.error('File not staged.', error)
     }

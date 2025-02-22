@@ -31,3 +31,18 @@ function isImageFile(fileName) {
     const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.webp'];
     return imageExtensions.some(ext => fileName.toLowerCase().endsWith(ext));
 }
+
+async function add_staged_badges(skate_id) {
+    let triggerElement = document.querySelector("#bulk_upload_placeholder");
+    if (triggerElement) {
+        // Dispatch a custom event or simulate the event that triggers htmx (e.g., 'click', 'change', etc.)
+        htmx.trigger(triggerElement, 'click');
+    }
+
+    triggerElement = document.querySelector(`#staged_message_${skate_id}`);
+
+    if (triggerElement) {
+        // Dispatch a custom event or simulate the event that triggers htmx (e.g., 'click', 'change', etc.)
+        htmx.trigger(triggerElement, 'click');
+    }
+}
