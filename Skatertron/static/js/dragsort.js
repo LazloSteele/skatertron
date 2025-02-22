@@ -4,6 +4,14 @@ console.log('sortable_loaded');
 let lastSwapTime = 0;
 const throttleDelay = 2000; // 2 seconds delay to limit reinitialization frequency
 
+let selectedSkateId = null;
+
+// Function to set the selected skate_id when a tree item is clicked
+function selectSkateItem(skateId) {
+    selectedSkateId = skateId;
+    console.log("Selected Skate ID:", selectedSkateId);  // For debugging
+}
+
 // Function to initialize Sortable.js
 const initializeSortable = () => {
     const EventsList = document.querySelector('#EventsList');

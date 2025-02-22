@@ -1,11 +1,5 @@
 const uploadQueue = [];
-let selectedSkateId = null;
 
-// Function to set the selected skate_id when a tree item is clicked
-function selectSkateItem(skateId) {
-    selectedSkateId = skateId;
-    console.log("Selected Skate ID:", selectedSkateId);  // For debugging
-}
 
 document.addEventListener('click', async (event) => {
     // Look for an <sl-button> with the 'data-file-picker' attribute
@@ -49,27 +43,26 @@ async function stage_file(file, filename, skate_id, creation_datetime) {
             };
 
         const exists = uploadQueue.some(u => {
-            console.log(uploadRequest.file.fileType);
-            const isVideo = u.fileType === 'video' && uploadRequest.fileType === 'video';
-            const isImage = u.fileType === 'image' && uploadRequest.fileType === 'image';
+            const isVideo = isVideoFile(u.filename) && isVideoFile(uploadRequest.filename);
+            const isImage = isImageFile(u.filename) && isImageFile(uploadRequest.filename);
 
             return (isVideo || isImage) && u.creation_datetime === uploadRequest.creation_datetime;
         });
 
         if (exists) {
-            throw new Error(`A video with the creation datetime ${uploadRequest.creation_datetime} already exists. Skipping this file.`)
+            throw new Error(`A file with the creation datetime ${uploadRequest.creation_datetime} already exists. Skipping this file.`)
         } else {
-            if (uploadQueue.length === 0) {
-                const triggerElement = document.querySelector("#bulk_upload_placeholder");
-                if (triggerElement) {
-                    // Dispatch a custom event or simulate the event that triggers htmx (e.g., 'click', 'change', etc.)
-                    htmx.trigger(triggerElement, 'click');
-                }
-            }
             uploadQueue.push(uploadRequest);
         }
 
-        const triggerElement = document.querySelector(`#staged_message_${skate_id}`);
+        let triggerElement = document.querySelector("#bulk_upload_placeholder");
+        if (triggerElement) {
+            // Dispatch a custom event or simulate the event that triggers htmx (e.g., 'click', 'change', etc.)
+            htmx.trigger(triggerElement, 'click');
+        }
+
+        triggerElement = document.querySelector(`#staged_message_${skate_id}`);
+
         if (triggerElement) {
             console.log(`staging file ${filename} to skate id #${skate_id}!`)
             // Dispatch a custom event or simulate the event that triggers htmx (e.g., 'click', 'change', etc.)
@@ -120,29 +113,6 @@ async function uploadFilesToServer(limit=3) {
     }
 
     await Promise.all([...Array(limit)].map(() => processNext())); // Start limited workers
-}
-
-async function extractCreationTime(file) {
-    // Convert the file to an ArrayBuffer asynchronously using FileReader
-    try {
-        const slice = file.slice(0, 200 * 1024); // get first 50kb for ensuring metadata is contained
-
-        const formData = new FormData();
-        formData.append("file_slice", slice, file.name);
-
-        const response = await fetch('/files/get_creation_datetime', {
-            method: 'POST',
-            body: formData
-        });
-
-        const result = await response.json();
-        console.log(result);
-
-        return result.creation_time;
-
-    } catch (error) {
-        console.error('Error while sending file slice...', error);
-    }
 }
 
 async function auto_populate_files(starting_skate_id) {
@@ -316,15 +286,3 @@ async function auto_populate_images(directoryHandle) {
         console.error("Error while auto populating images:", error);
     }
 }
-
-function isVideoFile(fileName) {
-    const videoExtensions = ['.mp4', '.mov', '.avi', '.mkv', '.flv', '.webm'];
-    return videoExtensions.some(ext => fileName.toLowerCase().endsWith(ext));
-}
-
-// Helper to determine if a file is an image (based on file extension)
-function isImageFile(fileName) {
-    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.webp'];
-    return imageExtensions.some(ext => fileName.toLowerCase().endsWith(ext));
-}
-
