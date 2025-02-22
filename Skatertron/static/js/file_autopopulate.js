@@ -1,7 +1,18 @@
-async function auto_populate_files(starting_skate_id) {
-    const directoryHandle = await window.showDirectoryPicker();
-    auto_populate_video(starting_skate_id, directoryHandle);
-    auto_populate_images(directoryHandle)
+async function auto_populate_files() {
+    try {
+        const starting_skate_id = selectedSkateId;
+
+        if (starting_skate_id === null) {
+            throw new Error('Please select a skate!')
+        } else {
+            const directoryHandle = await window.showDirectoryPicker();
+
+            auto_populate_video(starting_skate_id, directoryHandle);
+            auto_populate_images(directoryHandle)
+        }
+    } catch (error) {
+        console.error('Error with selected skate: ', error);
+    }
 }
 
 async function auto_populate_video(starting_skate_id, directoryHandle) {

@@ -43,13 +43,12 @@ async function stage_file(file, filename, skate_id, creation_datetime) {
 
         const exists = uploadQueue.some(u => {
             const isVideo = isVideoFile(u.filename) && isVideoFile(uploadRequest.filename);
-            const isImage = isImageFile(u.filename) && isImageFile(uploadRequest.filename);
 
-            return (isVideo || isImage) && u.creation_datetime === uploadRequest.creation_datetime;
+            return isVideo && u.creation_datetime === uploadRequest.creation_datetime;
         });
 
         if (exists) {
-            throw new Error(`A file with the creation datetime ${uploadRequest.creation_datetime} already exists. Skipping this file.`)
+            throw new Error(`A video file with the creation datetime ${uploadRequest.creation_datetime} already exists. Skipping this file.`)
         } else {
             uploadQueue.push(uploadRequest);
         }

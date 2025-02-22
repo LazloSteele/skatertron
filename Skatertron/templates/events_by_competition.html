@@ -1,6 +1,6 @@
 <sl-button-group>
     <sl-button onclick="new_event_modal.show()">New Event</sl-button>
-    <sl-button onclick="auto_populate_files({{ skate_id }})">Auto-Populate</sl-button>
+    <sl-button onclick="auto_populate_files()">Auto-Populate</sl-button>
     <div
             id="bulk_upload_placeholder"
             hx-get="/messages/upload_queue"

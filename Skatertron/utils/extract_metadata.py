@@ -73,7 +73,7 @@ async def get_image_metadata(file_contents):
                 for tag, value in exif_data.items():
                     # Look for DateTimeOriginal in EXIF data
                     if tag == 36867:  # DateTimeOriginal tag
-                        creation_time = datetime.strptime(value, "%Y:%m:%d %H:%M:%S") - timedelta(minutes=371)
+                        creation_time = datetime.strptime(value, "%Y:%m:%d %H:%M:%S") - timedelta(minutes=11)
                         creation_time = creation_time.isoformat()
                         break
 
