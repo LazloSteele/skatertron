@@ -14,7 +14,7 @@ async function extractCreationTime(file) {
         const result = await response.json();
         console.log(result);
 
-        return result.creation_time;
+        return new Date(result.creation_time).getTime();
 
     } catch (error) {
         console.error('Error while sending file slice...', error);

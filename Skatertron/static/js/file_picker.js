@@ -43,7 +43,6 @@ async function stage_file(file, filename, skate_id, creation_datetime) {
 
         const exists = uploadQueue.some(u => {
             const isVideo = isVideoFile(u.filename) && isVideoFile(uploadRequest.filename);
-
             return isVideo && u.creation_datetime === uploadRequest.creation_datetime;
         });
 
@@ -53,7 +52,7 @@ async function stage_file(file, filename, skate_id, creation_datetime) {
             uploadQueue.push(uploadRequest);
         }
 
-        add_staged_badges(skate_id)
+        await add_staged_badges(skate_id);
         console.log(`File ${filename} added to skate #${skate_id}!`)
     } catch (error) {
         console.error('File not staged.', error)

@@ -6,7 +6,7 @@ import os
 
 from io import BytesIO
 from PIL import Image
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 router = APIRouter()
 
@@ -51,7 +51,8 @@ async def get_video_metadata(file_contents):
         # Check for creation time in the metadata and return it
         creation_time = None
         if "format" in metadata and "tags" in metadata["format"]:
-            creation_time = metadata["format"]["tags"].get("creation_time")
+            creation_time = (datetime.fromisoformat(metadata["format"]["tags"].get("creation_time")
+                                                    .replace("Z", "+00:00")).strftime('%Y-%m-%d %H:%M:%S UTC'))
 
         return {"creation_time": creation_time}
 
@@ -61,6 +62,7 @@ async def get_video_metadata(file_contents):
 
 
 async def get_image_metadata(file_contents):
+    print("YES MARKED AS IMAGE!")
     try:
         # Use PIL (Pillow) to extract EXIF metadata from image files
         image = Image.open(BytesIO(file_contents))
@@ -73,8 +75,9 @@ async def get_image_metadata(file_contents):
                 for tag, value in exif_data.items():
                     # Look for DateTimeOriginal in EXIF data
                     if tag == 36867:  # DateTimeOriginal tag
-                        creation_time = datetime.strptime(value, "%Y:%m:%d %H:%M:%S") - timedelta(minutes=11)
-                        creation_time = creation_time.isoformat()
+                        print("YES FOUND EXIF")
+                        creation_time = datetime.strptime(value, "%Y:%m:%d %H:%M:%S") - timedelta(hours = 6, minutes=11)
+                        creation_time = creation_time.astimezone(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')
                         break
 
         if not creation_time:

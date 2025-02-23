@@ -6,9 +6,15 @@ async function auto_populate_files() {
             throw new Error('Please select a skate!')
         } else {
             const directoryHandle = await window.showDirectoryPicker();
+            console.log(`before video: ${uploadQueue}`)
 
-            auto_populate_video(starting_skate_id, directoryHandle);
-            auto_populate_images(directoryHandle)
+            await auto_populate_video(starting_skate_id, directoryHandle);
+            console.log(`after auto_populate_video: ${uploadQueue}`)
+            // sort the videos in chronological order
+            uploadQueue.sort((a, b) => new Date(a.creation_datetime) - new Date(b.creation_datetime));
+
+            await auto_populate_images(directoryHandle);
+
         }
     } catch (error) {
         console.error('Error with selected skate: ', error);
@@ -56,7 +62,7 @@ async function auto_populate_video(starting_skate_id, directoryHandle) {
 
                 // Check if the creation_datetime exists in uploadQueue, ascending with skate_position for this competition_id
                 const competitionKey = `${result.competition_id}-${result.event_rink}`; // add join to events table to get these values correctly
-                const existingSkates = skatesByCompetition[competitionKey];
+                const existingSkates = (skatesByCompetition[competitionKey] || []).sort((a, b) => a.skate_position - b.skate_position);
 
                 // Debugging: Check if the existing skates are correctly matched by competition_id and event_rink
                 console.log('Existing skates for competitionKey:', competitionKey, existingSkates);
@@ -91,21 +97,15 @@ async function auto_populate_video(starting_skate_id, directoryHandle) {
         }
 
         // Now, add the files in order to the uploadQueue
-        for (const upload of newUploads) {
-            const exists = uploadQueue.some(u => u.creation_datetime === upload.creation_datetime);
-            if (exists) {
-                console.log(`A video with the creation datetime ${upload.creation_datetime} already exists. Skipping this file.`);
-            } else {
-                // Get the skate_id based on the final skate_position
-                const skateIdForPosition = getSkateIdFromPosition(upload.skate_position);
-                console.log(`Assigning skate_id ${skateIdForPosition} to position ${upload.skate_position}`);
+        await Promise.all(newUploads.map(async (upload) => {
+            // Get the skate_id based on the final skate_position
+            const skateIdForPosition = getSkateIdFromPosition(upload.skate_position);
+            console.log(`Assigning skate_id ${skateIdForPosition} to position ${upload.skate_position}`);
 
-                // Stage the file for processing
-                stage_file(upload.file, upload.filename, skateIdForPosition, upload.creation_datetime);
-            }
-        }
+            // Stage the file for processing
+            await stage_file(upload.file, upload.filename, skateIdForPosition, upload.creation_datetime);
+        }));
 
-        console.log(uploadQueue);
     } catch (error) {
         console.error('Error while auto populating video...', error);
     }
@@ -137,30 +137,49 @@ async function auto_populate_images(directoryHandle) {
                 continue;
             }
 
-            const imageCreationDate = new Date(creationDatetime);
+            const imageCreationDate = creationDatetime;
 
             // Determine which video range this image falls into
             let assignedSkateId = null;
 
             const videoQueue = uploadQueue.filter(item => isVideoFile(item.filename));
-            for (let i = 0; i < uploadQueue.length - 1; i++) {
-                const videoA = uploadQueue[i];
-                const videoB = uploadQueue[i + 1];
-                const videoADate = new Date(videoA.creation_datetime);
-                const videoBDate = new Date(videoB.creation_datetime);
+            for (let i = 0; i < videoQueue.length - 1; i++) {
+                const videoA = videoQueue[i];
+                const videoB = videoQueue[i + 1];
+
+                const videoADate = videoA.creation_datetime;
+                const videoBDate = videoB.creation_datetime;
+
+                console.log(`video A: ${new Date(videoADate)} --- image: ${new Date(imageCreationDate)} --- video B: ${new Date(videoBDate)}`)
+                console.log(`image created later than videoA: ${new Date(imageCreationDate) >= new Date(videoADate)}`)
+                console.log(`image created earlier than videoB: ${new Date(imageCreationDate) < new Date(videoBDate)}`)
+
                 // Check if the image's creation time is between videoA and videoB
-                if (imageCreationDate >= videoADate && imageCreationDate < videoBDate) {
+                if (new Date(imageCreationDate) >= new Date(videoADate) && new Date(imageCreationDate) < new Date(videoBDate)) {
+                    console.log(`both`)
                     assignedSkateId = videoA.skate_id;
                     break;
                 }
+            }
+
+            // Handle the case where the image is after the last video in the array
+            const lastVideo = videoQueue[videoQueue.length - 1];
+            const lastVideoDate = lastVideo.creation_datetime;
+
+            console.log(`last video: ${lastVideo.filename} --- image: ${new Date(imageCreationDate)}`);
+            console.log(`image created later than last video: ${new Date(imageCreationDate) >= new Date(lastVideoDate)}`);
+
+            if (new Date(imageCreationDate) >= new Date(lastVideoDate)) {
+                console.log(`image assigned to last video`);
+                assignedSkateId = lastVideo.skate_id;
             }
 
             // Optionally, handle images outside any video range:
             if (!assignedSkateId && uploadQueue.length > 0) {
                 const firstVideo = uploadQueue[0];
                 const lastVideo = uploadQueue[uploadQueue.length - 1];
-                const firstVideoDate = new Date(firstVideo.creation_datetime);
-                const lastVideoDate = new Date(lastVideo.creation_datetime);
+                const firstVideoDate = firstVideo.creation_datetime;
+                const lastVideoDate = lastVideo.creation_datetime;
                 if (imageCreationDate < firstVideoDate) {
                     assignedSkateId = firstVideo.skate_id;
                 } else if (imageCreationDate >= lastVideoDate) {

@@ -211,6 +211,7 @@ async def get_creation_datetime(file_slice: UploadFile = File(...)):
     file_type = await get_file_type(file_contents)
 
     if file_type.startswith("image/"):
+        print("MARKED AS IMAGE!!!")
         metadata = await extract_metadata.get_image_metadata(file_contents)
     elif file_type.startswith("video/"):
         metadata = await extract_metadata.get_video_metadata(file_contents)
