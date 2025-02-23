@@ -71,7 +71,7 @@ async def create_event_by_pdf(
     for pdf_file in pdf_file_list:
         content = BytesIO(pdf_file.file.read())
         print(content)
-        event_scraped = await PDFScraper.stage_pdf(content, event_type)
+        event_scraped = PDFScraper.stage_pdf(content, event_type)
 
         try:
             event = EventDBModel(event_name=event_scraped["event_name"],
@@ -85,7 +85,7 @@ async def create_event_by_pdf(
                 session.commit()
 
             for skater in event_scraped["skaters"]:
-                skate = await SkateDBModel(event_id=event.id, skater_name=skater)
+                skate = SkateDBModel(event_id=event.id, skater_name=skater)
                 with get_db_session().__next__() as session:
                     session.add(skate)
                     session.commit()
@@ -94,8 +94,8 @@ async def create_event_by_pdf(
             raise HTTPException(422, "Missing data from event model.")
 
     with get_db_session().__next__() as session:
-        events_list = await session.query(EventDBModel).filter_by(competition_id=competition_id).all()
-        current_competition = await session.query(CompetitionDBModel).filter_by(id=competition_id).first()
+        events_list = session.query(EventDBModel).filter_by(competition_id=competition_id).all()
+        current_competition = session.query(CompetitionDBModel).filter_by(id=competition_id).first()
 
     return templates.TemplateResponse(
         request=request,

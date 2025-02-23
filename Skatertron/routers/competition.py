@@ -27,7 +27,7 @@ async def create_competition(
         request: Request
 ):
     try:
-        competition = await CompetitionDBModel(
+        competition = CompetitionDBModel(
             competition_name=competition_name,
             competition_year=competition_year,
             host_club=host_club
@@ -60,7 +60,7 @@ async def get_all_competitions():
 async def get_competition_by_id(competition_id: int):
     try:
         with get_db_session().__next__() as session:
-            competition = await session.query(CompetitionDBModel).filter_by(id=competition_id).first()
+            competition = session.query(CompetitionDBModel).filter_by(id=competition_id).first()
 
             return competition
     except IntegrityError:
@@ -72,7 +72,7 @@ async def get_events_by_competition_id(competition_id: int, request: Request):
     with get_db_session().__next__() as session:
         events_list = session.query(EventDBModel).filter_by(competition_id=competition_id).order_by(
             EventDBModel.event_position).all()
-        current_competition = get_competition_by_id(competition_id)
+        current_competition = await get_competition_by_id(competition_id)
 
     return templates.TemplateResponse(
         request=request,
