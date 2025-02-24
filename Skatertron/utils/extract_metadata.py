@@ -1,14 +1,11 @@
 import subprocess
 import tempfile
 import json
-from fastapi import APIRouter, UploadFile, File
 import os
 
 from io import BytesIO
 from PIL import Image
 from datetime import datetime, timedelta, timezone
-
-router = APIRouter()
 
 
 # Function to extract video metadata from the file contents (file slice)
@@ -62,7 +59,6 @@ async def get_video_metadata(file_contents):
 
 
 async def get_image_metadata(file_contents):
-    print("YES MARKED AS IMAGE!")
     try:
         # Use PIL (Pillow) to extract EXIF metadata from image files
         image = Image.open(BytesIO(file_contents))
@@ -75,7 +71,6 @@ async def get_image_metadata(file_contents):
                 for tag, value in exif_data.items():
                     # Look for DateTimeOriginal in EXIF data
                     if tag == 36867:  # DateTimeOriginal tag
-                        print("YES FOUND EXIF")
                         creation_time = datetime.strptime(value, "%Y:%m:%d %H:%M:%S") - timedelta(hours = 6, minutes=11)
                         creation_time = creation_time.astimezone(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')
                         break
