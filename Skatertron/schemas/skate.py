@@ -1,5 +1,4 @@
 from pydantic import BaseModel, ConfigDict, conint
-from Skatertron.enums.footage_exceptions import FootageExceptions
 
 
 class Skate(BaseModel):
@@ -8,5 +7,5 @@ class Skate(BaseModel):
     id: int
     event_id: conint(strict=True)
     skater_name: str
-    footage_exceptions: FootageExceptions
+    no_video: bool
     skate_position: int

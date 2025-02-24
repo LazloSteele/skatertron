@@ -1,6 +1,5 @@
-from sqlalchemy import ForeignKey, String, Integer, Enum as SQLEnum
+from sqlalchemy import ForeignKey, String, Integer, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from Skatertron.enums.footage_exceptions import FootageExceptions
 
 from . import Base
 
@@ -11,7 +10,7 @@ class Skate(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     event_id: Mapped[int] = mapped_column(ForeignKey("events.id"))
     skater_name: Mapped[str] = mapped_column(String(40))
-    footage_exceptions: Mapped[FootageExceptions] = mapped_column(SQLEnum(FootageExceptions), nullable=True)
+    no_video: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default='false')
     skate_position: Mapped[int] = mapped_column(Integer)
 
     event = relationship("Event", backref="skates")

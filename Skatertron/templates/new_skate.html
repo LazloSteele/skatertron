@@ -11,16 +11,17 @@
     {{skate.skater_name}}
     <sl-button-group style="margin-left:1em">
 
-        <sl-dropdown>
-            <sl-button slot="trigger" caret>Exceptions</sl-button>
-            <sl-menu>
-                <sl-menu-item type="checkbox" value="">Skater Scratch</sl-menu-item>
-                <sl-divider></sl-divider>
-                <sl-menu-item type="checkbox">No Video</sl-menu-item>
-                <sl-menu-item type="checkbox">No Photos</sl-menu-item>
-                <sl-menu-item type="checkbox">Multiple Videos</sl-menu-item>
-            </sl-menu>
-        </sl-dropdown>
+        <sl-checkbox
+                id="checkbox-{{ skate.id }}"
+                hx-put="/skates/{{ skate.id }}"
+                hx-trigger="sl-change"
+                hx-swap="none"
+                hx-vals='{}'
+                onclick="updateHxVals(this)"
+                {{ 'checked' if skate.no_video else '' }}
+        >
+            <sl-icon name="camera-video-off"></sl-icon>
+        </sl-checkbox>
 
         <sl-tooltip content="Add file to {{ skate.skater_name }}!">
             <sl-icon-button

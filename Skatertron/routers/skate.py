@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Request, Form, UploadFile, File
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, JSONResponse
 
-from typing import Annotated
+from typing import Annotated, Optional
 from tempfile import NamedTemporaryFile
 import subprocess
 
@@ -95,7 +95,7 @@ def get_context_by_skate_id_json(skate_id: int, request: Request):
             "id": skate_id,
             "event_id": current_skate.event_id,
             "skater_name": current_skate.skater_name,
-            "footage_exceptions": current_skate.footage_exceptions,
+            "no_video": current_skate.no_video,
             "skate_position": current_skate.skate_position,
             "competition_id": current_event.competition_id,
             "event_rink": current_event.event_rink
@@ -159,10 +159,18 @@ def get_files_by_skate_id(request: Request, skate_id: int):
 
 
 @router.put("/{skate_id}")
-def update_event(skate_id: int,
-                 new_event_id: int | None = None,
-                 new_skater_name: str | None = None,
-                 ):
+async def update_skate(
+        request: Request,
+        skate_id: int,
+        new_event_id: Optional[int] = None,
+        new_skater_name: Optional[str] = None,
+        new_skate_position: Optional[int] = None
+):
+    data = await request.form()
+
+    new_no_video = bool(data.get("new_no_video"))
+
+    print(f"new_no_video received: {new_no_video}")
     with get_db_session().__next__() as session:
         try:
             skate = session.query(SkateDBModel).filter_by(id=skate_id).first()
@@ -170,6 +178,13 @@ def update_event(skate_id: int,
                 skate.event_id = new_event_id
             if new_skater_name:
                 skate.skater_name = new_skater_name
+            if new_no_video is not None:
+                print(f"No Video: {skate.no_video}")
+                skate.no_video = new_no_video
+                print(f"No Video switched to: {skate.no_video}")
+
+            if new_skate_position:
+                skate.skate_position = new_skate_position
 
             session.commit()
         except UnmappedInstanceError:

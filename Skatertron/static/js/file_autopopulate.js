@@ -67,6 +67,12 @@ async function auto_populate_video(starting_skate_id, directoryHandle) {
                 // Debugging: Check if the existing skates are correctly matched by competition_id and event_rink
                 console.log('Existing skates for competitionKey:', competitionKey, existingSkates);
 
+                // Move to the next skate position if the current skate has no video
+                while (existingSkates[current_skate_position] && existingSkates[current_skate_position].no_video) {
+                    console.log(`Skipping skate at position ${current_skate_position} because no_video is True`);
+                    current_skate_position++;  // Skip to the next position
+                }
+
                 // Add new file to the temporary list of uploads with its creation_datetime and skate_position
                 newUploads.push({
                     file,
