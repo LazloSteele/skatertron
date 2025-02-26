@@ -122,7 +122,11 @@ async def get_event_by_id(event_id: int):
 async def get_skates_by_event_id(event_id: int, request: Request):
     try:
         with get_db_session().__next__() as session:
-            skates = session.query(SkateDBModel).filter_by(event_id=event_id).all()
+            skates = session.query(SkateDBModel).filter_by(
+                event_id=event_id
+            ).order_by(
+                SkateDBModel.skate_position
+            ).all()
 
             current_event = await get_event_by_id(event_id)
             current_competition = session.query(CompetitionDBModel).filter_by(id=current_event.competition_id)

@@ -67,8 +67,12 @@ async function auto_populate_video(starting_skate_id, directoryHandle) {
                 // Debugging: Check if the existing skates are correctly matched by competition_id and event_rink
                 console.log('Existing skates for competitionKey:', competitionKey, existingSkates);
 
+                console.log(`Length of existing skates: ${existingSkates.length}`)
+                console.log(`${current_skate_position}/${existingSkates.length}`)
+
                 // Move to the next skate position if the current skate has no video
-                while (existingSkates[current_skate_position] && existingSkates[current_skate_position].no_video) {
+                while (current_skate_position < existingSkates.length && existingSkates[current_skate_position].no_video === true) {
+
                     console.log(`Skipping skate at position ${current_skate_position} because no_video is True`);
                     current_skate_position++;  // Skip to the next position
                 }
@@ -85,10 +89,13 @@ async function auto_populate_video(starting_skate_id, directoryHandle) {
 
         // Reorder all files based on creation_datetime
         newUploads.sort((a, b) => new Date(a.creation_datetime) - new Date(b.creation_datetime));
+        const skatePositions = newUploads.map(upload => upload.skate_position);
+        skatePositions.sort((a, b) => a - b) // ensures numeric sort even if strings
+        console.log(skatePositions)
 
         // Reassign sequential skate_position values based on the sorted creation_datetime order
         newUploads.forEach((upload, index) => {
-            upload.skate_position = index + starting_skate_position;
+            upload.skate_position = skatePositions[index];
         });
 
         // Debugging: Check the final list of new uploads before adding them to the upload queue
