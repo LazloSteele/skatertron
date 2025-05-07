@@ -21,7 +21,10 @@
         </sl-tooltip>
 
         <sl-tooltip content="Delete {{ event.event_name }}!">
-            <sl-icon-button hx-delete="/events/{{ event.id }}" name="trash"></sl-icon-button>
+            <sl-icon-button
+                    hx-delete="/events/{{ event.id }}"
+                    hx-target="#event_tree_{{ event.id }}"
+                    name="trash"></sl-icon-button>
         </sl-tooltip>
 
     </sl-button-group>

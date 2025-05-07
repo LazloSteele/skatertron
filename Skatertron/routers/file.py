@@ -1,32 +1,30 @@
+import os
 import tempfile
 
-from fastapi import APIRouter, HTTPException, Request, UploadFile, File, Form, WebSocket
+from fastapi import APIRouter, HTTPException, Request, UploadFile, File, Form
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 import json
 import asyncio
 from datetime import datetime
 
-from sqlalchemy.orm import aliased
-
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import UnmappedInstanceError
 
 from pathlib import Path
-from typing import Annotated, List, Dict
+from typing import Annotated, List
 
 from Skatertron.models.file import File as FileDBModel
 from Skatertron.models.skate import Skate as SkateDBModel
 from Skatertron.models.event import Event as EventDBModel
 from Skatertron.models.competition import Competition as CompetitionDBModel
 from Skatertron.schemas.file import File as FileSchema
-from Skatertron.schemas.upload_item import UploadItem
 from Skatertron.database import get_db_session
 from Skatertron.database import session_manager
 from Skatertron.utils import extract_metadata
 from Skatertron.utils.video_formatter import VideoFormatter
 
-import shutil
+import aiofiles
 import magic
 
 
@@ -47,31 +45,65 @@ async def create_file(
                 request: Request,
                 uploaded_file: UploadFile = File(...)
                 ):
+    external_drive_tmp = r"S:\2025 Omaha Winterfest\tmp"
+
+    os.makedirs(external_drive_tmp, exist_ok=True)
+
     context = await get_file_path_from_skate_id(skate_id, file_name)
 
-    file_type = uploaded_file.content_type
+    file_type = await get_file_type(await uploaded_file.read(20 * 1024))
 
+    '''
     if file_type.startswith("video/"):
         # Create a temporary file for the uploaded video
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video_file:
-            # Save the uploaded video content into the temporary file
-            shutil.copyfileobj(uploaded_file.file, temp_video_file)
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".mov", dir=external_drive_tmp) as temp_video_file:
+            temp_video_path = temp_video_file.name
 
-            # Get the temporary file path
-            video_path = temp_video_file.name
+        async with aiofiles.open(temp_video_path, "wb") as out_file:
+            while True:
+                chunk = await uploaded_file.read(1024 * 1024)
+                if not chunk:
+                    break
 
-            processed_path = VideoFormatter.format_video(video_path)
+                await out_file.write(chunk)
 
-            shutil.move(processed_path, context["path"])
+        try:
+            processed_video_path = await VideoFormatter.format_video(temp_video_path)
 
+        except Exception as e:
+            os.remove(temp_video_path)
+            raise HTTPException(status_code=500, detail=f"Video Processing failed: {e}")
+
+        try:
+            await asyncio.to_thread(os.rename, processed_video_path, context["path"])
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Error moving file: {e}")
+
+        if os.path.exists(temp_video_path):
+            os.remove(temp_video_path)
+
+        print(f"Video uploaded and processed successfully. Saved to {context['path']}")
+    
     else:
-        with open(context["path"], 'wb') as file:
-            shutil.copyfileobj(uploaded_file.file, file)
+        async with aiofiles.open(context["path"], 'wb') as dest:
+            while True:
+                chunk = await uploaded_file.read(1024 * 1024)
+                if not chunk:
+                    break
+                await dest.write(chunk)
+    '''
+    # Delete this next block when reimplementing the converter!!!
+    async with aiofiles.open(context["path"], 'wb') as dest:
+        while True:
+            chunk = await uploaded_file.read(1024 * 1024)
+            if not chunk:
+                break
+            await dest.write(chunk)
 
     try:
         file = FileDBModel(skate_id=int(skate_id),
                            file_name=file_name,
-                           file_path=context["file_path"],
+                           file_path=context["path"],
                            file_type=uploaded_file.content_type,
                            creation_time=creation_datetime,
                            )
@@ -189,26 +221,6 @@ def delete_file(file_id: int):
             raise HTTPException(404, f"File with id: #{file_id} not found.")
 
 
-@router.post("/{file_id}/stage")
-def stage_file(
-        upload_request: dict
-):
-    pass
-
-
-@router.post("/bulk_upload")
-async def upload_from_queue(
-        files: List[UploadFile] = File(...),
-        skate_ids: str = Form(...),
-):
-    skate_ids_list = json.loads(skate_ids)  # Deserialize skate_ids from JSON string
-    for file, skate_id in zip(files, skate_ids_list):
-        contents = await file.read()  # Read the contents of the file
-        print(f"Received file: {file.filename} with skate_id: {skate_id}")
-
-    return {"message": "Upload successful"}
-
-
 @router.post("/get_creation_datetime")
 async def get_creation_datetime(file_slice: UploadFile = File(...)):
     file_contents = await file_slice.read()
@@ -258,21 +270,20 @@ async def get_file_path_from_skate_id(skate_id, file_name):
         current_event = context["current_event"]
         current_skate = context["current_skate"]
 
-        competition_path = f"{current_competition.competition_year}_{current_competition.competition_name}"
         event_path = f"{current_event.event_number}_{current_event.event_name}"
 
     except IntegrityError:
         raise HTTPException(404, "Data not found.")
 
-    file_name = f"{current_skate.skater_name.replace(' ', '_')}_{file_name.replace(' ', '_')}"
-    file_path = f"static/media/{competition_path.replace(' ', '_')}/{event_path.replace(' ', '_')}/"
-    path = Path(f"{file_path}{file_name}")
+    new_file_name = f"{current_skate.skater_name}_{file_name}".replace(' ', '_').replace('/', '-').replace('&', '_and_')
+    file_path = f"{event_path}".replace(' ', '_').replace('/', '-').replace('&', '_and_')
+    path = Path(f"S:/2025 Omaha Winterfest/{file_path}/{new_file_name}")
     path.parent.mkdir(parents=True, exist_ok=True)
 
     context = {
-        "file_name": file_name,
+        "file_name": new_file_name,
         "file_path": file_path,
-        "path": path
+        "path": fr"{path}"
     }
 
     return context

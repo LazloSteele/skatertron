@@ -19,7 +19,7 @@ document.addEventListener('click', async (event) => {
             ]
         });
         const file = await fileHandle.getFile();
-        const filename = fileHandle.name
+        const filename = fileHandle.name;
         const skate_id = parseInt(button.getAttribute('skate-id'));
         const creation_datetime = await extractCreationTime(file);
 

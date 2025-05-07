@@ -39,8 +39,14 @@
             <sl-icon-button name="pencil"></sl-icon-button>
         </sl-tooltip>
 
-        <sl-tooltip content="Delete {{ skate.skater_name }}! [UNDER CONSTRUCTION]">
-            <sl-icon-button name="trash"></sl-icon-button>
+        <sl-tooltip content="Delete {{ skate.skater_name }}!">
+            <sl-icon-button
+                    hx-delete="/skates/{{ skate.id }}"
+                    hx-target="#skate_tree_item_{{ skate.id }}"
+                    name="trash"
+            >
+
+            </sl-icon-button>
         </sl-tooltip>
 
         <div
